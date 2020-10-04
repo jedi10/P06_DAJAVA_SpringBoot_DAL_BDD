@@ -27,6 +27,10 @@ public class User {
     private String password;
 
     @Getter
+    @Setter
+    private BankAccount bankAccount;
+
+    @Getter
     private List<User> contactList;
 
     @Getter
