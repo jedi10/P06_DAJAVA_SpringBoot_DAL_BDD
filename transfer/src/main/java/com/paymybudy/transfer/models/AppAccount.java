@@ -1,6 +1,7 @@
 package com.paymybudy.transfer.models;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 import java.time.Instant;
@@ -12,8 +13,7 @@ public class AppAccount {
     private User user;
 
     @Getter
-    @Setter
-    private EnumAppAccountStatus loginAccountStatus;
+    private EnumAppAccountStatus appAccountStatus;
 
     @Getter
     @Setter
@@ -29,9 +29,28 @@ public class AppAccount {
      * @param loginAccountStatus loginAccountStatus (Enum)
      */
     public AppAccount(User user,
-                      EnumAppAccountStatus loginAccountStatus) {
+                      EnumAppAccountStatus loginAccountStatus) throws Exception {
         this.user = user;
-        this.loginAccountStatus = loginAccountStatus;
-        this.creationDate = LocalDate.from(Instant.now());
+        setAppAccountStatus(loginAccountStatus);
+        this.creationDate = LocalDate.now();
+    }
+
+    public void setAppAccountStatus(EnumAppAccountStatus appAccountStatus) throws Exception {
+         if (EnumAppAccountStatus.CONFIRMED.equals(appAccountStatus)){
+             if (userAccountsCreated()){
+                 this.appAccountStatus = appAccountStatus;
+             } else {
+                 throw new Exception(
+                         "User Bank Account and User Internal Account" +
+                                 " have to be created before AppAccount can be Confirmed");
+             }
+         } else {
+             this.appAccountStatus = appAccountStatus;
+         }
+    }
+
+    private boolean userAccountsCreated(){
+        return user.getBankAccount() != null &&
+                user.getInternalCashAccount() != null;
     }
 }
