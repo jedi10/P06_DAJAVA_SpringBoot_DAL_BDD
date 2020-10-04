@@ -31,6 +31,10 @@ public class User {
     private BankAccount bankAccount;
 
     @Getter
+    @Setter
+    private InternalCashAccount internalCashAccount;
+
+    @Getter
     private List<User> contactList;
 
     @Getter
