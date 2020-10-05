@@ -41,7 +41,7 @@ public class User {
     private List<ExternalTransaction> externalTransactionList;
 
     @Getter
-    private List<?> internalTransactionList;
+    private List<InternalTransaction> internalTransactionList;
 
     /**
      * <b>User Constructor: all list will be created as empty</b>
@@ -74,7 +74,7 @@ public class User {
                 .collect(Collectors.toList());
     }
 
-    public void setInternalTransactionList(List<?> internalList){
+    public void setInternalTransactionList(List<InternalTransaction> internalList){
         this.internalTransactionList = Optional.ofNullable(internalList)
                 .map(List::stream)
                 .orElseGet(Stream::empty)
