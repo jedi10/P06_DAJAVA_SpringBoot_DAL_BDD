@@ -38,7 +38,7 @@ public class User {
     private List<User> contactList;
 
     @Getter
-    private List<?> externalTransactionList;
+    private List<ExternalTransaction> externalTransactionList;
 
     @Getter
     private List<?> internalTransactionList;
@@ -67,7 +67,7 @@ public class User {
                 .collect(Collectors.toList());
     }
 
-    public void setExternalTransactionList(List<?> externalList){
+    public void setExternalTransactionList(List<ExternalTransaction> externalList){
         this.externalTransactionList = Optional.ofNullable(externalList)
                 .map(List::stream)
                 .orElseGet(Stream::empty)
