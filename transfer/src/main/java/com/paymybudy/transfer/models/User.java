@@ -9,12 +9,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Entity
-@Table(name = "user", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
+@Entity(name = "USER")
+@Table(name = "USER", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     @Getter
     @Setter
     private Long id;
@@ -24,16 +25,19 @@ public class User {
     @Setter
     private String firstName;
 
+    @Column(name = "last_name")
     @Getter
     @Setter
     private String lastName;
 
     @Getter
     @Setter
+    @Column(nullable = false)
     private String email;
 
     @Getter
     @Setter
+    @Column(nullable = false)
     private String password;
 
     /*@Getter
@@ -96,3 +100,9 @@ public class User {
     }*/
 
 }
+
+
+//https://www.logicbig.com/tutorials/java-ee-tutorial/jpa/table-annotation-unique-constraints.html
+//https://code-examples.net/en/q/5c11f1
+//https://stackoverflow.com/questions/3405229/specifying-an-index-non-unique-key-using-jpa
+// indexes = {@Index(name = "USER_EMAIL_UNIQUE_INDEX", columnList = "email")})
