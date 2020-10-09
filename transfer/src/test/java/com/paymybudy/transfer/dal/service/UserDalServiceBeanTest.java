@@ -100,6 +100,7 @@ class UserDalServiceBeanTest {
         assertEquals(userExpected, userResult);
     }
 
+    @Order(3)
     @Test
     void create() {
         //***********************************************************
@@ -119,6 +120,7 @@ class UserDalServiceBeanTest {
         assertEquals(userResult, userCreated);
     }
 
+    @Order(4)
     @Test
     void update() {
         //***********************************************************
@@ -139,6 +141,7 @@ class UserDalServiceBeanTest {
         assertEquals(userResult, userToUpdate);
     }
 
+    @Order(5)
     @Test
     void delete() {
         //***********************************************************
