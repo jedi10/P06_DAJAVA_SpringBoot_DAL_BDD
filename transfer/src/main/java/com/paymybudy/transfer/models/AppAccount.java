@@ -15,6 +15,7 @@ public class AppAccount {
     @Getter
     private EnumAppAccountStatus appAccountStatus;
 
+    //@Temporal(TemporalType.TIMESTAMP)
     @Getter
     @Setter
     private LocalDate creationDate;
@@ -50,7 +51,7 @@ public class AppAccount {
     }
 
     private boolean userAccountsCreated(){
-        return user.getBankAccount() != null &&
-                user.getInternalCashAccount() != null;
+        return true;//user.getBankAccount() != null &&
+                //user.getInternalCashAccount() != null;
     }
 }
