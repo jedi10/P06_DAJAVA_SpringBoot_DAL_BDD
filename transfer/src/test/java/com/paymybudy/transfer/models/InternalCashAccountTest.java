@@ -19,6 +19,21 @@ class InternalCashAccountTest {
 
     @Order(1)
     @Test
+    void checConstructor_ListEmpty() {
+        //When
+        InternalCashAccount cashAccount = new InternalCashAccount(
+                "1234564343",
+                "Livret de depot standard");
+
+        //Then
+        assertNotNull(cashAccount);
+
+        assertNotNull(cashAccount.getInternalTransactionList());
+        assertTrue(cashAccount.getInternalTransactionList().isEmpty());
+    }
+
+    @Order(2)
+    @Test
     void constructor_amountValue() {
         //When
         InternalCashAccount cashAccount = new InternalCashAccount(
@@ -30,7 +45,7 @@ class InternalCashAccountTest {
     }
 
 
-    @Order(2)
+    @Order(3)
     @Test
     void addCash() {
         //Given
@@ -43,7 +58,7 @@ class InternalCashAccountTest {
         assertEquals(101, cashAccount.getAmount());
     }
 
-    @Order(3)
+    @Order(4)
     @Test
     void removeCash() {
         //Given
