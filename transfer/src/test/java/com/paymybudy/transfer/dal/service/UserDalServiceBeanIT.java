@@ -4,23 +4,17 @@ import com.paymybudy.transfer.dal.repository.IUserRepository;
 import com.paymybudy.transfer.models.User;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.*;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-
-//TODO : pass this test to H2
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserDalServiceBeanIT {
@@ -40,6 +34,7 @@ class UserDalServiceBeanIT {
         usersGiven.add(user2);
     }
     private User userCreated = new User("Jack", "Holster", "holster@paymybuddy.com", "xxxx");
+    private User userCreatedBis = new User("Jack", "Holster", "holsterBis@paymybuddy.com", "xxxx");
     private User userToUpdate = new User("Tobias", "Hamsterdil", "hamsterdil@paymybuddy.com", "xxxx");
 
     @BeforeEach
@@ -118,6 +113,22 @@ class UserDalServiceBeanIT {
 
     @Order(5)
     @Test
+    void findByEmail() {
+        //GIVEN
+        User userCreatedResult = userDalServiceBean.create(userCreatedBis);
+        assertEquals(userCreatedBis.getEmail(), userCreatedResult.getEmail());
+        assertNotNull(userCreatedResult.getId());
+
+        //WHEN
+        User userResult = userDalServiceBean.findByEmail(userCreatedResult.getEmail());
+
+        //THEN
+        assertEquals(userCreatedResult.getEmail(), userResult.getEmail());
+        assertEquals(userCreatedResult.getId(), userResult.getId());
+    }
+
+    @Order(6)
+    @Test
     void update() {
         //GIVEN
         User userCreatedResult = userDalServiceBean.create(userToUpdate);
@@ -132,18 +143,42 @@ class UserDalServiceBeanIT {
         assertEquals(userCreatedResult.getFirstName(), userUpdateResult.getFirstName());
     }
 
-    @Order(6)
+    @Order(7)
     @Test
     void delete() {
         List<User> usersResult = userDalServiceBean.findAll();
         assertTrue(usersResult.size() > 0);
+        int userListSizeAtStart = usersResult.size();
+        User userToRemove = userDalServiceBean.findByEmail(userCreatedBis.getEmail());
+        assertTrue(usersResult.contains(userToRemove));
 
         //WHEN
-        usersResult.forEach(
-                (e)-> { userDalServiceBean.delete(e.getId()); }
-        );
+        userDalServiceBean.delete(userToRemove.getId());
+
+        //THEN
+        List<User> usersResultAfter = userDalServiceBean.findAll();
+        assertEquals(userListSizeAtStart-1, usersResultAfter.size());
+        assertFalse(usersResultAfter.contains(userToRemove));
+    }
+
+    @Order(8)
+    @Test
+    @Sql({"/import_users.sql"})
+    void deleteAll() {
+        List<User> usersResult = userDalServiceBean.findAll();
+        assertTrue(usersResult.size() > 0);
+
+        //WHEN
+        userDalServiceBean.deleteAll();
+        //usersResult.forEach(
+        //       (e)-> { userDalServiceBean.delete(e.getId()); }
+        //);
+
         //THEN
         List<User> usersResultAfter = userDalServiceBean.findAll();
         assertEquals(0, usersResultAfter.size());
     }
 }
+
+//Import SQL File, 5.
+//https://www.baeldung.com/spring-boot-data-sql-and-schema-sql
