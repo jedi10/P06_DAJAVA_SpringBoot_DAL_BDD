@@ -32,6 +32,7 @@ class AppAccountTest {
         assertEquals(EnumAppAccountStatus.NOTCONFIRMED, appAccount.getAppAccountStatus());
     }
 
+    /**
     @Order(2)
     @Test
     void setAppAccountStatus_Exception() throws Exception {
@@ -49,5 +50,5 @@ class AppAccountTest {
         } );
         assertTrue(exception.getMessage().contains(
                 "User Bank Account and User Internal Account have to be created"));
-    }
+    }**/
 }

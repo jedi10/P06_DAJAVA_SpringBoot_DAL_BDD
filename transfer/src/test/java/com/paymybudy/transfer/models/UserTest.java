@@ -17,6 +17,7 @@ class UserTest {
     void tearDown() {
     }
 
+    /*
     @Order(1)
     @Test
     void checkUserConstructor_ListEmpty() {
@@ -42,7 +43,7 @@ class UserTest {
         assertTrue(user.getInternalTransactionList().isEmpty());
 
 
-    }
+    }*/
 
 
 }
