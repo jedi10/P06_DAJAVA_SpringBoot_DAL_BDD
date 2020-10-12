@@ -53,11 +53,7 @@ public class User implements Serializable {
     @Getter
     private List<User> contactList;
 
-    @Getter
-    private List<ExternalTransaction> externalTransactionList;
-
-    @Getter
-    private List<InternalTransaction> internalTransactionList;*/
+    */
 
     /**
      * <b>User Constructor: all list will be created as empty</b>
@@ -72,8 +68,6 @@ public class User implements Serializable {
         this.email = email;
         this.password = password;
         //setContactList(null);
-        //setExternalTransactionList(null);
-        //setInternalTransactionList(null);
     }
 
     public User() {
@@ -87,19 +81,7 @@ public class User implements Serializable {
                 .collect(Collectors.toList());
     }
 
-    public void setExternalTransactionList(List<ExternalTransaction> externalList){
-        this.externalTransactionList = Optional.ofNullable(externalList)
-                .map(List::stream)
-                .orElseGet(Stream::empty)
-                .collect(Collectors.toList());
-    }
-
-    public void setInternalTransactionList(List<InternalTransaction> internalList){
-        this.internalTransactionList = Optional.ofNullable(internalList)
-                .map(List::stream)
-                .orElseGet(Stream::empty)
-                .collect(Collectors.toList());
-    }*/
+   */
 
     @Override
     public boolean equals(Object o) {

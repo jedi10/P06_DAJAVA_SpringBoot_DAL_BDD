@@ -4,6 +4,11 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public class InternalCashAccount {
     @Getter
     @Setter
@@ -19,10 +24,14 @@ public class InternalCashAccount {
     @Setter
     private double amount;
 
+    @Getter
+    private List<InternalTransaction> internalTransactionList;
+
     public InternalCashAccount(String number, String libelle) {
         this.number = number;
         this.libelle = libelle;
         this.amount = 0;
+        setInternalTransactionList(null);
     }
 
     public void addCash(double amount){
@@ -31,5 +40,12 @@ public class InternalCashAccount {
 
     public void removeCash(double amount){
         this.amount = this.amount - amount;
+    }
+
+    public void setInternalTransactionList(List<InternalTransaction> internalList){
+        this.internalTransactionList = Optional.ofNullable(internalList)
+                .map(List::stream)
+                .orElseGet(Stream::empty)
+                .collect(Collectors.toList());
     }
 }
