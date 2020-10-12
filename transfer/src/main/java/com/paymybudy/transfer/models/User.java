@@ -54,9 +54,6 @@ public class User implements Serializable {
     private List<User> contactList;
 
     @Getter
-    private List<ExternalTransaction> externalTransactionList;
-
-    @Getter
     private List<InternalTransaction> internalTransactionList;*/
 
     /**
@@ -72,7 +69,6 @@ public class User implements Serializable {
         this.email = email;
         this.password = password;
         //setContactList(null);
-        //setExternalTransactionList(null);
         //setInternalTransactionList(null);
     }
 
@@ -82,13 +78,6 @@ public class User implements Serializable {
     /*
     public void setContactList(List<User> userList){
         this.contactList = Optional.ofNullable(userList)
-                .map(List::stream)
-                .orElseGet(Stream::empty)
-                .collect(Collectors.toList());
-    }
-
-    public void setExternalTransactionList(List<ExternalTransaction> externalList){
-        this.externalTransactionList = Optional.ofNullable(externalList)
                 .map(List::stream)
                 .orElseGet(Stream::empty)
                 .collect(Collectors.toList());
