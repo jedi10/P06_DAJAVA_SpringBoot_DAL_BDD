@@ -3,12 +3,9 @@ package com.paymybudy.transfer.dal.service;
 import com.paymybudy.transfer.dal.repository.IUserRepository;
 import com.paymybudy.transfer.models.User;
 import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,6 +44,16 @@ public class UserDalServiceBean implements IUserDalService {
     }
 
     @Override
+    public User findByEmail(@NonNull String email) {
+        User result = null;
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()){
+            result = userOptional.get();
+        }
+        return result;
+    }
+
+    @Override
     public User create(@NonNull User user) {
         if (user.getId() != null) {
             //cannot create user with specified Id value
@@ -71,6 +78,11 @@ public class UserDalServiceBean implements IUserDalService {
         if (userPersisted != null){
             userRepository.delete(userPersisted);
         }
+    }
+
+    @Override
+    public void deleteAll() {
+        userRepository.deleteAll();
     }
 }
 
