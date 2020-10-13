@@ -42,10 +42,12 @@ public class User implements Serializable {
     @Column(nullable = false)
     private String password;
 
-    /*@Getter
+    @OneToOne
+    @JoinColumn(name="bank_account_id")
+    @Getter
     @Setter
     private BankAccount bankAccount;
-
+/*
     @Getter
     @Setter
     private InternalCashAccount internalCashAccount;
