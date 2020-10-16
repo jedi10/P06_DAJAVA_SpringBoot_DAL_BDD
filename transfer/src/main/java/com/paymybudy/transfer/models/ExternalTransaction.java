@@ -1,11 +1,25 @@
 package com.paymybudy.transfer.models;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class ExternalTransaction {
+@Entity(name = "EXTERNAL_TRANSACTION")
+@Table(name = "EXTERNAL_TRANSACTION")
+@NoArgsConstructor
+public class ExternalTransaction implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ext_transaction_id")
+    @Getter
+    @Setter
+    private Long id;
+
     @Getter
     @Setter
     private String description;
@@ -18,12 +32,16 @@ public class ExternalTransaction {
     @Getter
     @Setter
     private EnumTransacStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bank_account_fk", referencedColumnName = "bank_account_id")
     @Getter
     @Setter
     private BankAccount accountDebit;
+    /*
     @Getter
     @Setter
-    private InternalCashAccount accountCredit;
+    private InternalCashAccount accountCredit;*/
 
     /**
      * <b>ExternalTransaction Constructor</b>
@@ -40,6 +58,6 @@ public class ExternalTransaction {
         this.amount = amount;
         this.status = status;
         this.accountDebit = accountDebit;
-        this.accountCredit = accountCredit;
+        //this.accountCredit = accountCredit;
     }
 }

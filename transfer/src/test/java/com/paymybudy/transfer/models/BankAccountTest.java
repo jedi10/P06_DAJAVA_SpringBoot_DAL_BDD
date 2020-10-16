@@ -16,7 +16,7 @@ class BankAccountTest {
     @AfterEach
     void tearDown() {
     }
-    /*
+
     @Order(1)
     @Test
     void checkConstructor_ListEmpty() {
@@ -34,6 +34,6 @@ class BankAccountTest {
 
         assertNotNull(bankAccount.getExternalTransactionList());
         assertTrue(bankAccount.getExternalTransactionList().isEmpty());
-    }*/
+    }
 
 }
