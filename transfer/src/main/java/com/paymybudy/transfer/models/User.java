@@ -43,7 +43,7 @@ public class User implements Serializable {
     private String password;
 
     @OneToOne
-    @JoinColumn(name="bank_account_id")
+    @JoinColumn(name="bank_account_fk")
     @Getter
     @Setter
     private BankAccount bankAccount;
