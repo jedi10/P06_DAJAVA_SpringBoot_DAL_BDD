@@ -17,6 +17,7 @@ class InternalCashAccountTest {
     void tearDown() {
     }
 
+    /*
     @Order(1)
     @Test
     void checConstructor_ListEmpty() {
@@ -30,7 +31,7 @@ class InternalCashAccountTest {
 
         assertNotNull(cashAccount.getInternalTransactionList());
         assertTrue(cashAccount.getInternalTransactionList().isEmpty());
-    }
+    }*/
 
     @Order(2)
     @Test

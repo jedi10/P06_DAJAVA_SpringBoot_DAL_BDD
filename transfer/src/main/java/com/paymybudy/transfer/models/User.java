@@ -42,20 +42,21 @@ public class User implements Serializable {
     @Column(nullable = false)
     private String password;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="bank_account_fk")
     @Getter
     @Setter
     private BankAccount bankAccount;
-/*
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="int_cash_account_fk")
     @Getter
     @Setter
     private InternalCashAccount internalCashAccount;
-
+/*
     @Getter
     private List<User> contactList;
-
-    */
+*/
 
     /**
      * <b>User Constructor: all list will be created as empty</b>
