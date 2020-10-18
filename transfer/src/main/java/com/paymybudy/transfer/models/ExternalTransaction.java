@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity(name = "EXTERNAL_TRANSACTION")
 @Table(name = "EXTERNAL_TRANSACTION")
@@ -20,12 +20,15 @@ public class ExternalTransaction implements Serializable {
     @Setter
     private Long id;
 
+    @Column(name = "description", length = 350)
     @Getter
     @Setter
     private String description;
+
+    @Column(name = "status_date", columnDefinition = "TIMESTAMP")
     @Getter
     @Setter
-    private LocalDate date;
+    private LocalDateTime statusDate;
     @Getter
     @Setter
     private double amount;
@@ -46,15 +49,14 @@ public class ExternalTransaction implements Serializable {
     /**
      * <b>ExternalTransaction Constructor</b>
      * @param description description
-     * @param date date
      * @param amount amount
      * @param status status
      * @param accountDebit accountDebit
      * @param accountCredit accountCredit
      */
-    public ExternalTransaction(String description, LocalDate date, double amount, EnumTransacStatus status, BankAccount accountDebit, InternalCashAccount accountCredit) {
+    public ExternalTransaction(String description, double amount, EnumTransacStatus status, BankAccount accountDebit, InternalCashAccount accountCredit) {
         this.description = description;
-        this.date = date;
+        this.statusDate = LocalDateTime.now();
         this.amount = amount;
         this.status = status;
         this.accountDebit = accountDebit;
