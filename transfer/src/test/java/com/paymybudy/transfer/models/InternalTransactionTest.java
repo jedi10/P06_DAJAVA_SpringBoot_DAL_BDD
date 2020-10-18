@@ -33,14 +33,11 @@ class InternalTransactionTest {
         InternalCashAccount creditAccount = new InternalCashAccount("54321","Compte de depot 54321 De Mme Digger");
         double initialAmountForBeneficiary = creditAccount.getAmount();
         InternalTransaction transaction = new InternalTransaction(
-                "Operation de Crédit",
-                LocalDate.now(),
-                amountTransferred,
-                debitAccount,
-                creditAccount );
+                "Transfer Mensuel pour Service Art et culture",
+                amountTransferred);
 
         //WHEN
-        transaction.executeTransaction();
+        transaction.executeTransaction(debitAccount, creditAccount);
 
         //THEN
         assertEquals(EnumTransacStatus.FINISHED ,transaction.getStatus());
@@ -60,14 +57,11 @@ class InternalTransactionTest {
         double initialAmountForBeneficiary = creditAccount.getAmount();
 
         InternalTransaction transaction = new InternalTransaction(
-                "Operation de Crédit",
-                LocalDate.now(),
-                amountTransferred,
-                debitAccount,
-                creditAccount );
+                "Transfer Mensuel pour Service Art et culture",
+                amountTransferred);
 
         //WHEN
-        transaction.executeTransaction();
+        transaction.executeTransaction(debitAccount, creditAccount);
 
         //THEN
         assertEquals(EnumTransacStatus.ABORTED , transaction.getStatus());
