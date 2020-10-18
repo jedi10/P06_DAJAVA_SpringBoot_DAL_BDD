@@ -6,3 +6,5 @@ public enum EnumTransacStatus {
     ABORTED,
     FINISHED
 }
+
+//https://www.baeldung.com/jpa-persisting-enums-in-jpa
