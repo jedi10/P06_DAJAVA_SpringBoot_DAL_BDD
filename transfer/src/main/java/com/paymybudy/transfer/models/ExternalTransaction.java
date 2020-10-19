@@ -36,15 +36,17 @@ public class ExternalTransaction implements Serializable {
     @Setter
     private EnumTransacStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "bank_account_fk", referencedColumnName = "bank_account_id")
     @Getter
     @Setter
     private BankAccount accountDebit;
-    /*
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "int_cash_account_fk", referencedColumnName = "int_cash_account_id")
     @Getter
     @Setter
-    private InternalCashAccount accountCredit;*/
+    private InternalCashAccount accountCredit;
 
     /**
      * <b>ExternalTransaction Constructor</b>
@@ -60,7 +62,7 @@ public class ExternalTransaction implements Serializable {
         this.amount = amount;
         this.status = status;
         this.accountDebit = accountDebit;
-        //this.accountCredit = accountCredit;
+        this.accountCredit = accountCredit;
     }
 }
 
