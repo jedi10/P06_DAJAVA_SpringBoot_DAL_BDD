@@ -76,5 +76,6 @@ public class InternalTransaction implements Serializable {
     }
 }
 
+//https://www.baeldung.com/jpa-java-time
 //https://stackoverflow.com/questions/54840769/how-to-persist-localdate-with-jpa
 //https://www.baeldung.com/jpa-many-to-many

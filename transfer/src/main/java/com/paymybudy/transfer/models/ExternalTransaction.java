@@ -63,3 +63,6 @@ public class ExternalTransaction implements Serializable {
         //this.accountCredit = accountCredit;
     }
 }
+
+
+//https://www.baeldung.com/jpa-java-time
