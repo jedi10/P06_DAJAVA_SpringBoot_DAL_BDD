@@ -53,6 +53,11 @@ public class User implements Serializable {
     @Getter
     @Setter
     private InternalCashAccount internalCashAccount;
+
+    @OneToOne(mappedBy = "user")
+    @Getter
+    @Setter
+    private AppAccount appAccount;
 /*
     @Getter
     private List<User> contactList;

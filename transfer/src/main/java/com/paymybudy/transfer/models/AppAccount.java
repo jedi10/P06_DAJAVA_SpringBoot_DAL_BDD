@@ -1,13 +1,28 @@
 package com.paymybudy.transfer.models;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 
+import javax.persistence.*;
 import java.time.Instant;
 import java.time.LocalDate;
 
+@Entity(name = "APP_ACCOUNT")
+@Table(name = "APP_ACCOUNT")
+@NoArgsConstructor
 public class AppAccount {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "app_account_id")
+    @Getter
+    @Setter
+    private Long id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_fk", referencedColumnName = "user_id")
     @Getter
     @Setter
     private User user;
@@ -15,10 +30,10 @@ public class AppAccount {
     @Getter
     private EnumAppAccountStatus appAccountStatus;
 
-    //@Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "status_date", columnDefinition = "DATE")
     @Getter
     @Setter
-    private LocalDate creationDate;
+    private LocalDate statusDate;
 
     @Getter
     @Setter
@@ -33,7 +48,7 @@ public class AppAccount {
                       EnumAppAccountStatus loginAccountStatus) throws Exception {
         this.user = user;
         setAppAccountStatus(loginAccountStatus);
-        this.creationDate = LocalDate.now();
+        this.statusDate = LocalDate.now();
     }
 
     public void setAppAccountStatus(EnumAppAccountStatus appAccountStatus) throws Exception {
@@ -51,7 +66,10 @@ public class AppAccount {
     }
 
     private boolean userAccountsCreated(){
-        return true;//user.getBankAccount() != null &&
-                //user.getInternalCashAccount() != null;
+        return user.getBankAccount() != null &&
+                user.getInternalCashAccount() != null;
     }
 }
+
+
+//https://www.baeldung.com/jpa-java-time
