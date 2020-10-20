@@ -23,7 +23,7 @@ public class AppAccount implements Serializable {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_fk", referencedColumnName = "user_id")
+    @JoinColumn(name="user_fk", referencedColumnName = "user_id", nullable = false)
     @Getter
     @Setter
     private User user;
