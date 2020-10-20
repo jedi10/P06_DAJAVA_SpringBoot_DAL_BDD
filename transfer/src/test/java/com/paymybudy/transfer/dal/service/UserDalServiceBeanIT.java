@@ -6,6 +6,8 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.jdbc.Sql;
@@ -164,6 +166,35 @@ class UserDalServiceBeanIT {
     @Order(8)
     @Test
     @Sql({"/import_users.sql"})
+    void addOneContact() {
+        //GIVEN
+        List<User> usersResult = userDalServiceBean.findAll();
+        assertTrue(usersResult.size() > 1);
+        User user1 = usersResult.get(0);
+        User friend = usersResult.get(usersResult.size()-1);
+        //WHEN
+        user1.addOneContact(friend);
+        User userUpdateResult = userDalServiceBean.update(user1);
+        User friendUpdateResult = userDalServiceBean.update(friend);
+
+        //THEN
+        //Check that user has a new contact
+        assertEquals(user1, userUpdateResult,
+                "user is not the same");
+        assertEquals(1, userUpdateResult.getContactList().size());
+        assertEquals(user1.getContactList().get(0), userUpdateResult.getContactList().get(0),
+                "contact added is not the same");
+
+        //Check that friend has a new contact
+        assertEquals(friend, friendUpdateResult,
+                "friend is not the same");
+        assertEquals(1, friendUpdateResult.getContactList().size());
+        assertEquals(friend.getContactList().get(0), friendUpdateResult.getContactList().get(0),
+                "contact added is not the same");
+    }
+
+    @Order(9)
+    @Test
     void deleteAll() {
         List<User> usersResult = userDalServiceBean.findAll();
         assertTrue(usersResult.size() > 0);
@@ -182,3 +213,4 @@ class UserDalServiceBeanIT {
 
 //Import SQL File, 5.
 //https://www.baeldung.com/spring-boot-data-sql-and-schema-sql
+//https://www.baeldung.com/spring-boot-testing

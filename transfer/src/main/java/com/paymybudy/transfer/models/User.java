@@ -58,10 +58,15 @@ public class User implements Serializable {
     @Getter
     @Setter
     private AppAccount appAccount;
-/*
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_friends",
+            joinColumns = @JoinColumn(name = "user", referencedColumnName = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend", referencedColumnName = "user_id"))
     @Getter
     private List<User> contactList;
-*/
+
 
     /**
      * <b>User Constructor: all list will be created as empty</b>
@@ -75,21 +80,37 @@ public class User implements Serializable {
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        //setContactList(null);
+        setContactList(null);
     }
 
     public User() {
         super();
     }
-    /*
+
     public void setContactList(List<User> userList){
         this.contactList = Optional.ofNullable(userList)
                 .map(List::stream)
                 .orElseGet(Stream::empty)
                 .collect(Collectors.toList());
+        if(userList != null && userList.size() > 0){
+            userList.forEach(e -> {
+                if (!e.getContactList().contains(this)){
+                    e.addOneContact(this);
+                }
+            });
+        }
     }
 
-   */
+    public void addOneContact(User contact){
+        if (!this.contactList.contains(contact)){
+            this.contactList.add(contact);
+        }
+        if (!contact.getContactList().contains(this)){
+            contact.addOneContact(this);
+        }
+    }
+
+
 
     @Override
     public boolean equals(Object o) {
@@ -106,6 +127,9 @@ public class User implements Serializable {
     }
 }
 
+
+//https://stuetzpunkt.wordpress.com/2013/10/19/jpa-recursive-manytomany-relationship/
+//https://www.baeldung.com/jpa-many-to-many
 
 //https://www.logicbig.com/tutorials/java-ee-tutorial/jpa/table-annotation-unique-constraints.html
 //https://code-examples.net/en/q/5c11f1
