@@ -6,13 +6,14 @@ import lombok.NonNull;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 
-@Entity(name = "APP_ACCOUNT")
+@Entity(name = "AppAccount")
 @Table(name = "APP_ACCOUNT")
 @NoArgsConstructor
-public class AppAccount {
+public class AppAccount implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

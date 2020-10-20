@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Entity(name = "INT_CASH_ACCOUNT")
+@Entity(name = "InternalCashAccount")
 @Table(name = "INT_CASH_ACCOUNT")
 @NoArgsConstructor
 public class InternalCashAccount implements Serializable {
@@ -43,7 +43,6 @@ public class InternalCashAccount implements Serializable {
 
     @OneToMany(mappedBy = "internalCashAccount")
     @Getter
-    @Setter
     private List<MoneyTransfertType> transfertTypeList;
     /*
     @OneToMany(targetEntity = InternalTransaction.class, cascade = CascadeType.ALL,

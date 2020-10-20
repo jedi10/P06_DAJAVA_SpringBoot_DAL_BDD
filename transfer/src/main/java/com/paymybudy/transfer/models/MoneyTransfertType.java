@@ -5,14 +5,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
+
 /**
  * <b>Joint Table between InternalCashAccount and Internal Transaction</b>
  * <p>Define a key property to determine if money transfer is for Credit or Debit</p>
  */
-@Entity(name = "money_transfer_type")
+@Entity(name = "MoneyTransferType")
 @Table(name = "money_transfer_type")
 @NoArgsConstructor
-public class MoneyTransfertType {
+public class MoneyTransfertType implements Serializable {
 
     @EmbeddedId
     @Getter

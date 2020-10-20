@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Entity(name = "BANK_ACCOUNT")
+@Entity(name = "BankAccount")
 @Table(name = "BANK_ACCOUNT")
 @NoArgsConstructor
 public class BankAccount implements Serializable {

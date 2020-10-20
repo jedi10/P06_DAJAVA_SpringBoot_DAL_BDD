@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Entity(name = "USER")
+@Entity(name = "User")
 @Table(name = "USER", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User implements Serializable {
 

@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Entity(name = "EXTERNAL_TRANSACTION")
+@Entity(name = "ExternalTransaction")
 @Table(name = "EXTERNAL_TRANSACTION")
 @NoArgsConstructor
 public class ExternalTransaction implements Serializable {

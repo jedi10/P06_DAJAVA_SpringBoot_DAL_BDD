@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity(name = "INTERNAL_TRANSACTION")
+@Entity(name = "InternalTransaction")
 @Table(name = "INTERNAL_TRANSACTION")
 @NoArgsConstructor
 public class InternalTransaction implements Serializable {
