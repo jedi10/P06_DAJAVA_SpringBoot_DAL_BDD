@@ -24,6 +24,7 @@ public class InternalCashAccount implements Serializable {
     @Setter
     private Long id;
 
+    @Column(length = 35)
     @Getter
     @Setter
     private String number;
@@ -31,6 +32,7 @@ public class InternalCashAccount implements Serializable {
     @Setter
     private String libelle;
 
+    @Column(length = 35)
     @Getter
     private final String currency = "Euros";
 

@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity(name = "AppAccount")
 @Table(name = "APP_ACCOUNT")
@@ -28,6 +29,7 @@ public class AppAccount implements Serializable {
     @Setter
     private User user;
 
+    @Column(name = "app_account_status", length = 15)
     @Getter
     private EnumAppAccountStatus appAccountStatus;
 
@@ -36,9 +38,10 @@ public class AppAccount implements Serializable {
     @Setter
     private LocalDate statusDate;
 
+    @Column(name = "last_connection", columnDefinition = "TIMESTAMP")
     @Getter
     @Setter
-    private LocalDate lastConnection;
+    private LocalDateTime lastConnection;
 
     /**
      * <b>AppLoginAccount Constructor</b>

@@ -32,6 +32,8 @@ public class ExternalTransaction implements Serializable {
     @Getter
     @Setter
     private double amount;
+
+    @Column(length = 15)
     @Getter
     @Setter
     private EnumTransacStatus status;

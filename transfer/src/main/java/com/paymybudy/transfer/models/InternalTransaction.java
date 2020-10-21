@@ -36,6 +36,7 @@ public class InternalTransaction implements Serializable {
     @Setter
     private LocalDateTime statusDate;
 
+    @Column(length = 15)
     @Getter
     @Setter
     private EnumTransacStatus status;
@@ -45,6 +46,7 @@ public class InternalTransaction implements Serializable {
     @Setter
     private List<MoneyTransfertType> transfertType;
 
+    @Column(name = "transaction_message")
     @Getter
     @Setter
     private String transactionMessage;

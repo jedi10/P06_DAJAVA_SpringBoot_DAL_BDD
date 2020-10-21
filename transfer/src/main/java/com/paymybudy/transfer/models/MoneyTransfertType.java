@@ -35,6 +35,7 @@ public class MoneyTransfertType implements Serializable {
     @Setter
     InternalTransaction internalTransaction;
 
+    @Column(name = "is_credit")
     @Getter
     @Setter
     boolean isCredit;

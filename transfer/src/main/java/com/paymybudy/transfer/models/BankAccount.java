@@ -23,12 +23,16 @@ public class BankAccount implements Serializable {
     @Setter
     private Long id;
 
+    @Column(length = 55)
     @Getter
     @Setter
     private String name;
+
+    @Column(name = "tel_number", length = 55)
     @Getter
     @Setter
     private String telNumber;
+
     @Getter
     @Setter
     private String address;
@@ -38,7 +42,7 @@ public class BankAccount implements Serializable {
 
     @OneToMany(targetEntity = ExternalTransaction.class, cascade = CascadeType.ALL,
             fetch = FetchType.LAZY, mappedBy = "accountDebit")
-    @OrderBy("date ASC")
+    @OrderBy("statusDate ASC")
     @Getter
     private List<ExternalTransaction> externalTransactionList;
 

@@ -22,24 +22,24 @@ public class User implements Serializable {
     @Setter
     private Long id;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", length = 55)
     @Getter
     @Setter
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", length = 55)
     @Getter
     @Setter
     private String lastName;
 
     @Getter
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String email;
 
     @Getter
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String password;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -62,8 +62,8 @@ public class User implements Serializable {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_friends",
-            joinColumns = @JoinColumn(name = "user", referencedColumnName = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "friend", referencedColumnName = "user_id"))
+            joinColumns = @JoinColumn(name = "user_fk", referencedColumnName = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_fk", referencedColumnName = "user_id"))
     @Getter
     private List<User> contactList;
 
