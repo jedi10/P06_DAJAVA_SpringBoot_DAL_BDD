@@ -29,4 +29,6 @@ public class TransferApplication implements CommandLineRunner {
 		//https://stackoverflow.com/questions/62400654/is-data-sql-disabled-in-spring-boot-2-3-1-release
 	}
 
+	//https://www.tutorialspoint.com/jpa/jpa_entity_relationships.htm
+
 }
