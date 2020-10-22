@@ -47,6 +47,8 @@ public class AppAccount implements Serializable {
      * <b>AppLoginAccount Constructor</b>
      * @param user user
      * @param loginAccountStatus loginAccountStatus (Enum)
+     * @throws Exception custom Exception
+     * @see #setAppAccountStatus(EnumAppAccountStatus)
      */
     public AppAccount(User user,
                       EnumAppAccountStatus loginAccountStatus) throws Exception {

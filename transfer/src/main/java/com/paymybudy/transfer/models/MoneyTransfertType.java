@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 /**
- * <b>Joint Table between InternalCashAccount and Internal Transaction</b>
+ * <b>Join Table between InternalCashAccount and Internal Transaction</b>
  * <p>Define a key property to determine if money transfer is for Credit or Debit</p>
  */
 @Entity(name = "MoneyTransferType")
@@ -48,3 +48,6 @@ public class MoneyTransfertType implements Serializable {
         this.isCredit = isCredit;
     }
 }
+
+
+//https://www.baeldung.com/jpa-many-to-many

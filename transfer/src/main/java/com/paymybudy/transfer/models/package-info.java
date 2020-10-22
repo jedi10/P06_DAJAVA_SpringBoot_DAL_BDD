@@ -1,4 +1,4 @@
 /**
- * <b>All Models of Application</b>
+ * <b>All Application Models</b>
  */
 package com.paymybudy.transfer.models;

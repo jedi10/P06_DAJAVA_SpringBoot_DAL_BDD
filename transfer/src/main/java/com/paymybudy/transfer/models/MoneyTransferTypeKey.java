@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * <b>Embeddable Table for MoneyTransferType Primary Key</b>
+ * <b>Embeddable Table used for MoneyTransferType Primary Key</b>
  * <p>Define a primary key composed with internalCashAccount ID and internalTransaction ID</p>
  * <p>Serializable, Equals and Hash Code are mandatory</p>
  */
@@ -48,3 +48,4 @@ public class MoneyTransferTypeKey implements Serializable {
     }
 }
 
+//https://www.baeldung.com/jpa-many-to-many

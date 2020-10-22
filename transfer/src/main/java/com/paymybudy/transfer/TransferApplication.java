@@ -9,6 +9,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
+/**
+ * <b>Main Class of the Application (Root)</b>
+ */
 //@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @Slf4j
 @SpringBootApplication
