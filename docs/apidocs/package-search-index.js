@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"com.paymybudy.transfer"},{"l":"com.paymybudy.transfer.dal.repository"},{"l":"com.paymybudy.transfer.dal.service"},{"l":"com.paymybudy.transfer.models"}]
