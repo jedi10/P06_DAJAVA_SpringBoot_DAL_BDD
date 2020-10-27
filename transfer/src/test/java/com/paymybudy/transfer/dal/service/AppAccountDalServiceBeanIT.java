@@ -1,0 +1,194 @@
+package com.paymybudy.transfer.dal.service;
+
+import com.paymybudy.transfer.dal.repository.IAppAccountRepository;
+import com.paymybudy.transfer.models.AppAccount;
+import com.paymybudy.transfer.models.EnumAppAccountStatus;
+import com.paymybudy.transfer.models.User;
+import org.junit.jupiter.api.*;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@SpringBootTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class AppAccountDalServiceBeanIT {
+
+    @Autowired
+    private IAppAccountDalService appAccountDalServiceBean;
+    @Autowired
+    private UserDalServiceBean userDalServiceBean;
+    @Autowired
+    private IAppAccountRepository appAccountRepository;
+
+    private static List<AppAccount> appAccountsGiven = new ArrayList<>();
+
+    static {
+        //GIVEN
+        User user1 = new User("John", "Carter", "carter@paymybuddy.com","xxxx");
+        User user2 = new User("Lidia", "Topiac", "topiac@paymybuddy.com","xxxx");
+        AppAccount appAccount1 = null;
+        AppAccount appAccount2 = null;
+        try {
+            appAccount1 = new AppAccount(user1, EnumAppAccountStatus.NOTCONFIRMED);
+            appAccount2 = new AppAccount(user2, EnumAppAccountStatus.NOTCONFIRMED);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        appAccountsGiven.add(appAccount1);
+        appAccountsGiven.add(appAccount2);
+    }
+    private User userCreated = new User("Jack", "Holster", "holster@paymybuddy.com", "xxxx");
+    private AppAccount appAccountCreated = new AppAccount(userCreated, EnumAppAccountStatus.NOTCONFIRMED);
+    private User userToUpdate = new User("Tobias", "Hamsterdil", "hamsterdil@paymybuddy.com", "xxxx");
+    private AppAccount appAccountToUpdate = new AppAccount(userToUpdate, EnumAppAccountStatus.NOTCONFIRMED);
+
+    AppAccountDalServiceBeanIT() throws Exception {
+    }
+
+
+    @BeforeAll
+    void setUpAll() {
+        //GIVEN
+        User user1 = userDalServiceBean.create(appAccountsGiven.get(0).getUser());
+        //appAccountsGiven.get(0).getUser().setId(user1.getId());
+        User user2 = userDalServiceBean.create(appAccountsGiven.get(1).getUser());
+        //appAccountsGiven.get(1).getUser().setId(user2.getId());
+    }
+
+    @AfterEach
+    void tearDown() {
+
+    }
+
+    @Order(1)
+    @Test
+    void create() {
+        //GIVEN
+        assertNotNull(appAccountsGiven);
+        assertNotNull(appAccountsGiven.get(0));
+        assertNotNull(appAccountsGiven.get(0).getUser());
+        assertNotNull(appAccountsGiven.get(0).getUser().getId(),
+                "You have to save user in DBB");
+        assertNotNull(appAccountsGiven.get(1));
+        assertNotNull(appAccountsGiven.get(1).getUser());
+        assertNotNull(appAccountsGiven.get(1).getUser().getId(),
+                "You have to save user in DBB");
+        //WHEN
+        AppAccount appAccountResult1 = appAccountDalServiceBean.create(appAccountsGiven.get(0));
+        AppAccount appAccountResult2 = appAccountDalServiceBean.create(appAccountsGiven.get(1));
+
+        //THEN
+        assertEquals(appAccountsGiven.get(0), appAccountResult1);
+        assertNotNull(appAccountResult1.getId());
+        assertEquals(appAccountsGiven.get(1), appAccountResult2);
+        assertNotNull(appAccountResult2.getId());
+    }
+
+    @Order(2)
+    @Test
+    void findAll() {
+        assertNotNull(appAccountDalServiceBean);
+
+        //WHEN
+        List<AppAccount> appAccountsResult = appAccountDalServiceBean.findAll();
+
+        //THEN
+        assertNotNull(appAccountsResult);
+        assertEquals(appAccountsGiven.size(), appAccountsResult.size());
+        assertEquals(appAccountsGiven.get(0).getUser(),
+                appAccountsResult.get(0).getUser());
+        assertEquals(appAccountsGiven.get(1).getUser(),
+                appAccountsResult.get(1).getUser());
+    }
+
+
+    @Order(3)
+    @Test
+    void findOne() {
+        //GIVEN
+        User userCreatedResult = userDalServiceBean.create(userCreated);
+        AppAccount appAccountCreatedResult = appAccountDalServiceBean.create(appAccountCreated);
+        assertEquals(userCreated.getEmail(), userCreatedResult.getEmail());
+        assertNotNull(userCreatedResult.getId());
+        assertEquals(appAccountCreated.getUser(), appAccountCreatedResult.getUser());
+        assertNotNull(appAccountCreatedResult.getId());
+
+        //WHEN
+        AppAccount appAccountResult = appAccountDalServiceBean.findOne(appAccountCreatedResult.getId());
+
+        //THEN
+        assertEquals(appAccountCreatedResult.getUser(), appAccountResult.getUser());
+        assertEquals(appAccountCreatedResult.getId(), appAccountResult.getId());
+    }
+
+    @Order(4)
+    @Test
+    void update() throws Exception {
+        //GIVEN
+        //USER Creation
+        User userCreatedResult = userDalServiceBean.create(userToUpdate);
+        assertEquals(userToUpdate.getEmail(), userCreatedResult.getEmail());
+        assertNotNull(userCreatedResult.getId());
+        //App Account Creation
+        AppAccount appAccountCreatedResult =  appAccountDalServiceBean.create(appAccountToUpdate);
+        assertEquals(appAccountToUpdate.getUser(), appAccountCreatedResult.getUser());
+        assertNotNull(appAccountCreatedResult.getId());
+        assertEquals(EnumAppAccountStatus.NOTCONFIRMED, appAccountCreatedResult.getAppAccountStatus());
+        //Change Account Status but no Update
+        appAccountCreatedResult.setAppAccountStatus(EnumAppAccountStatus.SUSPENDED);
+        assertEquals(EnumAppAccountStatus.SUSPENDED, appAccountCreatedResult.getAppAccountStatus());
+
+        //WHEN Update
+        AppAccount appAccountUpdateResult = appAccountDalServiceBean.update(appAccountCreatedResult);
+
+        //THEN
+        assertEquals(appAccountCreatedResult.getAppAccountStatus(), appAccountUpdateResult.getAppAccountStatus());
+    }
+
+    @Order(5)
+    @Test
+    void delete() {
+        List<AppAccount> appAccountsResult = appAccountDalServiceBean.findAll();
+        assertTrue(appAccountsResult.size() > 0);
+        int userListSizeAtStart = appAccountsResult.size();
+        AppAccount appAccountToRemove = appAccountsResult.get(0);
+        assertTrue(appAccountsResult.contains(appAccountToRemove));
+
+        //WHEN
+        appAccountDalServiceBean.delete(appAccountToRemove.getId());
+
+        //THEN
+        List<AppAccount> appAccountsResultAfter = appAccountDalServiceBean.findAll();
+        assertEquals(userListSizeAtStart-1, appAccountsResultAfter.size());
+        assertFalse(appAccountsResultAfter.contains(appAccountToRemove));
+        assertNull(userDalServiceBean.findOne(appAccountToRemove.getUser().getId()),
+                "User can not survive to the suppression of his account: on delete cascade");
+    }
+
+    @Order(6)
+    @Test
+    void deleteAll() {
+        List<AppAccount> appAccountsResult = appAccountDalServiceBean.findAll();
+        assertTrue(appAccountsResult.size() > 0);
+
+        //WHEN
+        appAccountDalServiceBean.deleteAll();
+
+        //THEN
+        List<User> usersResultAfter = userDalServiceBean.findAll();
+        assertEquals(0, usersResultAfter.size());
+        List<AppAccount> appAccountsResultAfter = appAccountDalServiceBean.findAll();
+        assertEquals(0, appAccountsResultAfter.size());
+    }
+}

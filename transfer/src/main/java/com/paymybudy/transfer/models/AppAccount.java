@@ -23,7 +23,7 @@ public class AppAccount implements Serializable {
     @Setter
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinColumn(name="user_fk", referencedColumnName = "user_id", nullable = false)
     @Getter
     @Setter

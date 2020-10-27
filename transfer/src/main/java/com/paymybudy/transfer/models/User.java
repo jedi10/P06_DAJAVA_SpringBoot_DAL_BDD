@@ -125,6 +125,21 @@ public class User implements Serializable {
     public int hashCode() {
         return Objects.hash(id, email);
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", bankAccount=" + bankAccount +
+                ", internalCashAccount=" + internalCashAccount +
+                ", appAccount=" + appAccount +
+                ", contactList=" + contactList +
+                '}';
+    }
 }
 
 
