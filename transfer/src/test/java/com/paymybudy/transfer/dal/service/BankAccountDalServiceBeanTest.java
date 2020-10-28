@@ -1,7 +1,6 @@
 package com.paymybudy.transfer.dal.service;
 
 import com.paymybudy.transfer.dal.repository.IBankAccountRepository;
-import com.paymybudy.transfer.models.AppAccount;
 import com.paymybudy.transfer.models.BankAccount;
 import org.junit.jupiter.api.*;
 import org.mockito.Mock;
