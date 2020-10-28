@@ -44,7 +44,7 @@ class AppAccountDalServiceBeanTest {
         appAccountsGiven.add(appAccount2);
     }
     private User userCreated = new User("Jack", "Holster", "holster@paymybuddy.com", "xxxx");
-    private AppAccount appAccountCreated = new AppAccount(userCreated, EnumAppAccountStatus.NOTCONFIRMED);
+    private AppAccount appAccountToCreate = new AppAccount(userCreated, EnumAppAccountStatus.NOTCONFIRMED);
     private User userToUpdate = new User("Tobias", "Hamsterdil", "hamsterdil@paymybuddy.com", "xxxx");
     private AppAccount appAccountToUpdate = new AppAccount(userToUpdate, EnumAppAccountStatus.NOTCONFIRMED);
 
@@ -58,7 +58,7 @@ class AppAccountDalServiceBeanTest {
         //CONFIG Mock
         when(appAccountRepository.findAll()).thenReturn(appAccountsGiven);
         when(appAccountRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(appAccountsGiven.get(0)));
-        when(appAccountRepository.save(any())).thenReturn(appAccountCreated);
+        when(appAccountRepository.save(any())).thenReturn(appAccountToCreate);
         //For update operation
         appAccountToUpdate.setId(251L);
         when(appAccountRepository.save(appAccountToUpdate)).thenReturn(appAccountToUpdate);
@@ -127,7 +127,7 @@ class AppAccountDalServiceBeanTest {
         verify(appAccountRepository, Mockito.never()).save(any());
 
         //WHEN
-        AppAccount appAccountResult = appAccountDalServiceBean.create(appAccountCreated);
+        AppAccount appAccountResult = appAccountDalServiceBean.create(appAccountToCreate);
 
         //THEN
         //***********************************************************
@@ -135,7 +135,7 @@ class AppAccountDalServiceBeanTest {
         //***********************************************************
         verify(appAccountRepository, Mockito.times(1)).save(any());
 
-        assertEquals(appAccountResult, appAccountCreated);
+        assertEquals(appAccountToCreate, appAccountResult);
     }
 
     @Order(4)
@@ -156,7 +156,7 @@ class AppAccountDalServiceBeanTest {
         verify(appAccountRepository, Mockito.times(1)).findById(appAccountToUpdate.getId());
         verify(appAccountRepository, Mockito.times(1)).save(appAccountToUpdate);
 
-        assertEquals(appAccountResult, appAccountToUpdate);
+        assertEquals(appAccountToUpdate, appAccountResult);
     }
 
     @Order(5)

@@ -40,7 +40,7 @@ public class AppAccountDalServiceBean implements IAppAccountDalService {
     @Override
     public AppAccount create(@NonNull AppAccount appAccount) {
         if (appAccount.getId() != null) {
-            //cannot create user with specified Id value
+            //cannot create with specified Id value
             return null;
         }
         return appAccountRepository.save(appAccount);

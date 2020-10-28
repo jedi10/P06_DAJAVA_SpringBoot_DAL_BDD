@@ -6,7 +6,6 @@ import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,7 @@ class UserDalServiceBeanTest {
         usersGiven.add(user1);
         usersGiven.add(user2);
     }
-    private User userCreated = new User("Jack", "Holster", "holster@paymybuddy.com", "xxxx");
+    private User userToCreate = new User("Jack", "Holster", "holster@paymybuddy.com", "xxxx");
     private User userToUpdate = new User("Tobias", "Hamsterdil", "hamsterdil@paymybuddy.com", "xxxx");
 
     @BeforeEach
@@ -43,7 +42,7 @@ class UserDalServiceBeanTest {
         when(userRepository.findAll()).thenReturn(usersGiven);
         when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(usersGiven.get(0)));
         when(userRepository.findByEmail(Mockito.anyString())).thenReturn(Optional.of(usersGiven.get(0)));
-        when(userRepository.save(any())).thenReturn(userCreated);
+        when(userRepository.save(any())).thenReturn(userToCreate);
         //For update operation
         userToUpdate.setId(251L);
         when(userRepository.save(userToUpdate)).thenReturn(userToUpdate);
@@ -131,7 +130,7 @@ class UserDalServiceBeanTest {
         verify(userRepository, Mockito.never()).save(any());
 
         //WHEN
-        User userResult = userDalServiceBean.create(userCreated);
+        User userResult = userDalServiceBean.create(userToCreate);
 
         //THEN
         //***********************************************************
@@ -139,7 +138,7 @@ class UserDalServiceBeanTest {
         //***********************************************************
         verify(userRepository, Mockito.times(1)).save(any());
 
-        assertEquals(userResult, userCreated);
+        assertEquals(userToCreate, userResult);
     }
 
     @Order(5)
@@ -160,7 +159,7 @@ class UserDalServiceBeanTest {
         verify(userRepository, Mockito.times(1)).findById(userToUpdate.getId());
         verify(userRepository, Mockito.times(1)).save(userToUpdate);
 
-        assertEquals(userResult, userToUpdate);
+        assertEquals(userToUpdate, userResult);
     }
 
     @Order(6)
