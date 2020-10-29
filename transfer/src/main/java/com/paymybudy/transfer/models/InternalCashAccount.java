@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Entity(name = "InternalCashAccount")
-@Table(name = "INT_CASH_ACCOUNT")
+@Table(name = "INT_CASH_ACCOUNT", uniqueConstraints = @UniqueConstraint(columnNames = "number"))
 @NoArgsConstructor
 public class InternalCashAccount implements Serializable {
 
