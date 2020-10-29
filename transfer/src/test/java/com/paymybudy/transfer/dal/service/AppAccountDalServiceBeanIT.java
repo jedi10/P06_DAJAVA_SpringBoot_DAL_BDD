@@ -5,19 +5,15 @@ import com.paymybudy.transfer.models.AppAccount;
 import com.paymybudy.transfer.models.EnumAppAccountStatus;
 import com.paymybudy.transfer.models.User;
 import org.junit.jupiter.api.*;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -49,7 +45,7 @@ class AppAccountDalServiceBeanIT {
         appAccountsGiven.add(appAccount2);
     }
     private User userCreated = new User("Jack", "Holster", "holster@paymybuddy.com", "xxxx");
-    private AppAccount appAccountCreated = new AppAccount(userCreated, EnumAppAccountStatus.NOTCONFIRMED);
+    private AppAccount appAccountToCreate = new AppAccount(userCreated, EnumAppAccountStatus.NOTCONFIRMED);
     private User userToUpdate = new User("Tobias", "Hamsterdil", "hamsterdil@paymybuddy.com", "xxxx");
     private AppAccount appAccountToUpdate = new AppAccount(userToUpdate, EnumAppAccountStatus.NOTCONFIRMED);
 
@@ -118,10 +114,10 @@ class AppAccountDalServiceBeanIT {
     void findOne() {
         //GIVEN
         User userCreatedResult = userDalServiceBean.create(userCreated);
-        AppAccount appAccountCreatedResult = appAccountDalServiceBean.create(appAccountCreated);
+        AppAccount appAccountCreatedResult = appAccountDalServiceBean.create(appAccountToCreate);
         assertEquals(userCreated.getEmail(), userCreatedResult.getEmail());
         assertNotNull(userCreatedResult.getId());
-        assertEquals(appAccountCreated.getUser(), appAccountCreatedResult.getUser());
+        assertEquals(appAccountToCreate.getUser(), appAccountCreatedResult.getUser());
         assertNotNull(appAccountCreatedResult.getId());
 
         //WHEN

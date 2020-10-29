@@ -34,7 +34,7 @@ class BankAccountDalServiceBeanTest {
         bankAccountsGiven.add(bankAccount2);
     }
 
-    private BankAccount bankAccountCreated = new BankAccount("Banque Passilex","012345678", "1 Rue des morts 75000 Paris");
+    private BankAccount bankAccountToCreate = new BankAccount("Banque Passilex","012345678", "1 Rue des morts 75000 Paris");
 
     private BankAccount bankAccountToUpdate = new BankAccount("Banque Optimex","0987654232", "3 Place Vendome 75000 Paris");
 
@@ -46,7 +46,7 @@ class BankAccountDalServiceBeanTest {
         //CONFIG Mock
         when(bankAccountRepository.findAll()).thenReturn(bankAccountsGiven);
         when(bankAccountRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(bankAccountsGiven.get(0)));
-        when(bankAccountRepository.save(any())).thenReturn(bankAccountCreated);
+        when(bankAccountRepository.save(any())).thenReturn(bankAccountToCreate);
         //For update operation
         bankAccountToUpdate.setId(251L);
         when(bankAccountRepository.save(bankAccountToUpdate)).thenReturn(bankAccountToUpdate);
@@ -116,7 +116,7 @@ class BankAccountDalServiceBeanTest {
         verify(bankAccountRepository, Mockito.never()).save(any());
 
         //WHEN
-        BankAccount bankAccountResult = bankAccountDalServiceBean.create(bankAccountCreated);
+        BankAccount bankAccountResult = bankAccountDalServiceBean.create(bankAccountToCreate);
 
         //THEN
         //***********************************************************
@@ -124,7 +124,7 @@ class BankAccountDalServiceBeanTest {
         //***********************************************************
         verify(bankAccountRepository, Mockito.times(1)).save(any());
 
-        assertEquals(bankAccountCreated, bankAccountResult);
+        assertEquals(bankAccountToCreate, bankAccountResult);
     }
 
     @Order(4)
