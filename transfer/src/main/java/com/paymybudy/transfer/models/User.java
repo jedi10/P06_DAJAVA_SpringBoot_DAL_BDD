@@ -42,13 +42,13 @@ public class User implements Serializable {
     @Column(nullable = false, length = 100)
     private String password;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="bank_account_fk")
     @Getter
     @Setter
     private BankAccount bankAccount;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="int_cash_account_fk")
     @Getter
     @Setter
@@ -137,7 +137,6 @@ public class User implements Serializable {
                 ", bankAccount=" + bankAccount +
                 ", internalCashAccount=" + internalCashAccount +
                 ", appAccount=" + appAccount +
-                ", contactList=" + contactList +
                 '}';
     }
 }
