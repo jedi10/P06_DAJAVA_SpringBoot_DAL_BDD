@@ -66,6 +66,14 @@ public class ExternalTransaction implements Serializable {
         this.status = status;
         this.accountDebit = accountDebit;
         this.accountCredit = accountCredit;
+        executeExternalTransfer();
+    }
+
+    public void executeExternalTransfer(){
+        if (this.accountDebit != null && this.accountCredit != null){
+            double initialAmount = this.accountCredit.getAmount();
+            this.accountCredit.setAmount( initialAmount + this.amount);
+        }
     }
 
     @Override
