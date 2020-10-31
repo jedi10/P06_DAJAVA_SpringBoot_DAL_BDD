@@ -90,8 +90,10 @@ class ExternalTransactionDalServiceBeanIT {
     void setUp() {
     }
 
-    @AfterEach
+    @AfterAll
     void tearDown() {
+        bankAccountDalServiceBean.deleteAll();
+        internalCashAccountDalService.deleteAll();
     }
 
 
