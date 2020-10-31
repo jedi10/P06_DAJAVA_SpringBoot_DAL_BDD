@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -75,6 +76,19 @@ public class InternalCashAccount implements Serializable {
                 .map(List::stream)
                 .orElseGet(Stream::empty)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof InternalCashAccount)) return false;
+        InternalCashAccount that = (InternalCashAccount) o;
+        return number.equals(that.number);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(number);
     }
 
     @Override
