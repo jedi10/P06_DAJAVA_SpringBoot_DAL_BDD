@@ -61,9 +61,14 @@ class InternalTransactionDalServiceBeanTest {
 
     @Order(1)
     @Test
-    void findAll() {
+    void serviceInstantiation() {
         assertNotNull(internalTransactionDalService,
-                "you have forget to declare internalTransactionService as a service to SpringBoot");
+                "you have forgot to create an Instance internalTransactionDalService and inject Mock Repository inside");
+    }
+
+    @Order(2)
+    @Test
+    void findAll() {
         //***********************************************************
         //****************CHECK MOCK INVOCATION at start*************
         //***********************************************************
@@ -84,7 +89,7 @@ class InternalTransactionDalServiceBeanTest {
         assertEquals(intTransactionsGiven.get(1), internalTransactionResult.get(1));
     }
 
-    @Order(2)
+    @Order(3)
     @Test
     void findOne() {
         //GIVEN
@@ -106,7 +111,7 @@ class InternalTransactionDalServiceBeanTest {
         assertEquals(intTransactionExpected.getStatusDate(), internalTransactionResult.getStatusDate());
     }
 
-    @Order(3)
+    @Order(4)
     @Test
     void create() {
         //***********************************************************
@@ -126,7 +131,7 @@ class InternalTransactionDalServiceBeanTest {
         assertEquals(internalTransactionToCreate, extTransactionCreatedResult);
     }
 
-    @Order(4)
+    @Order(5)
     @Test
     void update() {
         //***********************************************************
@@ -147,7 +152,7 @@ class InternalTransactionDalServiceBeanTest {
         assertEquals(internalTransactionToUpdate, extTransactionUpdatedResult);
     }
 
-    @Order(5)
+    @Order(6)
     @Test
     void delete() {
         //***********************************************************
@@ -165,7 +170,7 @@ class InternalTransactionDalServiceBeanTest {
         verify(internalTransactionRepository, Mockito.times(1)).delete(internalTransactionToUpdate);
     }
 
-    @Order(6)
+    @Order(7)
     @Test
     void deleteAll() {
         //***********************************************************

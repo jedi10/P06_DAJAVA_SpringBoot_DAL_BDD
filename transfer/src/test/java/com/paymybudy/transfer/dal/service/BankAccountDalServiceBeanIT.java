@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BankAccountDalServiceBeanIT {
 
     @Autowired
-    private IBankAccountDalService bankAccountDalServiceBean;
+    private IBankAccountDalService bankAccountDalService;
 
     private static List<BankAccount> bankAccountsGiven = new ArrayList<>();
 
@@ -44,15 +44,21 @@ class BankAccountDalServiceBeanIT {
 
     @Order(1)
     @Test
+    void serviceDeclarationInstantiation() {
+        assertNotNull(bankAccountDalService,
+                "you have forgot to declare bankAccountDalService as a SpringBoot service or to autowire it");
+    }
+
+    @Order(2)
+    @Test
     void create() {
         //GIVEN
-        assertNotNull(bankAccountDalServiceBean);
         assertNotNull(bankAccountsGiven);
         assertNotNull(bankAccountsGiven.get(0));
         assertNotNull(bankAccountsGiven.get(1));
         //WHEN
-        BankAccount bankAccountResult1 = bankAccountDalServiceBean.create(bankAccountsGiven.get(0));
-        BankAccount bankAccountResult2 = bankAccountDalServiceBean.create(bankAccountsGiven.get(1));
+        BankAccount bankAccountResult1 = bankAccountDalService.create(bankAccountsGiven.get(0));
+        BankAccount bankAccountResult2 = bankAccountDalService.create(bankAccountsGiven.get(1));
 
         //THEN
         assertEquals(bankAccountsGiven.get(0), bankAccountResult1);
@@ -61,13 +67,12 @@ class BankAccountDalServiceBeanIT {
         assertNotNull(bankAccountResult2.getId());
     }
 
-    @Order(2)
+    @Order(3)
     @Test
     void findAll() {
-        assertNotNull(bankAccountDalServiceBean);
 
         //WHEN
-        List<BankAccount> bankAccountsResult = bankAccountDalServiceBean.findAll();
+        List<BankAccount> bankAccountsResult = bankAccountDalService.findAll();
 
         //THEN
         assertNotNull(bankAccountsResult);
@@ -79,16 +84,16 @@ class BankAccountDalServiceBeanIT {
     }
 
 
-    @Order(3)
+    @Order(4)
     @Test
     void findOne() {
         //GIVEN
-        BankAccount bankAccountCreatedResult = bankAccountDalServiceBean.create(bankAccountToCreate);
+        BankAccount bankAccountCreatedResult = bankAccountDalService.create(bankAccountToCreate);
         assertEquals(bankAccountToCreate.getName(), bankAccountCreatedResult.getName());
         assertNotNull(bankAccountCreatedResult.getId());
 
         //WHEN
-        BankAccount bankAccountResult = bankAccountDalServiceBean.findOne(bankAccountCreatedResult.getId());
+        BankAccount bankAccountResult = bankAccountDalService.findOne(bankAccountCreatedResult.getId());
 
         //THEN
         assertNotNull(bankAccountResult, "bankAccountToCreate has not been created or can not be find");
@@ -96,12 +101,12 @@ class BankAccountDalServiceBeanIT {
         assertEquals(bankAccountCreatedResult.getId(), bankAccountResult.getId());
     }
 
-    @Order(4)
+    @Order(5)
     @Test
     void update() {
         //GIVEN
         //Bank Account Creation
-        BankAccount bankAccountCreatedResult =  bankAccountDalServiceBean.create(bankAccountToUpdate);
+        BankAccount bankAccountCreatedResult =  bankAccountDalService.create(bankAccountToUpdate);
         assertEquals(bankAccountToUpdate.getName(), bankAccountCreatedResult.getName());
         assertNotNull(bankAccountCreatedResult.getId());
         //Change Bank Account Status but no Update
@@ -109,16 +114,16 @@ class BankAccountDalServiceBeanIT {
         bankAccountCreatedResult.setName(bankAccountCreatedResult.getName()+ nameSuffix);
 
         //WHEN Update
-        BankAccount bankAccountUpdateResult = bankAccountDalServiceBean.update(bankAccountCreatedResult);
+        BankAccount bankAccountUpdateResult = bankAccountDalService.update(bankAccountCreatedResult);
 
         //THEN
         assertTrue(bankAccountUpdateResult.getName().contains(nameSuffix));
     }
 
-    @Order(5)
+    @Order(6)
     @Test
     void delete() {
-        List<BankAccount> bankAccountsResult = bankAccountDalServiceBean.findAll();
+        List<BankAccount> bankAccountsResult = bankAccountDalService.findAll();
         assertTrue(bankAccountsResult.size() > 0);
         int bankAccountListSizeAtStart = bankAccountsResult.size();
         BankAccount bankAccountToRemove = bankAccountsResult.get(0);
@@ -126,25 +131,25 @@ class BankAccountDalServiceBeanIT {
         assertNotNull(bankAccountToRemove.getId());
 
         //WHEN
-        bankAccountDalServiceBean.delete(bankAccountToRemove.getId());
+        bankAccountDalService.delete(bankAccountToRemove.getId());
 
         //THEN
-        List<BankAccount> bankAccountsResultAfter = bankAccountDalServiceBean.findAll();
+        List<BankAccount> bankAccountsResultAfter = bankAccountDalService.findAll();
         assertEquals(bankAccountListSizeAtStart-1, bankAccountsResultAfter.size());
         assertFalse(bankAccountsResultAfter.contains(bankAccountToRemove));
     }
 
-    @Order(6)
+    @Order(7)
     @Test
     void deleteAll() {
-        List<BankAccount> bankAccountsResult = bankAccountDalServiceBean.findAll();
+        List<BankAccount> bankAccountsResult = bankAccountDalService.findAll();
         assertTrue(bankAccountsResult.size() > 0);
 
         //WHEN
-        bankAccountDalServiceBean.deleteAll();
+        bankAccountDalService.deleteAll();
 
         //THEN
-        List<BankAccount> bankAccountsResultAfter = bankAccountDalServiceBean.findAll();
+        List<BankAccount> bankAccountsResultAfter = bankAccountDalService.findAll();
         assertEquals(0, bankAccountsResultAfter.size());
     }
 

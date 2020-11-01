@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserDalServiceBeanIT {
 
     @Autowired
-    private UserDalServiceBean userDalServiceBean;
+    private UserDalServiceBean userDalService;
 
     private static List<User> usersGiven = new ArrayList<>();
     static {
@@ -43,10 +43,17 @@ class UserDalServiceBeanIT {
 
     @Order(1)
     @Test
+    void serviceDeclaration_instantiation() {
+        assertNotNull(userDalService,
+                "you have forgot to declare userDalService as a SpringBoot service or to autowire it");
+    }
+
+    @Order(2)
+    @Test
     void create() {
         //WHEN
-        User userResult1 = userDalServiceBean.create(usersGiven.get(0));
-        User userResult2 = userDalServiceBean.create(usersGiven.get(1));
+        User userResult1 = userDalService.create(usersGiven.get(0));
+        User userResult2 = userDalService.create(usersGiven.get(1));
 
         //THEN
         assertEquals(usersGiven.get(0), userResult1);
@@ -55,7 +62,7 @@ class UserDalServiceBeanIT {
         assertNotNull( userResult2.getId());
     }
 
-    @Order(2)
+    @Order(3)
     @Test
     void create_UniqueEmailConstraint() {
         //GIVEN
@@ -67,19 +74,18 @@ class UserDalServiceBeanIT {
 
         //WHEN
         Exception exception = assertThrows(DataIntegrityViolationException.class, ()-> {
-            userDalServiceBean.create(userClone);
+            userDalService.create(userClone);
         });
         assertTrue(exception.getMessage().contains("could not execute statement"));
         assertTrue(exception.getMessage().contains("constraint"));
     }
 
-    @Order(3)
+    @Order(4)
     @Test
     void findAll() {
-        assertNotNull(userDalServiceBean);
 
         //WHEN
-        List<User> usersResult = userDalServiceBean.findAll();
+        List<User> usersResult = userDalService.findAll();
 
         //THEN
         assertNotNull(usersResult);
@@ -90,16 +96,16 @@ class UserDalServiceBeanIT {
                 usersResult.get(1).getEmail());
     }
 
-    @Order(4)
+    @Order(5)
     @Test
     void findOne() {
         //GIVEN
-        User userCreatedResult = userDalServiceBean.create(userToCreate);
+        User userCreatedResult = userDalService.create(userToCreate);
         assertEquals(userToCreate.getEmail(), userCreatedResult.getEmail());
         assertNotNull(userCreatedResult.getId());
 
         //WHEN
-        User userResult = userDalServiceBean.findOne(userCreatedResult.getId());
+        User userResult = userDalService.findOne(userCreatedResult.getId());
 
         //THEN
         assertNotNull(userResult, "userToCreate has not been created or can not be find");
@@ -107,16 +113,16 @@ class UserDalServiceBeanIT {
         assertEquals(userCreatedResult.getId(), userResult.getId());
     }
 
-    @Order(5)
+    @Order(6)
     @Test
     void findByEmail() {
         //GIVEN
-        User userCreatedResult = userDalServiceBean.create(userToCreateBis);
+        User userCreatedResult = userDalService.create(userToCreateBis);
         assertEquals(userToCreateBis.getEmail(), userCreatedResult.getEmail());
         assertNotNull(userCreatedResult.getId());
 
         //WHEN
-        User userResult = userDalServiceBean.findByEmail(userCreatedResult.getEmail());
+        User userResult = userDalService.findByEmail(userCreatedResult.getEmail());
 
         //THEN
         assertNotNull(userResult, "userToCreateBis has not been created or can not be find");
@@ -124,53 +130,53 @@ class UserDalServiceBeanIT {
         assertEquals(userCreatedResult.getId(), userResult.getId());
     }
 
-    @Order(6)
+    @Order(7)
     @Test
     void update() {
         //GIVEN
-        User userCreatedResult = userDalServiceBean.create(userToUpdate);
+        User userCreatedResult = userDalService.create(userToUpdate);
         assertEquals(userToUpdate.getEmail(), userCreatedResult.getEmail());
         assertNotNull(userCreatedResult.getId());
         userCreatedResult.setFirstName("Vladimir");
 
         //WHEN
-        User userUpdateResult = userDalServiceBean.update(userToUpdate);
+        User userUpdateResult = userDalService.update(userToUpdate);
 
         //THEN
         assertEquals(userCreatedResult.getFirstName(), userUpdateResult.getFirstName());
     }
 
-    @Order(7)
+    @Order(8)
     @Test
     void delete() {
-        List<User> usersResult = userDalServiceBean.findAll();
+        List<User> usersResult = userDalService.findAll();
         assertTrue(usersResult.size() > 0);
         int userListSizeAtStart = usersResult.size();
-        User userToRemove = userDalServiceBean.findByEmail(userToCreateBis.getEmail());
+        User userToRemove = userDalService.findByEmail(userToCreateBis.getEmail());
         assertTrue(usersResult.contains(userToRemove));
 
         //WHEN
-        userDalServiceBean.delete(userToRemove.getId());
+        userDalService.delete(userToRemove.getId());
 
         //THEN
-        List<User> usersResultAfter = userDalServiceBean.findAll();
+        List<User> usersResultAfter = userDalService.findAll();
         assertEquals(userListSizeAtStart-1, usersResultAfter.size());
         assertFalse(usersResultAfter.contains(userToRemove));
     }
 
-    @Order(8)
+    @Order(9)
     @Test
     @Sql({"/import_users.sql"})
     void addOneContact() {
         //GIVEN
-        List<User> usersResult = userDalServiceBean.findAll();
+        List<User> usersResult = userDalService.findAll();
         assertTrue(usersResult.size() > 1);
         User user1 = usersResult.get(0);
         User friend = usersResult.get(usersResult.size()-1);
         //WHEN
         user1.addOneContact(friend);
-        User userUpdateResult = userDalServiceBean.update(user1);
-        User friendUpdateResult = userDalServiceBean.update(friend);
+        User userUpdateResult = userDalService.update(user1);
+        User friendUpdateResult = userDalService.update(friend);
 
         //THEN
         //Check that user has a new contact
@@ -188,20 +194,20 @@ class UserDalServiceBeanIT {
                 "contact added is not the same");
     }
 
-    @Order(9)
+    @Order(10)
     @Test
     void deleteAll() {
-        List<User> usersResult = userDalServiceBean.findAll();
+        List<User> usersResult = userDalService.findAll();
         assertTrue(usersResult.size() > 0);
 
         //WHEN
-        userDalServiceBean.deleteAll();
+        userDalService.deleteAll();
         //usersResult.forEach(
         //       (e)-> { userDalServiceBean.delete(e.getId()); }
         //);
 
         //THEN
-        List<User> usersResultAfter = userDalServiceBean.findAll();
+        List<User> usersResultAfter = userDalService.findAll();
         assertEquals(0, usersResultAfter.size());
     }
 }

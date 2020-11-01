@@ -42,8 +42,14 @@ class InternalCashAccountDalServiceBeanIT {
     void tearDown() {
     }
 
-
     @Order(1)
+    @Test
+    void serviceDeclarationInstantiation() {
+        assertNotNull(internalCashAccountDalService,
+                "you have forgot to declare internalCashAccountDalService as a SpringBoot service or to autowire it");
+    }
+
+    @Order(2)
     @Test
     void create() {
         //WHEN
@@ -57,7 +63,7 @@ class InternalCashAccountDalServiceBeanIT {
         assertNotNull( intCashAccountResult2.getId());
     }
 
-    @Order(2)
+    @Order(3)
     @Test
     void create_UniqueAccountNumberConstraint() {
         //GIVEN
@@ -74,10 +80,9 @@ class InternalCashAccountDalServiceBeanIT {
         assertTrue(exception.getMessage().contains("constraint"));
     }
 
-    @Order(3)
+    @Order(4)
     @Test
     void findAll() {
-        assertNotNull(internalCashAccountDalService);
 
         //WHEN
         List<InternalCashAccount> intCashAccountResult = internalCashAccountDalService.findAll();
@@ -91,7 +96,7 @@ class InternalCashAccountDalServiceBeanIT {
                 intCashAccountResult.get(1).getNumber());
     }
 
-    @Order(4)
+    @Order(5)
     @Test
     void findOne() {
         //GIVEN
@@ -108,7 +113,7 @@ class InternalCashAccountDalServiceBeanIT {
         assertEquals(intCashAccountCreatedResult.getId(), intCashAccountResult.getId());
     }
 
-    @Order(5)
+    @Order(6)
     @Test
     void update() {
         //GIVEN
@@ -127,7 +132,7 @@ class InternalCashAccountDalServiceBeanIT {
         assertEquals(amountUpdated, intCashAccountUpdateResult.getAmount());
     }
 
-    @Order(6)
+    @Order(7)
     @Test
     void delete() {
         List<InternalCashAccount> intCashAccountResult = internalCashAccountDalService.findAll();
@@ -145,7 +150,7 @@ class InternalCashAccountDalServiceBeanIT {
         assertFalse(intCashAccountsResultAfter.contains(intCashAccountToRemove));
     }
 
-    @Order(7)
+    @Order(8)
     @Test
     void deleteAll() {
         List<InternalCashAccount> intCashAccountsResult = internalCashAccountDalService.findAll();

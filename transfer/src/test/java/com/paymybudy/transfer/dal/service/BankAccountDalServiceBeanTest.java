@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class BankAccountDalServiceBeanTest {
 
-    private IBankAccountDalService bankAccountDalServiceBean;
+    private IBankAccountDalService bankAccountDalService;
     @Mock
     private IBankAccountRepository bankAccountRepository;
 
@@ -53,26 +53,30 @@ class BankAccountDalServiceBeanTest {
         when(bankAccountRepository.findById(bankAccountToUpdate.getId())).thenReturn(Optional.of(bankAccountToUpdate));
 
         //INSERT Mock
-        bankAccountDalServiceBean = new BankAccountDalServiceBean(bankAccountRepository);
+        bankAccountDalService = new BankAccountDalServiceBean(bankAccountRepository);
     }
 
     @AfterEach
     void tearDown() {
     }
 
-
     @Order(1)
     @Test
+    void serviceInstantiation() {
+        assertNotNull(bankAccountDalService,
+                "you have forgot to create an Instance bankAccountDalService and inject Mock Repository inside");
+    }
+
+    @Order(2)
+    @Test
     void findAll() {
-        assertNotNull(bankAccountDalServiceBean,
-                "you have forget to declare BankAccountService as a service to SpringBoot");
         //***********************************************************
         //****************CHECK MOCK INVOCATION at start*************
         //***********************************************************
         verify(bankAccountRepository, Mockito.never()).findAll();
 
         //WHEN
-        List<BankAccount> bankAccountsResult = bankAccountDalServiceBean.findAll();
+        List<BankAccount> bankAccountsResult = bankAccountDalService.findAll();
 
         //THEN
         //***********************************************************
@@ -86,7 +90,7 @@ class BankAccountDalServiceBeanTest {
         assertEquals(bankAccountsGiven.get(1), bankAccountsResult.get(1));
     }
 
-    @Order(2)
+    @Order(3)
     @Test
     void findOne() {
         //GIVEN
@@ -97,7 +101,7 @@ class BankAccountDalServiceBeanTest {
         verify(bankAccountRepository, Mockito.never()).findById(Mockito.anyLong());
 
         //WHEN
-        BankAccount bankAccountResult = bankAccountDalServiceBean.findOne(10L);
+        BankAccount bankAccountResult = bankAccountDalService.findOne(10L);
         //***********************************************************
         //****************CHECK MOCK INVOCATION at end***************
         //***********************************************************
@@ -107,7 +111,7 @@ class BankAccountDalServiceBeanTest {
         assertEquals(bankAccountExpected.getName(), bankAccountResult.getName());
     }
 
-    @Order(3)
+    @Order(4)
     @Test
     void create() {
         //***********************************************************
@@ -116,7 +120,7 @@ class BankAccountDalServiceBeanTest {
         verify(bankAccountRepository, Mockito.never()).save(any());
 
         //WHEN
-        BankAccount bankAccountResult = bankAccountDalServiceBean.create(bankAccountToCreate);
+        BankAccount bankAccountResult = bankAccountDalService.create(bankAccountToCreate);
 
         //THEN
         //***********************************************************
@@ -127,7 +131,7 @@ class BankAccountDalServiceBeanTest {
         assertEquals(bankAccountToCreate, bankAccountResult);
     }
 
-    @Order(4)
+    @Order(5)
     @Test
     void update() {
         //***********************************************************
@@ -137,7 +141,7 @@ class BankAccountDalServiceBeanTest {
         verify(bankAccountRepository, Mockito.never()).save(bankAccountToUpdate);
 
         //WHEN
-        BankAccount bankAccountResult = bankAccountDalServiceBean.update(bankAccountToUpdate);
+        BankAccount bankAccountResult = bankAccountDalService.update(bankAccountToUpdate);
         //THEN
         //***********************************************************
         //*****************CHECK MOCK INVOCATION at end**************
@@ -148,7 +152,7 @@ class BankAccountDalServiceBeanTest {
         assertEquals(bankAccountToUpdate, bankAccountResult);
     }
 
-    @Order(5)
+    @Order(6)
     @Test
     void delete() {
         //***********************************************************
@@ -158,7 +162,7 @@ class BankAccountDalServiceBeanTest {
         verify(bankAccountRepository, Mockito.never()).delete(bankAccountToUpdate);
 
         //WHEN
-        bankAccountDalServiceBean.delete(bankAccountToUpdate.getId());
+        bankAccountDalService.delete(bankAccountToUpdate.getId());
         //***********************************************************
         //*****************CHECK MOCK INVOCATION at end**************
         //***********************************************************
@@ -166,7 +170,7 @@ class BankAccountDalServiceBeanTest {
         verify(bankAccountRepository, Mockito.times(1)).delete(bankAccountToUpdate);
     }
 
-    @Order(6)
+    @Order(7)
     @Test
     void deleteAll() {
         //***********************************************************
@@ -175,7 +179,7 @@ class BankAccountDalServiceBeanTest {
         verify(bankAccountRepository, Mockito.never()).deleteAll();
 
         //WHEN
-        bankAccountDalServiceBean.deleteAll();
+        bankAccountDalService.deleteAll();
         //***********************************************************
         //*****************CHECK MOCK INVOCATION at end**************
         //***********************************************************

@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AppAccountDalServiceBeanTest {
 
-    private IAppAccountDalService appAccountDalServiceBean;
+    private IAppAccountDalService appAccountDalService;
     @Mock
     private IAppAccountRepository appAccountRepository;
 
@@ -65,7 +65,7 @@ class AppAccountDalServiceBeanTest {
         when(appAccountRepository.findById(appAccountToUpdate.getId())).thenReturn(Optional.of(appAccountToUpdate));
 
         //INSERT Mock
-        appAccountDalServiceBean = new AppAccountDalServiceBean(appAccountRepository);
+        appAccountDalService = new AppAccountDalServiceBean(appAccountRepository);
     }
 
     @AfterEach
@@ -74,16 +74,21 @@ class AppAccountDalServiceBeanTest {
 
     @Order(1)
     @Test
+    void serviceInstantiation() {
+        assertNotNull(appAccountDalService,
+                "you have forgot to create an Instance appAccountDalService and inject repository Mock inside");
+    }
+
+    @Order(2)
+    @Test
     void findAll() {
-        assertNotNull(appAccountDalServiceBean,
-                "you have forget to declare AppAccountService as a service to SpringBoot");
         //***********************************************************
         //****************CHECK MOCK INVOCATION at start*************
         //***********************************************************
         verify(appAccountRepository, Mockito.never()).findAll();
 
         //WHEN
-        List<AppAccount> appAccountsResult = appAccountDalServiceBean.findAll();
+        List<AppAccount> appAccountsResult = appAccountDalService.findAll();
 
         //THEN
         //***********************************************************
@@ -97,7 +102,7 @@ class AppAccountDalServiceBeanTest {
         assertEquals(appAccountsGiven.get(1), appAccountsResult.get(1));
     }
 
-    @Order(2)
+    @Order(3)
     @Test
     void findOne() {
         //GIVEN
@@ -108,7 +113,7 @@ class AppAccountDalServiceBeanTest {
         verify(appAccountRepository, Mockito.never()).findById(Mockito.anyLong());
 
         //WHEN
-        AppAccount appAccountResult = appAccountDalServiceBean.findOne(10L);
+        AppAccount appAccountResult = appAccountDalService.findOne(10L);
         //***********************************************************
         //****************CHECK MOCK INVOCATION at end***************
         //***********************************************************
@@ -118,7 +123,7 @@ class AppAccountDalServiceBeanTest {
         assertEquals(appAccountExpected.getUser(), appAccountResult.getUser());
     }
 
-    @Order(3)
+    @Order(4)
     @Test
     void create() {
         //***********************************************************
@@ -127,7 +132,7 @@ class AppAccountDalServiceBeanTest {
         verify(appAccountRepository, Mockito.never()).save(any());
 
         //WHEN
-        AppAccount appAccountResult = appAccountDalServiceBean.create(appAccountToCreate);
+        AppAccount appAccountResult = appAccountDalService.create(appAccountToCreate);
 
         //THEN
         //***********************************************************
@@ -138,7 +143,7 @@ class AppAccountDalServiceBeanTest {
         assertEquals(appAccountToCreate, appAccountResult);
     }
 
-    @Order(4)
+    @Order(5)
     @Test
     void update() {
         //***********************************************************
@@ -148,7 +153,7 @@ class AppAccountDalServiceBeanTest {
         verify(appAccountRepository, Mockito.never()).save(appAccountToUpdate);
 
         //WHEN
-        AppAccount appAccountResult = appAccountDalServiceBean.update(appAccountToUpdate);
+        AppAccount appAccountResult = appAccountDalService.update(appAccountToUpdate);
         //THEN
         //***********************************************************
         //*****************CHECK MOCK INVOCATION at end**************
@@ -159,7 +164,7 @@ class AppAccountDalServiceBeanTest {
         assertEquals(appAccountToUpdate, appAccountResult);
     }
 
-    @Order(5)
+    @Order(6)
     @Test
     void delete() {
         //***********************************************************
@@ -169,7 +174,7 @@ class AppAccountDalServiceBeanTest {
         verify(appAccountRepository, Mockito.never()).delete(appAccountToUpdate);
 
         //WHEN
-        appAccountDalServiceBean.delete(appAccountToUpdate.getId());
+        appAccountDalService.delete(appAccountToUpdate.getId());
         //***********************************************************
         //*****************CHECK MOCK INVOCATION at end**************
         //***********************************************************
@@ -177,7 +182,7 @@ class AppAccountDalServiceBeanTest {
         verify(appAccountRepository, Mockito.times(1)).delete(appAccountToUpdate);
     }
 
-    @Order(6)
+    @Order(7)
     @Test
     void deleteAll() {
         //***********************************************************
@@ -186,7 +191,7 @@ class AppAccountDalServiceBeanTest {
         verify(appAccountRepository, Mockito.never()).deleteAll();
 
         //WHEN
-        appAccountDalServiceBean.deleteAll();
+        appAccountDalService.deleteAll();
         //***********************************************************
         //*****************CHECK MOCK INVOCATION at end**************
         //***********************************************************

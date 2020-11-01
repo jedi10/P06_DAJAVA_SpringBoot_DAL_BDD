@@ -45,9 +45,9 @@ class InternalTransactionDalServiceBeanIT {
 
     @Order(1)
     @Test
-    void serviceDeclaration_instantiation() {
+    void serviceDeclarationInstantiation() {
         assertNotNull(internalTransactionDalService,
-                "you have forgot to declare internalTransactionService as a SpringBoot service or to autowire it");
+                "you have forgot to declare internalTransactionDalService as a SpringBoot service or to autowire it");
     }
 
     @Order(2)

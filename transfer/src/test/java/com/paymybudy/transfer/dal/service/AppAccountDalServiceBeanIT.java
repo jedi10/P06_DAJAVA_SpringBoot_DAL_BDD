@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class AppAccountDalServiceBeanIT {
 
     @Autowired
-    private IAppAccountDalService appAccountDalServiceBean;
+    private IAppAccountDalService appAccountDalService;
     @Autowired
     private UserDalServiceBean userDalServiceBean;
 
@@ -64,6 +64,13 @@ class AppAccountDalServiceBeanIT {
 
     @Order(1)
     @Test
+    void serviceDeclarationInstantiation() {
+        assertNotNull(appAccountDalService,
+                "you have forgot to declare appAccountDalService as a SpringBoot service or to autowire it");
+    }
+
+    @Order(2)
+    @Test
     void create() {
         //GIVEN
         assertNotNull(appAccountsGiven);
@@ -76,8 +83,8 @@ class AppAccountDalServiceBeanIT {
         assertNotNull(appAccountsGiven.get(1).getUser().getId(),
                 "You have to save user in DBB");
         //WHEN
-        AppAccount appAccountResult1 = appAccountDalServiceBean.create(appAccountsGiven.get(0));
-        AppAccount appAccountResult2 = appAccountDalServiceBean.create(appAccountsGiven.get(1));
+        AppAccount appAccountResult1 = appAccountDalService.create(appAccountsGiven.get(0));
+        AppAccount appAccountResult2 = appAccountDalService.create(appAccountsGiven.get(1));
 
         //THEN
         assertEquals(appAccountsGiven.get(0), appAccountResult1);
@@ -86,13 +93,12 @@ class AppAccountDalServiceBeanIT {
         assertNotNull(appAccountResult2.getId());
     }
 
-    @Order(2)
+    @Order(3)
     @Test
     void findAll() {
-        assertNotNull(appAccountDalServiceBean);
 
         //WHEN
-        List<AppAccount> appAccountsResult = appAccountDalServiceBean.findAll();
+        List<AppAccount> appAccountsResult = appAccountDalService.findAll();
 
         //THEN
         assertNotNull(appAccountsResult);
@@ -104,19 +110,19 @@ class AppAccountDalServiceBeanIT {
     }
 
 
-    @Order(3)
+    @Order(4)
     @Test
     void findOne() {
         //GIVEN
         User userCreatedResult = userDalServiceBean.create(userCreated);
-        AppAccount appAccountCreatedResult = appAccountDalServiceBean.create(appAccountToCreate);
+        AppAccount appAccountCreatedResult = appAccountDalService.create(appAccountToCreate);
         assertEquals(userCreated.getEmail(), userCreatedResult.getEmail());
         assertNotNull(userCreatedResult.getId());
         assertEquals(appAccountToCreate.getUser(), appAccountCreatedResult.getUser());
         assertNotNull(appAccountCreatedResult.getId());
 
         //WHEN
-        AppAccount appAccountResult = appAccountDalServiceBean.findOne(appAccountCreatedResult.getId());
+        AppAccount appAccountResult = appAccountDalService.findOne(appAccountCreatedResult.getId());
 
         //THEN
         assertNotNull(appAccountResult, "appAccountToCreate has not been created or can not be find");
@@ -124,7 +130,7 @@ class AppAccountDalServiceBeanIT {
         assertEquals(appAccountCreatedResult.getId(), appAccountResult.getId());
     }
 
-    @Order(4)
+    @Order(5)
     @Test
     void update() throws Exception {
         //GIVEN
@@ -133,7 +139,7 @@ class AppAccountDalServiceBeanIT {
         assertEquals(userToUpdate.getEmail(), userCreatedResult.getEmail());
         assertNotNull(userCreatedResult.getId());
         //App Account Creation
-        AppAccount appAccountCreatedResult =  appAccountDalServiceBean.create(appAccountToUpdate);
+        AppAccount appAccountCreatedResult =  appAccountDalService.create(appAccountToUpdate);
         assertEquals(appAccountToUpdate.getUser(), appAccountCreatedResult.getUser());
         assertNotNull(appAccountCreatedResult.getId());
         assertEquals(EnumAppAccountStatus.NOTCONFIRMED, appAccountCreatedResult.getAppAccountStatus());
@@ -142,45 +148,45 @@ class AppAccountDalServiceBeanIT {
         assertEquals(EnumAppAccountStatus.SUSPENDED, appAccountCreatedResult.getAppAccountStatus());
 
         //WHEN Update
-        AppAccount appAccountUpdateResult = appAccountDalServiceBean.update(appAccountCreatedResult);
+        AppAccount appAccountUpdateResult = appAccountDalService.update(appAccountCreatedResult);
 
         //THEN
         assertEquals(appAccountCreatedResult.getAppAccountStatus(), appAccountUpdateResult.getAppAccountStatus());
     }
 
-    @Order(5)
+    @Order(6)
     @Test
     void delete() {
-        List<AppAccount> appAccountsResult = appAccountDalServiceBean.findAll();
+        List<AppAccount> appAccountsResult = appAccountDalService.findAll();
         assertTrue(appAccountsResult.size() > 0);
         int userListSizeAtStart = appAccountsResult.size();
         AppAccount appAccountToRemove = appAccountsResult.get(0);
         assertTrue(appAccountsResult.contains(appAccountToRemove));
 
         //WHEN
-        appAccountDalServiceBean.delete(appAccountToRemove.getId());
+        appAccountDalService.delete(appAccountToRemove.getId());
 
         //THEN
-        List<AppAccount> appAccountsResultAfter = appAccountDalServiceBean.findAll();
+        List<AppAccount> appAccountsResultAfter = appAccountDalService.findAll();
         assertEquals(userListSizeAtStart-1, appAccountsResultAfter.size());
         assertFalse(appAccountsResultAfter.contains(appAccountToRemove));
         assertNull(userDalServiceBean.findOne(appAccountToRemove.getUser().getId()),
                 "User can not survive to the suppression of his account: on delete cascade");
     }
 
-    @Order(6)
+    @Order(7)
     @Test
     void deleteAll() {
-        List<AppAccount> appAccountsResult = appAccountDalServiceBean.findAll();
+        List<AppAccount> appAccountsResult = appAccountDalService.findAll();
         assertTrue(appAccountsResult.size() > 0);
 
         //WHEN
-        appAccountDalServiceBean.deleteAll();
+        appAccountDalService.deleteAll();
 
         //THEN
         List<User> usersResultAfter = userDalServiceBean.findAll();
         assertEquals(0, usersResultAfter.size());
-        List<AppAccount> appAccountsResultAfter = appAccountDalServiceBean.findAll();
+        List<AppAccount> appAccountsResultAfter = appAccountDalService.findAll();
         assertEquals(0, appAccountsResultAfter.size());
     }
 }

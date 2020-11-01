@@ -91,12 +91,16 @@ class ExternalTransactionDalServiceBeanIT {
         internalCashAccountDalService.deleteAll();
     }
 
-
     @Order(1)
     @Test
-    void create() {
+    void serviceDeclarationInstantiation() {
         assertNotNull(externalTransactionDalService,
-                "You have forgotten to inject an instance of ExternalTransactionDalService");
+                "you have forgot to declare externalTransactionDalService as a SpringBoot service or to autowire it");
+    }
+
+    @Order(2)
+    @Test
+    void create() {
 
         //WHEN
         ExternalTransaction externalTransactionResult1 = externalTransactionDalService.create(extTransactionsGiven.get(0));
@@ -110,10 +114,9 @@ class ExternalTransactionDalServiceBeanIT {
     }
 
 
-    @Order(2)
+    @Order(3)
     @Test
     void findAll() {
-        assertNotNull(externalTransactionDalService);
 
         //WHEN
         List<ExternalTransaction> extTransactionsResult = externalTransactionDalService.findAll();
@@ -127,7 +130,7 @@ class ExternalTransactionDalServiceBeanIT {
                 extTransactionsResult.get(1).getAmount());
     }
 
-    @Order(3)
+    @Order(4)
     @Test
     void findOne() {
         //GIVEN
@@ -144,7 +147,7 @@ class ExternalTransactionDalServiceBeanIT {
         assertEquals(extTransactionCreatedResult.getId(), extTransactionResult.getId());
     }
 
-    @Order(4)
+    @Order(5)
     @Test
     void update() {
         //GIVEN
@@ -161,7 +164,7 @@ class ExternalTransactionDalServiceBeanIT {
         assertEquals(externalTransactionCreatedResult.getAmount(), extTransactionUpdatedResult.getAmount());
     }
 
-    @Order(5)
+    @Order(6)
     @Test
     void delete() {
         List<ExternalTransaction> extTransactionsResult = externalTransactionDalService.findAll();
@@ -179,7 +182,7 @@ class ExternalTransactionDalServiceBeanIT {
         assertFalse(extTransactionsResultAfter.contains(extTransactionToRemove));
     }
 
-    @Order(6)
+    @Order(7)
     @Test
     void deleteAll() {
         List<ExternalTransaction> extTransactionsResult = externalTransactionDalService.findAll();
