@@ -2,10 +2,12 @@ package com.paymybudy.transfer.dal.service;
 
 import com.paymybudy.transfer.dal.repository.IInternalTransactionRepository;
 import com.paymybudy.transfer.models.InternalTransaction;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class InternalTransactionDalServiceBean implements IInternalTransactionDalService {
 
     private IInternalTransactionRepository internalTransactionRepository;

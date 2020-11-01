@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "InternalTransaction")
 @Table(name = "INTERNAL_TRANSACTION")
@@ -75,6 +76,21 @@ public class InternalTransaction implements Serializable {
             setStatus(EnumTransacStatus.ABORTED);
             setTransactionMessage("Not Enough cash to execute transaction");
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof InternalTransaction)) return false;
+        InternalTransaction that = (InternalTransaction) o;
+        return Double.compare(that.amount, amount) == 0 &&
+                Objects.equals(description, that.description) &&
+                statusDate.equals(that.statusDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(description, amount, statusDate);
     }
 }
 
