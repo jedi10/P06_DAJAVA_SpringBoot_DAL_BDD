@@ -1,6 +1,5 @@
 package com.paymybudy.transfer.dal.service;
 
-import com.paymybudy.transfer.dal.repository.IExternalTransactionRepository;
 import com.paymybudy.transfer.models.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -27,8 +24,6 @@ class ExternalTransactionDalServiceBeanIT {
     private IBankAccountDalService bankAccountDalServiceBean;
     @Autowired
     private IInternalCashAccountDalService internalCashAccountDalService;
-    @Autowired
-    private IExternalTransactionRepository externalTransactionRepository;
 
     private static List<ExternalTransaction> extTransactionsGiven = new ArrayList<>();
 
@@ -144,6 +139,7 @@ class ExternalTransactionDalServiceBeanIT {
         ExternalTransaction extTransactionResult = externalTransactionDalService.findOne(extTransactionCreatedResult.getId());
 
         //THEN
+        assertNotNull(extTransactionResult, "extTransactionToCreate has not been created or can not be find");
         assertEquals(extTransactionCreatedResult.getAmount(), extTransactionResult.getAmount());
         assertEquals(extTransactionCreatedResult.getId(), extTransactionResult.getId());
     }
@@ -193,7 +189,7 @@ class ExternalTransactionDalServiceBeanIT {
         externalTransactionDalService.deleteAll();
 
         //THEN
-        List<ExternalTransaction> usersResultAfter = externalTransactionDalService.findAll();
-        assertEquals(0, usersResultAfter.size());
+        List<ExternalTransaction> extTransactionsAfter = externalTransactionDalService.findAll();
+        assertEquals(0, extTransactionsAfter.size());
     }
 }

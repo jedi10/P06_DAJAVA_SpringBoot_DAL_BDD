@@ -1,13 +1,9 @@
 package com.paymybudy.transfer.dal.service;
 
-import com.paymybudy.transfer.dal.repository.IUserRepository;
 import com.paymybudy.transfer.models.User;
-import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.jdbc.Sql;
@@ -24,9 +20,6 @@ class UserDalServiceBeanIT {
     @Autowired
     private UserDalServiceBean userDalServiceBean;
 
-    @Autowired
-    private IUserRepository userRepository;
-
     private static List<User> usersGiven = new ArrayList<>();
     static {
         //GIVEN
@@ -35,8 +28,8 @@ class UserDalServiceBeanIT {
         usersGiven.add(user1);
         usersGiven.add(user2);
     }
-    private User userCreated = new User("Jack", "Holster", "holster@paymybuddy.com", "xxxx");
-    private User userCreatedBis = new User("Jack", "Holster", "holsterBis@paymybuddy.com", "xxxx");
+    private User userToCreate = new User("Jack", "Holster", "holster@paymybuddy.com", "xxxx");
+    private User userToCreateBis = new User("Jack", "Holster", "holsterBis@paymybuddy.com", "xxxx");
     private User userToUpdate = new User("Tobias", "Hamsterdil", "hamsterdil@paymybuddy.com", "xxxx");
 
     @BeforeEach
@@ -101,14 +94,15 @@ class UserDalServiceBeanIT {
     @Test
     void findOne() {
         //GIVEN
-        User userCreatedResult = userDalServiceBean.create(userCreated);
-        assertEquals(userCreated.getEmail(), userCreatedResult.getEmail());
+        User userCreatedResult = userDalServiceBean.create(userToCreate);
+        assertEquals(userToCreate.getEmail(), userCreatedResult.getEmail());
         assertNotNull(userCreatedResult.getId());
 
         //WHEN
         User userResult = userDalServiceBean.findOne(userCreatedResult.getId());
 
         //THEN
+        assertNotNull(userResult, "userToCreate has not been created or can not be find");
         assertEquals(userCreatedResult.getEmail(), userResult.getEmail());
         assertEquals(userCreatedResult.getId(), userResult.getId());
     }
@@ -117,14 +111,15 @@ class UserDalServiceBeanIT {
     @Test
     void findByEmail() {
         //GIVEN
-        User userCreatedResult = userDalServiceBean.create(userCreatedBis);
-        assertEquals(userCreatedBis.getEmail(), userCreatedResult.getEmail());
+        User userCreatedResult = userDalServiceBean.create(userToCreateBis);
+        assertEquals(userToCreateBis.getEmail(), userCreatedResult.getEmail());
         assertNotNull(userCreatedResult.getId());
 
         //WHEN
         User userResult = userDalServiceBean.findByEmail(userCreatedResult.getEmail());
 
         //THEN
+        assertNotNull(userResult, "userToCreateBis has not been created or can not be find");
         assertEquals(userCreatedResult.getEmail(), userResult.getEmail());
         assertEquals(userCreatedResult.getId(), userResult.getId());
     }
@@ -151,7 +146,7 @@ class UserDalServiceBeanIT {
         List<User> usersResult = userDalServiceBean.findAll();
         assertTrue(usersResult.size() > 0);
         int userListSizeAtStart = usersResult.size();
-        User userToRemove = userDalServiceBean.findByEmail(userCreatedBis.getEmail());
+        User userToRemove = userDalServiceBean.findByEmail(userToCreateBis.getEmail());
         assertTrue(usersResult.contains(userToRemove));
 
         //WHEN

@@ -1,6 +1,5 @@
 package com.paymybudy.transfer.dal.service;
 
-import com.paymybudy.transfer.dal.repository.IBankAccountRepository;
 import com.paymybudy.transfer.models.BankAccount;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +17,6 @@ class BankAccountDalServiceBeanIT {
 
     @Autowired
     private IBankAccountDalService bankAccountDalServiceBean;
-    @Autowired
-    private IBankAccountRepository bankAccountRepository;
 
     private static List<BankAccount> bankAccountsGiven = new ArrayList<>();
 
@@ -94,6 +91,7 @@ class BankAccountDalServiceBeanIT {
         BankAccount bankAccountResult = bankAccountDalServiceBean.findOne(bankAccountCreatedResult.getId());
 
         //THEN
+        assertNotNull(bankAccountResult, "bankAccountToCreate has not been created or can not be find");
         assertEquals(bankAccountCreatedResult.getName(), bankAccountResult.getName());
         assertEquals(bankAccountCreatedResult.getId(), bankAccountResult.getId());
     }

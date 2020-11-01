@@ -1,6 +1,5 @@
 package com.paymybudy.transfer.dal.service;
 
-import com.paymybudy.transfer.dal.repository.IAppAccountRepository;
 import com.paymybudy.transfer.models.AppAccount;
 import com.paymybudy.transfer.models.EnumAppAccountStatus;
 import com.paymybudy.transfer.models.User;
@@ -12,8 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -24,8 +21,6 @@ class AppAccountDalServiceBeanIT {
     private IAppAccountDalService appAccountDalServiceBean;
     @Autowired
     private UserDalServiceBean userDalServiceBean;
-    @Autowired
-    private IAppAccountRepository appAccountRepository;
 
     private static List<AppAccount> appAccountsGiven = new ArrayList<>();
 
@@ -124,6 +119,7 @@ class AppAccountDalServiceBeanIT {
         AppAccount appAccountResult = appAccountDalServiceBean.findOne(appAccountCreatedResult.getId());
 
         //THEN
+        assertNotNull(appAccountResult, "appAccountToCreate has not been created or can not be find");
         assertEquals(appAccountCreatedResult.getUser(), appAccountResult.getUser());
         assertEquals(appAccountCreatedResult.getId(), appAccountResult.getId());
     }

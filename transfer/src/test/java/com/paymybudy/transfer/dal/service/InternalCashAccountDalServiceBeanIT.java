@@ -1,7 +1,6 @@
 package com.paymybudy.transfer.dal.service;
 
 import com.paymybudy.transfer.models.InternalCashAccount;
-import com.paymybudy.transfer.models.User;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -104,6 +103,7 @@ class InternalCashAccountDalServiceBeanIT {
         InternalCashAccount intCashAccountResult = internalCashAccountDalService.findOne(intCashAccountCreatedResult.getId());
 
         //THEN
+        assertNotNull(intCashAccountResult, "intCashAccountToCreate has not been created or can not be find");
         assertEquals(intCashAccountCreatedResult.getNumber(), intCashAccountResult.getNumber());
         assertEquals(intCashAccountCreatedResult.getId(), intCashAccountResult.getId());
     }
