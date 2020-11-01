@@ -16,7 +16,7 @@ public class ExternalTransactionDalServiceBean implements IExternalTransactionDa
 
     /**
      * <b>External Transaction Dal Service Constructor</b>
-     * @param externalTransactionRepository repository internalTransaction
+     * @param externalTransactionRepository repository externalTransaction
      */
     public ExternalTransactionDalServiceBean(IExternalTransactionRepository externalTransactionRepository) {
         super();
