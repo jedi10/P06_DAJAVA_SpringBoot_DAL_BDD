@@ -2,6 +2,7 @@ package com.paymybudy.transfer.dal.service;
 
 import com.paymybudy.transfer.dal.repository.IInternalCashAccountRepository;
 import com.paymybudy.transfer.models.InternalCashAccount;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class InternalCashAccountDalServiceBean implements IInternalCashAccountDa
     }
 
     @Override
-    public InternalCashAccount findOne(Long id) {
+    public InternalCashAccount findOne(@NonNull Long id) {
         InternalCashAccount result = null;
         Optional<InternalCashAccount> internalCashAccountOptional = internalCashAccountRepository.findById(id);
         if (internalCashAccountOptional.isPresent()){
@@ -37,7 +38,7 @@ public class InternalCashAccountDalServiceBean implements IInternalCashAccountDa
     }
 
     @Override
-    public InternalCashAccount create(InternalCashAccount internalCashAccount) {
+    public InternalCashAccount create(@NonNull InternalCashAccount internalCashAccount) {
         if (internalCashAccount.getId() != null) {
             //cannot create with specified Id value
             return null;
@@ -46,7 +47,7 @@ public class InternalCashAccountDalServiceBean implements IInternalCashAccountDa
     }
 
     @Override
-    public InternalCashAccount update(InternalCashAccount internalCashAccount) {
+    public InternalCashAccount update(@NonNull InternalCashAccount internalCashAccount) {
         InternalCashAccount intCashAccountPersisted = findOne(internalCashAccount.getId());
         if (intCashAccountPersisted == null){
             //We can't update an object not persisted
@@ -56,7 +57,7 @@ public class InternalCashAccountDalServiceBean implements IInternalCashAccountDa
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(@NonNull Long id) {
         InternalCashAccount intCashAccountPersisted = findOne(id);
         if (intCashAccountPersisted != null){
             internalCashAccountRepository.delete(intCashAccountPersisted);

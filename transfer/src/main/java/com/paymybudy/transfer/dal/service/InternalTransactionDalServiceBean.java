@@ -2,6 +2,7 @@ package com.paymybudy.transfer.dal.service;
 
 import com.paymybudy.transfer.dal.repository.IInternalTransactionRepository;
 import com.paymybudy.transfer.models.InternalTransaction;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class InternalTransactionDalServiceBean implements IInternalTransactionDa
     }
 
     @Override
-    public InternalTransaction findOne(Long id) {
+    public InternalTransaction findOne(@NonNull Long id) {
         InternalTransaction result = null;
         Optional<InternalTransaction> internalTransactionOptional = internalTransactionRepository.findById(id);
         if (internalTransactionOptional.isPresent()){
@@ -37,7 +38,7 @@ public class InternalTransactionDalServiceBean implements IInternalTransactionDa
     }
 
     @Override
-    public InternalTransaction create(InternalTransaction internalTransaction) {
+    public InternalTransaction create(@NonNull InternalTransaction internalTransaction) {
         if (internalTransaction.getId() != null) {
             //cannot create with specified Id value
             return null;
@@ -46,7 +47,7 @@ public class InternalTransactionDalServiceBean implements IInternalTransactionDa
     }
 
     @Override
-    public InternalTransaction update(InternalTransaction internalTransaction) {
+    public InternalTransaction update(@NonNull InternalTransaction internalTransaction) {
         InternalTransaction internalTransactionPersisted = findOne(internalTransaction.getId());
         if (internalTransactionPersisted == null){
             //We can't update an object not persisted
@@ -56,7 +57,7 @@ public class InternalTransactionDalServiceBean implements IInternalTransactionDa
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(@NonNull Long id) {
         InternalTransaction internalTransactionPersisted = findOne(id);
         if (internalTransactionPersisted != null){
             internalTransactionRepository.delete(internalTransactionPersisted);

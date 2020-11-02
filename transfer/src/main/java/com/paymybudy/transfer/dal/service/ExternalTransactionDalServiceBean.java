@@ -4,6 +4,7 @@ import com.paymybudy.transfer.dal.repository.IExternalTransactionRepository;
 
 import com.paymybudy.transfer.models.ExternalTransaction;
 
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class ExternalTransactionDalServiceBean implements IExternalTransactionDa
     }
 
     @Override
-    public ExternalTransaction findOne(Long id) {
+    public ExternalTransaction findOne(@NonNull Long id) {
         ExternalTransaction result = null;
         Optional<ExternalTransaction> externalTransactionOptional = externalTransactionRepository.findById(id);
         if (externalTransactionOptional.isPresent()){
@@ -39,7 +40,7 @@ public class ExternalTransactionDalServiceBean implements IExternalTransactionDa
     }
 
     @Override
-    public ExternalTransaction create(ExternalTransaction externalTransaction) {
+    public ExternalTransaction create(@NonNull ExternalTransaction externalTransaction) {
         if (externalTransaction.getId() != null) {
             //cannot create with specified Id value
             return null;
@@ -48,7 +49,7 @@ public class ExternalTransactionDalServiceBean implements IExternalTransactionDa
     }
 
     @Override
-    public ExternalTransaction update(ExternalTransaction externalTransaction) {
+    public ExternalTransaction update(@NonNull ExternalTransaction externalTransaction) {
         ExternalTransaction externalTransactionPersisted = findOne(externalTransaction.getId());
         if (externalTransactionPersisted == null){
             //We can't update an object not persisted
@@ -58,7 +59,7 @@ public class ExternalTransactionDalServiceBean implements IExternalTransactionDa
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(@NonNull Long id) {
         ExternalTransaction externalTransactionPersisted = findOne(id);
         if (externalTransactionPersisted != null){
             externalTransactionRepository.delete(externalTransactionPersisted);

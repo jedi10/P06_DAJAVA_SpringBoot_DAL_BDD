@@ -2,6 +2,7 @@ package com.paymybudy.transfer.dal.service;
 
 import com.paymybudy.transfer.dal.repository.IBankAccountRepository;
 import com.paymybudy.transfer.models.BankAccount;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class BankAccountDalServiceBean implements IBankAccountDalService {
     }
 
     @Override
-    public BankAccount findOne(Long id) {
+    public BankAccount findOne(@NonNull Long id) {
         BankAccount result = null;
         Optional<BankAccount> bankAccountOptional = bankAccountRepository.findById(id);
         if (bankAccountOptional.isPresent()){
@@ -37,7 +38,7 @@ public class BankAccountDalServiceBean implements IBankAccountDalService {
     }
 
     @Override
-    public BankAccount create(BankAccount bankAccount) {
+    public BankAccount create(@NonNull BankAccount bankAccount) {
         if (bankAccount.getId() != null) {
             //cannot create with specified Id value
             return null;
@@ -46,7 +47,7 @@ public class BankAccountDalServiceBean implements IBankAccountDalService {
     }
 
     @Override
-    public BankAccount update(BankAccount bankAccount) {
+    public BankAccount update(@NonNull BankAccount bankAccount) {
         BankAccount bankAccountPersisted = findOne(bankAccount.getId());
         if (bankAccountPersisted == null){
             //We can't update an object not persisted
@@ -56,7 +57,7 @@ public class BankAccountDalServiceBean implements IBankAccountDalService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(@NonNull Long id) {
         BankAccount bankAccountPersisted = findOne(id);
         if (bankAccountPersisted != null){
             bankAccountRepository.delete(bankAccountPersisted);
