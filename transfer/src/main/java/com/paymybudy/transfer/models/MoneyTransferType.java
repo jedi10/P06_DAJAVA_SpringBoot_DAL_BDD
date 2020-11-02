@@ -14,7 +14,7 @@ import java.io.Serializable;
 @Entity(name = "MoneyTransferType")
 @Table(name = "money_transfer_type")
 @NoArgsConstructor
-public class MoneyTransfertType implements Serializable {
+public class MoneyTransferType implements Serializable {
 
     @EmbeddedId
     @Getter
@@ -40,9 +40,9 @@ public class MoneyTransfertType implements Serializable {
     @Setter
     boolean isCredit;
 
-    public MoneyTransfertType(InternalCashAccount internalCashAccount,
-                              InternalTransaction internalTransaction,
-                              boolean isCredit) {
+    public MoneyTransferType(InternalCashAccount internalCashAccount,
+                             InternalTransaction internalTransaction,
+                             boolean isCredit) {
         this.internalCashAccount = internalCashAccount;
         this.internalTransaction = internalTransaction;
         this.isCredit = isCredit;

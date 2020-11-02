@@ -2,7 +2,6 @@ package com.paymybudy.transfer.models;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -46,7 +45,7 @@ public class InternalCashAccount implements Serializable {
 
     @OneToMany(mappedBy = "internalCashAccount")
     @Getter
-    private List<MoneyTransfertType> transfertTypeList;
+    private List<MoneyTransferType> transfertTypeList;
     /*
     @OneToMany(targetEntity = InternalTransaction.class, cascade = CascadeType.ALL,
             fetch = FetchType.LAZY, mappedBy = "accountDebit")
@@ -71,7 +70,7 @@ public class InternalCashAccount implements Serializable {
         this.amount = this.amount - amount;
     }
 
-    public void setTransfertTypeList(List<MoneyTransfertType> internalList){
+    public void setTransfertTypeList(List<MoneyTransferType> internalList){
         this.transfertTypeList = Optional.ofNullable(internalList)
                 .map(List::stream)
                 .orElseGet(Stream::empty)

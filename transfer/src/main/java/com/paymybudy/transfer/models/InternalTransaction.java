@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -45,7 +44,7 @@ public class InternalTransaction implements Serializable {
     @OneToMany(mappedBy = "internalTransaction")
     @Getter
     @Setter
-    private List<MoneyTransfertType> transfertType;
+    private List<MoneyTransferType> transfertType;
 
     @Column(name = "transaction_message")
     @Getter
