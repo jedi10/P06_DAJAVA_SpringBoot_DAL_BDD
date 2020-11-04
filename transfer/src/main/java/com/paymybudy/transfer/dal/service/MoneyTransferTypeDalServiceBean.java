@@ -4,6 +4,8 @@ import com.paymybudy.transfer.dal.repository.IMoneyTransferTypeRepository;
 import com.paymybudy.transfer.models.MoneyTransferTypeKey;
 import com.paymybudy.transfer.models.MoneyTransferType;
 import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +15,9 @@ import java.util.Optional;
 public class MoneyTransferTypeDalServiceBean implements IMoneyTransferTypeDalService {
 
     private IMoneyTransferTypeRepository moneyTransferTypeRepository;
+
+    //@Autowired
+    //private ApplicationContext applicationContext;
 
     /**
      * <b>Money Transfer Dal Service Constructor</b>

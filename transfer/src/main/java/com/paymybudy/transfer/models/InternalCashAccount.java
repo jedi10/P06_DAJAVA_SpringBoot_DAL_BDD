@@ -41,6 +41,8 @@ public class InternalCashAccount implements Serializable {
     private double amount;
 
     @OneToOne(mappedBy = "internalCashAccount")
+    @Getter
+    @Setter
     private User user;
 
     @OneToMany(mappedBy = "internalCashAccount")
@@ -54,8 +56,26 @@ public class InternalCashAccount implements Serializable {
     private List<InternalTransaction> internalTransactionList;*/
 
 
-
+    /**
+     * <b>InternalCashAccount Constructor</b>
+     * @param number account number
+     * @param libelle libelle
+     */
     public InternalCashAccount(String number, String libelle) {
+        this.number = number;
+        this.libelle = libelle;
+        this.amount = 0;
+        setTransfertTypeList(null);
+    }
+
+    /**
+     * <b>internalCashAccount constructor</b>
+     * @param id id
+     * @param number account Number
+     * @param libelle libelle
+     */
+    public InternalCashAccount(Long id, String number, String libelle) {
+        this.id = id;
         this.number = number;
         this.libelle = libelle;
         this.amount = 0;

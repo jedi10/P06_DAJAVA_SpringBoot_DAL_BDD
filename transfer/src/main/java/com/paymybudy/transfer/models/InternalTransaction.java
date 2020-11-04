@@ -64,6 +64,21 @@ public class InternalTransaction implements Serializable {
         this.status = EnumTransacStatus.INITIATED;
     }
 
+    /**
+     * <b>InternalTransaction Constructor</b>
+     * @param id id
+     * @param description description
+     * @param amount amount
+     */
+    public InternalTransaction(Long id, String description,
+                               double amount) {
+        this.id = id;
+        this.description = description;
+        this.amount = amount;
+        this.statusDate = LocalDateTime.now();
+        this.status = EnumTransacStatus.INITIATED;
+    }
+
     public void executeTransaction(InternalCashAccount debitAccount, InternalCashAccount creditAccount) {
 
         if (debitAccount.getAmount() >= amount){

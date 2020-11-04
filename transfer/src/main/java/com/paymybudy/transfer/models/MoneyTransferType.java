@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * <b>Join Table between InternalCashAccount and Internal Transaction</b>
@@ -40,12 +41,37 @@ public class MoneyTransferType implements Serializable {
     @Setter
     boolean isCredit;
 
+    public MoneyTransferType(MoneyTransferTypeKey key,
+                InternalCashAccount internalCashAccount,
+                InternalTransaction internalTransaction,
+                boolean isCredit) {
+        this.id = key;
+        this.internalCashAccount = internalCashAccount;
+        this.internalTransaction = internalTransaction;
+        this.isCredit = isCredit;
+    }
+
     public MoneyTransferType(InternalCashAccount internalCashAccount,
                              InternalTransaction internalTransaction,
                              boolean isCredit) {
         this.internalCashAccount = internalCashAccount;
         this.internalTransaction = internalTransaction;
         this.isCredit = isCredit;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MoneyTransferType)) return false;
+        MoneyTransferType that = (MoneyTransferType) o;
+        return id.equals(that.id) &&
+                internalCashAccount.equals(that.internalCashAccount) &&
+                internalTransaction.equals(that.internalTransaction);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, internalCashAccount, internalTransaction);
     }
 }
 

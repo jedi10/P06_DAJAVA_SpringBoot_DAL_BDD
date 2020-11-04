@@ -39,10 +39,10 @@ public class InternalTransactionDalServiceBean implements IInternalTransactionDa
 
     @Override
     public InternalTransaction create(@NonNull InternalTransaction internalTransaction) {
-        if (internalTransaction.getId() != null) {
+        //if (internalTransaction.getId() != null) {
             //cannot create with specified Id value
-            return null;
-        }
+        //    return null;
+        //}
         return internalTransactionRepository.save(internalTransaction);
     }
 

@@ -39,10 +39,10 @@ public class InternalCashAccountDalServiceBean implements IInternalCashAccountDa
 
     @Override
     public InternalCashAccount create(@NonNull InternalCashAccount internalCashAccount) {
-        if (internalCashAccount.getId() != null) {
+        //if (internalCashAccount.getId() != null) {
             //cannot create with specified Id value
-            return null;
-        }
+        //    return null;
+        //}
         return internalCashAccountRepository.save(internalCashAccount);
     }
 

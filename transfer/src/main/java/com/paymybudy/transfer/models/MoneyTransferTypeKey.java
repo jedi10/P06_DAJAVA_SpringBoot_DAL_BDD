@@ -21,14 +21,15 @@ public class MoneyTransferTypeKey implements Serializable {
     @Column(name="int_cash_account_id")
     @Getter
     @Setter
-    Long internalCashAccountId;
+    private Long internalCashAccountId;
 
     @Column(name="int_transaction_id")
     @Getter
     @Setter
-    Long internalTransactionId;
+    private Long internalTransactionId;
 
     public MoneyTransferTypeKey(Long cashAccountId, Long transactionId) {
+        super();
         this.internalCashAccountId = cashAccountId;
         this.internalTransactionId = transactionId;
     }
