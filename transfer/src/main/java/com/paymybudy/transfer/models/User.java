@@ -64,6 +64,14 @@ public class User implements Serializable {
             name = "user_friends",
             joinColumns = @JoinColumn(name = "user_fk", referencedColumnName = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "friend_fk", referencedColumnName = "user_id"))
+    /*
+    @OneToMany
+    private List<User> friends;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "account_id", referencedColumnName="id")
+
+    */
+
     @Getter
     private List<User> contactList;
 

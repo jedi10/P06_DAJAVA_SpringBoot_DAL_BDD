@@ -57,7 +57,7 @@ public class TransferApplication implements CommandLineRunner {
 			externalTransactionDalService.create(externalTransaction);
 			internalCashAccountDalService.update(externalTransaction.getAccountCredit());
 
-			User user2 = userDalService.findByEmail(userList2.get(1).getEmail());
+			User user2 = user1.getContactList().get(1);
 			//User 1 want to give money to User 2
 			InternalTransaction internalTransaction = new InternalTransaction("Paiement service livraison", 500);
 			//Operation creation in DBB
