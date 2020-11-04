@@ -3,6 +3,7 @@ package com.paymybudy.transfer.dal.service;
 import com.paymybudy.transfer.dal.repository.IInternalCashAccountRepository;
 import com.paymybudy.transfer.models.InternalCashAccount;
 import org.junit.jupiter.api.*;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,9 +22,11 @@ import static org.mockito.Mockito.when;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class InternalCashAccountDalServiceBeanTest {
 
-    private IInternalCashAccountDalService internalCashAccountDalService;
     @Mock
     private IInternalCashAccountRepository internalCashAccountRepository;
+
+    @InjectMocks
+    private InternalCashAccountDalServiceBean internalCashAccountDalService;
 
     private static List<InternalCashAccount> intCashAccountsGiven = new ArrayList<>();
 
@@ -49,9 +52,6 @@ class InternalCashAccountDalServiceBeanTest {
         intCashAccountToUpdate.setId(251L);
         when(internalCashAccountRepository.save(intCashAccountToUpdate)).thenReturn(intCashAccountToUpdate);
         when(internalCashAccountRepository.findById(intCashAccountToUpdate.getId())).thenReturn(Optional.of(intCashAccountToUpdate));
-
-        //INSERT Mock
-        internalCashAccountDalService = new InternalCashAccountDalServiceBean(internalCashAccountRepository);
     }
 
     @AfterEach

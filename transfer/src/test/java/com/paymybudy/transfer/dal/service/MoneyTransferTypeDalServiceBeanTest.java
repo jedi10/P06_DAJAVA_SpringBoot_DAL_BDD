@@ -6,6 +6,7 @@ import com.paymybudy.transfer.models.InternalTransaction;
 import com.paymybudy.transfer.models.MoneyTransferType;
 import com.paymybudy.transfer.models.MoneyTransferTypeKey;
 import org.junit.jupiter.api.*;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,9 +24,11 @@ import static org.mockito.Mockito.when;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MoneyTransferTypeDalServiceBeanTest {
 
-    private IMoneyTransferTypeDalService moneyTransferTypeDalService;
     @Mock
     private IMoneyTransferTypeRepository moneyTransferTypeRepository;
+
+    @InjectMocks
+    private MoneyTransferTypeDalServiceBean moneyTransferTypeDalService;
 
     private static List<MoneyTransferType> moneyTransferTypesGiven = new ArrayList<>();
 
@@ -62,9 +65,6 @@ class MoneyTransferTypeDalServiceBeanTest {
         moneyTransferTypeToCreate2.setId(key);
         when(moneyTransferTypeRepository.save(moneyTransferTypeToCreate2)).thenReturn(moneyTransferTypeToCreate2);
         when(moneyTransferTypeRepository.findById(moneyTransferTypeToCreate2.getId())).thenReturn(Optional.of(moneyTransferTypeToCreate2));
-
-        //INSERT Mock
-        moneyTransferTypeDalService = new MoneyTransferTypeDalServiceBean(moneyTransferTypeRepository);
     }
 
     @AfterEach

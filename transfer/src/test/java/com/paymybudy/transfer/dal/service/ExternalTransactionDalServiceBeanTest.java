@@ -3,6 +3,7 @@ package com.paymybudy.transfer.dal.service;
 import com.paymybudy.transfer.dal.repository.IExternalTransactionRepository;
 import com.paymybudy.transfer.models.*;
 import org.junit.jupiter.api.*;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,9 +21,11 @@ import static org.mockito.Mockito.when;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ExternalTransactionDalServiceBeanTest {
 
-    private IExternalTransactionDalService externalTransactionDalService;
     @Mock
     private IExternalTransactionRepository externalTransactionRepository;
+
+    @InjectMocks
+    private ExternalTransactionDalServiceBean externalTransactionDalService;
 
     private static List<ExternalTransaction> extTransactionsGiven = new ArrayList<>();
 
@@ -75,9 +78,6 @@ class ExternalTransactionDalServiceBeanTest {
         externalTransactionToUpdate.setId(251L);
         when(externalTransactionRepository.save(externalTransactionToUpdate)).thenReturn(externalTransactionToUpdate);
         when(externalTransactionRepository.findById(externalTransactionToUpdate.getId())).thenReturn(Optional.of(externalTransactionToUpdate));
-
-        //INSERT Mock
-        externalTransactionDalService = new ExternalTransactionDalServiceBean(externalTransactionRepository);
     }
 
     @AfterEach

@@ -3,6 +3,7 @@ package com.paymybudy.transfer.dal.service;
 import com.paymybudy.transfer.dal.repository.IUserRepository;
 import com.paymybudy.transfer.models.User;
 import org.junit.jupiter.api.*;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,9 +21,11 @@ import static org.mockito.Mockito.verify;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserDalServiceBeanTest {
 
-    private UserDalServiceBean userDalService;
     @Mock
     private IUserRepository userRepository;
+
+    @InjectMocks
+    private UserDalServiceBean userDalService;
 
     private static List<User> usersGiven = new ArrayList<>();
     static {
@@ -47,9 +50,6 @@ class UserDalServiceBeanTest {
         userToUpdate.setId(251L);
         when(userRepository.save(userToUpdate)).thenReturn(userToUpdate);
         when(userRepository.findById(userToUpdate.getId())).thenReturn(Optional.of(userToUpdate));
-
-        //INSERT Mock
-        userDalService = new UserDalServiceBean(userRepository);
     }
 
     @AfterEach

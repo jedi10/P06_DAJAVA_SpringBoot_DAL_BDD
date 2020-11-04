@@ -4,6 +4,7 @@ import com.paymybudy.transfer.dal.repository.IInternalTransactionRepository;
 import com.paymybudy.transfer.models.ExternalTransaction;
 import com.paymybudy.transfer.models.InternalTransaction;
 import org.junit.jupiter.api.*;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,9 +23,11 @@ import static org.mockito.Mockito.when;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class InternalTransactionDalServiceBeanTest {
 
-    private IInternalTransactionDalService internalTransactionDalService;
     @Mock
     private IInternalTransactionRepository internalTransactionRepository;
+
+    @InjectMocks
+    private InternalTransactionDalServiceBean internalTransactionDalService;
 
     private static List<InternalTransaction> intTransactionsGiven = new ArrayList<>();
 
@@ -50,9 +53,6 @@ class InternalTransactionDalServiceBeanTest {
         internalTransactionToUpdate.setId(251L);
         when(internalTransactionRepository.save(internalTransactionToUpdate)).thenReturn(internalTransactionToUpdate);
         when(internalTransactionRepository.findById(internalTransactionToUpdate.getId())).thenReturn(Optional.of(internalTransactionToUpdate));
-
-        //INSERT Mock
-        internalTransactionDalService = new InternalTransactionDalServiceBean(internalTransactionRepository);
     }
 
     @AfterEach

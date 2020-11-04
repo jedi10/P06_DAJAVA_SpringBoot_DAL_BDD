@@ -5,6 +5,7 @@ import com.paymybudy.transfer.models.AppAccount;
 import com.paymybudy.transfer.models.EnumAppAccountStatus;
 import com.paymybudy.transfer.models.User;
 import org.junit.jupiter.api.*;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,9 +24,11 @@ import static org.mockito.Mockito.when;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AppAccountDalServiceBeanTest {
 
-    private IAppAccountDalService appAccountDalService;
     @Mock
     private IAppAccountRepository appAccountRepository;
+
+    @InjectMocks
+    private AppAccountDalServiceBean appAccountDalService;
 
     private static List<AppAccount> appAccountsGiven = new ArrayList<>();
 
@@ -58,14 +62,12 @@ class AppAccountDalServiceBeanTest {
         //CONFIG Mock
         when(appAccountRepository.findAll()).thenReturn(appAccountsGiven);
         when(appAccountRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(appAccountsGiven.get(0)));
-        when(appAccountRepository.save(any())).thenReturn(appAccountToCreate);
+        //when(appAccountRepository.save(any())).thenReturn(appAccountToCreate);
+        given(appAccountRepository.save(any())).willReturn(appAccountToCreate);
         //For update operation
         appAccountToUpdate.setId(251L);
         when(appAccountRepository.save(appAccountToUpdate)).thenReturn(appAccountToUpdate);
         when(appAccountRepository.findById(appAccountToUpdate.getId())).thenReturn(Optional.of(appAccountToUpdate));
-
-        //INSERT Mock
-        appAccountDalService = new AppAccountDalServiceBean(appAccountRepository);
     }
 
     @AfterEach
@@ -198,3 +200,6 @@ class AppAccountDalServiceBeanTest {
         verify(appAccountRepository, Mockito.times(1)).deleteAll();
     }
 }
+
+//injeck Mocks
+// https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/

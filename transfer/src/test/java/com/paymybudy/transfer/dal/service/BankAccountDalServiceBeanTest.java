@@ -3,6 +3,7 @@ package com.paymybudy.transfer.dal.service;
 import com.paymybudy.transfer.dal.repository.IBankAccountRepository;
 import com.paymybudy.transfer.models.BankAccount;
 import org.junit.jupiter.api.*;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,9 +22,11 @@ import static org.mockito.Mockito.when;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class BankAccountDalServiceBeanTest {
 
-    private IBankAccountDalService bankAccountDalService;
     @Mock
     private IBankAccountRepository bankAccountRepository;
+
+    @InjectMocks
+    private BankAccountDalServiceBean bankAccountDalService;
 
     private static List<BankAccount> bankAccountsGiven = new ArrayList<>();
 
@@ -51,9 +54,6 @@ class BankAccountDalServiceBeanTest {
         bankAccountToUpdate.setId(251L);
         when(bankAccountRepository.save(bankAccountToUpdate)).thenReturn(bankAccountToUpdate);
         when(bankAccountRepository.findById(bankAccountToUpdate.getId())).thenReturn(Optional.of(bankAccountToUpdate));
-
-        //INSERT Mock
-        bankAccountDalService = new BankAccountDalServiceBean(bankAccountRepository);
     }
 
     @AfterEach
