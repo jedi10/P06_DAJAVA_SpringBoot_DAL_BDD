@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BankAccount.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">transfer</a> &gt; <a href="index.source.html" class="el_package">com.paymybudy.transfer.models</a> &gt; <span class="el_source">BankAccount.java</span></div><h1>BankAccount.java</h1><pre class="source lang-java linenums">package com.paymybudy.transfer.models;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@Entity(name = &quot;BankAccount&quot;)
+@Table(name = &quot;BANK_ACCOUNT&quot;)
+<span class="fc" id="L16">@NoArgsConstructor</span>
+public class BankAccount implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;bank_account_id&quot;)
+<span class="fc" id="L22">    @Getter</span>
+<span class="fc" id="L23">    @Setter</span>
+    private Long id;
+
+    @Column(length = 55)
+<span class="fc" id="L27">    @Getter</span>
+<span class="nc" id="L28">    @Setter</span>
+    private String name;
+
+    @Column(name = &quot;tel_number&quot;, length = 55)
+<span class="nc" id="L32">    @Getter</span>
+<span class="nc" id="L33">    @Setter</span>
+    private String telNumber;
+
+<span class="nc" id="L36">    @Getter</span>
+<span class="nc" id="L37">    @Setter</span>
+    private String address;
+
+    @OneToOne(mappedBy = &quot;bankAccount&quot;)
+    private User user;
+
+    @OneToMany(targetEntity = ExternalTransaction.class, cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY, mappedBy = &quot;accountDebit&quot;)
+    @OrderBy(&quot;statusDate ASC&quot;)
+<span class="fc" id="L46">    @Getter</span>
+    private List&lt;ExternalTransaction&gt; externalTransactionList;
+
+
+
+    /**
+     * &lt;b&gt;BankAccount constructor&lt;/b&gt;
+     * @param name bank name
+     * @param telNumber telephone
+     * @param address address
+     */
+<span class="fc" id="L57">    public BankAccount(String name, String telNumber, String address) {</span>
+<span class="fc" id="L58">        this.name = name;</span>
+<span class="fc" id="L59">        this.telNumber = telNumber;</span>
+<span class="fc" id="L60">        this.address = address;</span>
+<span class="fc" id="L61">        setExternalTransactionList(null);</span>
+<span class="fc" id="L62">    }</span>
+
+
+    public void setExternalTransactionList(List&lt;ExternalTransaction&gt; externalList){
+<span class="fc" id="L66">        this.externalTransactionList = Optional.ofNullable(externalList)</span>
+<span class="fc" id="L67">                .map(List::stream)</span>
+<span class="fc" id="L68">                .orElseGet(Stream::empty)</span>
+<span class="fc" id="L69">                .collect(Collectors.toList());</span>
+<span class="fc" id="L70">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L74">        return &quot;BankAccount{&quot; +</span>
+                &quot;id=&quot; + id +
+                &quot;, name='&quot; + name + '\'' +
+                &quot;, telNumber='&quot; + telNumber + '\'' +
+                &quot;, address='&quot; + address + '\'' +
+                '}';
+    }
+}
+
+//https://www.codeflow.site/fr/article/jpa-join-column
+//http://www.java2s.com/Tutorials/Java/JPA/0920__JPA_ManyToOne_Join_Column.htm
+//https://www.baeldung.com/jpa-join-column
+//https://en.wikibooks.org/wiki/Java_Persistence/OneToMany#Example_of_a_JPA_2.x_unidirectional_OneToMany_relationship_annotations
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>User.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">transfer</a> &gt; <a href="index.source.html" class="el_package">com.paymybudy.transfer.models</a> &gt; <span class="el_source">User.java</span></div><h1>User.java</h1><pre class="source lang-java linenums">package com.paymybudy.transfer.models;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@Entity(name = &quot;User&quot;)
+@Table(name = &quot;USER&quot;, uniqueConstraints = @UniqueConstraint(columnNames = &quot;email&quot;))
+public class User implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;user_id&quot;)
+<span class="fc" id="L21">    @Getter</span>
+<span class="fc" id="L22">    @Setter</span>
+    private Long id;
+
+    @Column(name = &quot;first_name&quot;, length = 55)
+<span class="nc" id="L26">    @Getter</span>
+<span class="nc" id="L27">    @Setter</span>
+    private String firstName;
+
+    @Column(name = &quot;last_name&quot;, length = 55)
+<span class="nc" id="L31">    @Getter</span>
+<span class="nc" id="L32">    @Setter</span>
+    private String lastName;
+
+<span class="fc" id="L35">    @Getter</span>
+<span class="nc" id="L36">    @Setter</span>
+    @Column(nullable = false, length = 100)
+    private String email;
+
+<span class="nc" id="L40">    @Getter</span>
+<span class="nc" id="L41">    @Setter</span>
+    @Column(nullable = false, length = 100)
+    private String password;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name=&quot;bank_account_fk&quot;)
+<span class="fc" id="L47">    @Getter</span>
+<span class="nc" id="L48">    @Setter</span>
+    private BankAccount bankAccount;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name=&quot;int_cash_account_fk&quot;)
+<span class="nc" id="L53">    @Getter</span>
+<span class="nc" id="L54">    @Setter</span>
+    private InternalCashAccount internalCashAccount;
+
+    @OneToOne(mappedBy = &quot;user&quot;)
+<span class="nc" id="L58">    @Getter</span>
+<span class="nc" id="L59">    @Setter</span>
+    private AppAccount appAccount;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = &quot;user_friends&quot;,
+            joinColumns = @JoinColumn(name = &quot;user_fk&quot;, referencedColumnName = &quot;user_id&quot;),
+            inverseJoinColumns = @JoinColumn(name = &quot;friend_fk&quot;, referencedColumnName = &quot;user_id&quot;))
+    /*
+    @OneToMany
+    private List&lt;User&gt; friends;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = &quot;account_id&quot;, referencedColumnName=&quot;id&quot;)
+
+    */
+
+<span class="fc" id="L75">    @Getter</span>
+    private List&lt;User&gt; contactList;
+
+
+    /**
+     * &lt;b&gt;User Constructor: all list will be created as empty&lt;/b&gt;
+     * @param firstName firstName
+     * @param lastName lastName
+     * @param email email
+     * @param password password
+     */
+<span class="fc" id="L86">    public User(String firstName, String lastName, String email, String password) {</span>
+<span class="fc" id="L87">        this.firstName = firstName;</span>
+<span class="fc" id="L88">        this.lastName = lastName;</span>
+<span class="fc" id="L89">        this.email = email;</span>
+<span class="fc" id="L90">        this.password = password;</span>
+<span class="fc" id="L91">        setContactList(null);</span>
+<span class="fc" id="L92">    }</span>
+
+    public User() {
+<span class="fc" id="L95">        super();</span>
+<span class="fc" id="L96">    }</span>
+
+    public void setContactList(List&lt;User&gt; userList){
+<span class="fc" id="L99">        this.contactList = Optional.ofNullable(userList)</span>
+<span class="fc" id="L100">                .map(List::stream)</span>
+<span class="fc" id="L101">                .orElseGet(Stream::empty)</span>
+<span class="fc" id="L102">                .collect(Collectors.toList());</span>
+<span class="pc bpc" id="L103" title="3 of 4 branches missed.">        if(userList != null &amp;&amp; userList.size() &gt; 0){</span>
+<span class="nc" id="L104">            userList.forEach(e -&gt; {</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">                if (!e.getContactList().contains(this)){</span>
+<span class="nc" id="L106">                    e.addOneContact(this);</span>
+                }
+<span class="nc" id="L108">            });</span>
+        }
+<span class="fc" id="L110">    }</span>
+
+    public void addOneContact(User contact){
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (!this.contactList.contains(contact)){</span>
+<span class="nc" id="L114">            this.contactList.add(contact);</span>
+        }
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        if (!contact.getContactList().contains(this)){</span>
+<span class="nc" id="L117">            contact.addOneContact(this);</span>
+        }
+<span class="nc" id="L119">    }</span>
+
+
+
+    @Override
+    public boolean equals(Object o) {
+<span class="fc bfc" id="L125" title="All 2 branches covered.">        if (this == o) return true;</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">        if (!(o instanceof User)) return false;</span>
+<span class="fc" id="L127">        User user = (User) o;</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        return Objects.equals(id, user.id) &amp;&amp;</span>
+<span class="pc bnc" id="L129" title="All 2 branches missed.">                email.equals(user.email);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L134">        return Objects.hash(id, email);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L139">        return &quot;User{&quot; +</span>
+                &quot;id=&quot; + id +
+                &quot;, firstName='&quot; + firstName + '\'' +
+                &quot;, lastName='&quot; + lastName + '\'' +
+                &quot;, email='&quot; + email + '\'' +
+                &quot;, password='&quot; + password + '\'' +
+                &quot;, bankAccount=&quot; + bankAccount +
+                &quot;, internalCashAccount=&quot; + internalCashAccount +
+                &quot;, appAccount=&quot; + appAccount +
+                '}';
+    }
+}
+
+
+//https://stuetzpunkt.wordpress.com/2013/10/19/jpa-recursive-manytomany-relationship/
+//https://www.baeldung.com/jpa-many-to-many
+
+//https://www.logicbig.com/tutorials/java-ee-tutorial/jpa/table-annotation-unique-constraints.html
+//https://code-examples.net/en/q/5c11f1
+//https://stackoverflow.com/questions/3405229/specifying-an-index-non-unique-key-using-jpa
+// indexes = {@Index(name = &quot;USER_EMAIL_UNIQUE_INDEX&quot;, columnList = &quot;email&quot;)})
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

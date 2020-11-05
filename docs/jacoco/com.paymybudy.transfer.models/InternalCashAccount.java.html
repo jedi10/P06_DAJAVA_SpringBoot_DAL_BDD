@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InternalCashAccount.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">transfer</a> &gt; <a href="index.source.html" class="el_package">com.paymybudy.transfer.models</a> &gt; <span class="el_source">InternalCashAccount.java</span></div><h1>InternalCashAccount.java</h1><pre class="source lang-java linenums">package com.paymybudy.transfer.models;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@Entity(name = &quot;InternalCashAccount&quot;)
+@Table(name = &quot;INT_CASH_ACCOUNT&quot;, uniqueConstraints = @UniqueConstraint(columnNames = &quot;number&quot;))
+<span class="fc" id="L17">@NoArgsConstructor</span>
+public class InternalCashAccount implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;int_cash_account_id&quot;)
+<span class="fc" id="L23">    @Getter</span>
+<span class="fc" id="L24">    @Setter</span>
+    private Long id;
+
+    @Column(length = 35)
+<span class="fc" id="L28">    @Getter</span>
+<span class="nc" id="L29">    @Setter</span>
+    private String number;
+<span class="nc" id="L31">    @Getter</span>
+<span class="nc" id="L32">    @Setter</span>
+    private String libelle;
+
+<span class="pc" id="L35">    @Column(length = 35)</span>
+<span class="nc" id="L36">    @Getter</span>
+    private final String currency = &quot;Euros&quot;;
+
+<span class="fc" id="L39">    @Getter</span>
+<span class="fc" id="L40">    @Setter</span>
+    private double amount;
+
+    @OneToOne(mappedBy = &quot;internalCashAccount&quot;)
+<span class="nc" id="L44">    @Getter</span>
+<span class="nc" id="L45">    @Setter</span>
+    private User user;
+
+    @OneToMany(mappedBy = &quot;internalCashAccount&quot;)
+<span class="nc" id="L49">    @Getter</span>
+    private List&lt;MoneyTransferType&gt; transfertTypeList;
+    /*
+    @OneToMany(targetEntity = InternalTransaction.class, cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY, mappedBy = &quot;accountDebit&quot;)
+    @OrderBy(&quot;date ASC&quot;)
+    @Getter
+    private List&lt;InternalTransaction&gt; internalTransactionList;*/
+
+
+    /**
+     * &lt;b&gt;InternalCashAccount Constructor&lt;/b&gt;
+     * @param number account number
+     * @param libelle libelle
+     */
+<span class="fc" id="L64">    public InternalCashAccount(String number, String libelle) {</span>
+<span class="fc" id="L65">        this.number = number;</span>
+<span class="fc" id="L66">        this.libelle = libelle;</span>
+<span class="fc" id="L67">        this.amount = 0;</span>
+<span class="fc" id="L68">        setTransfertTypeList(null);</span>
+<span class="fc" id="L69">    }</span>
+
+    /**
+     * &lt;b&gt;internalCashAccount constructor&lt;/b&gt;
+     * @param id id
+     * @param number account Number
+     * @param libelle libelle
+     */
+<span class="nc" id="L77">    public InternalCashAccount(Long id, String number, String libelle) {</span>
+<span class="nc" id="L78">        this.id = id;</span>
+<span class="nc" id="L79">        this.number = number;</span>
+<span class="nc" id="L80">        this.libelle = libelle;</span>
+<span class="nc" id="L81">        this.amount = 0;</span>
+<span class="nc" id="L82">        setTransfertTypeList(null);</span>
+<span class="nc" id="L83">    }</span>
+
+    public void addCash(double amount){
+<span class="fc" id="L86">        this.amount = this.amount + amount;</span>
+<span class="fc" id="L87">    }</span>
+
+    public void removeCash(double amount){
+<span class="fc" id="L90">        this.amount = this.amount - amount;</span>
+<span class="fc" id="L91">    }</span>
+
+    public void setTransfertTypeList(List&lt;MoneyTransferType&gt; internalList){
+<span class="fc" id="L94">        this.transfertTypeList = Optional.ofNullable(internalList)</span>
+<span class="fc" id="L95">                .map(List::stream)</span>
+<span class="fc" id="L96">                .orElseGet(Stream::empty)</span>
+<span class="fc" id="L97">                .collect(Collectors.toList());</span>
+<span class="fc" id="L98">    }</span>
+
+    @Override
+    public boolean equals(Object o) {
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        if (this == o) return true;</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">        if (!(o instanceof InternalCashAccount)) return false;</span>
+<span class="fc" id="L104">        InternalCashAccount that = (InternalCashAccount) o;</span>
+<span class="fc" id="L105">        return number.equals(that.number);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L110">        return Objects.hash(number);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L115">        return &quot;InternalCashAccount{&quot; +</span>
+                &quot;id=&quot; + id +
+                &quot;, number='&quot; + number + '\'' +
+                &quot;, libelle='&quot; + libelle + '\'' +
+                &quot;, currency='&quot; + currency + '\'' +
+                &quot;, amount=&quot; + amount +
+                '}';
+    }
+}
+
+
+
+//https://www.baeldung.com/jpa-many-to-many
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
