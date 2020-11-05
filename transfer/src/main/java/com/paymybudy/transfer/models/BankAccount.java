@@ -68,6 +68,16 @@ public class BankAccount implements Serializable {
                 .orElseGet(Stream::empty)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public String toString() {
+        return "BankAccount{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", telNumber='" + telNumber + '\'' +
+                ", address='" + address + '\'' +
+                '}';
+    }
 }
 
 //https://www.codeflow.site/fr/article/jpa-join-column

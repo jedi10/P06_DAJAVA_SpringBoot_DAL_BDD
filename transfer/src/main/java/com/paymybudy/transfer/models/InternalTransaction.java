@@ -6,9 +6,9 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "InternalTransaction")
 @Table(name = "INTERNAL_TRANSACTION")
@@ -44,7 +44,7 @@ public class InternalTransaction implements Serializable {
     @OneToMany(mappedBy = "internalTransaction")
     @Getter
     @Setter
-    private List<MoneyTransfertType> transfertType;
+    private List<MoneyTransferType> transfertType;
 
     @Column(name = "transaction_message")
     @Getter
@@ -64,6 +64,21 @@ public class InternalTransaction implements Serializable {
         this.status = EnumTransacStatus.INITIATED;
     }
 
+    /**
+     * <b>InternalTransaction Constructor</b>
+     * @param id id
+     * @param description description
+     * @param amount amount
+     */
+    public InternalTransaction(Long id, String description,
+                               double amount) {
+        this.id = id;
+        this.description = description;
+        this.amount = amount;
+        this.statusDate = LocalDateTime.now();
+        this.status = EnumTransacStatus.INITIATED;
+    }
+
     public void executeTransaction(InternalCashAccount debitAccount, InternalCashAccount creditAccount) {
 
         if (debitAccount.getAmount() >= amount){
@@ -75,6 +90,21 @@ public class InternalTransaction implements Serializable {
             setStatus(EnumTransacStatus.ABORTED);
             setTransactionMessage("Not Enough cash to execute transaction");
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof InternalTransaction)) return false;
+        InternalTransaction that = (InternalTransaction) o;
+        return Double.compare(that.amount, amount) == 0 &&
+                Objects.equals(description, that.description) &&
+                statusDate.equals(that.statusDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(description, amount, statusDate);
     }
 }
 

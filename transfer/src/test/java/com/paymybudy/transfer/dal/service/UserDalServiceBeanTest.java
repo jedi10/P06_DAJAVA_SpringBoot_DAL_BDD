@@ -3,10 +3,10 @@ package com.paymybudy.transfer.dal.service;
 import com.paymybudy.transfer.dal.repository.IUserRepository;
 import com.paymybudy.transfer.models.User;
 import org.junit.jupiter.api.*;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +21,11 @@ import static org.mockito.Mockito.verify;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserDalServiceBeanTest {
 
-    private UserDalServiceBean userDalServiceBean;
     @Mock
     private IUserRepository userRepository;
+
+    @InjectMocks
+    private UserDalServiceBean userDalService;
 
     private static List<User> usersGiven = new ArrayList<>();
     static {
@@ -33,7 +35,7 @@ class UserDalServiceBeanTest {
         usersGiven.add(user1);
         usersGiven.add(user2);
     }
-    private User userCreated = new User("Jack", "Holster", "holster@paymybuddy.com", "xxxx");
+    private User userToCreate = new User("Jack", "Holster", "holster@paymybuddy.com", "xxxx");
     private User userToUpdate = new User("Tobias", "Hamsterdil", "hamsterdil@paymybuddy.com", "xxxx");
 
     @BeforeEach
@@ -43,14 +45,11 @@ class UserDalServiceBeanTest {
         when(userRepository.findAll()).thenReturn(usersGiven);
         when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(usersGiven.get(0)));
         when(userRepository.findByEmail(Mockito.anyString())).thenReturn(Optional.of(usersGiven.get(0)));
-        when(userRepository.save(any())).thenReturn(userCreated);
+        when(userRepository.save(any())).thenReturn(userToCreate);
         //For update operation
         userToUpdate.setId(251L);
         when(userRepository.save(userToUpdate)).thenReturn(userToUpdate);
         when(userRepository.findById(userToUpdate.getId())).thenReturn(Optional.of(userToUpdate));
-
-        //INSERT Mock
-        userDalServiceBean = new UserDalServiceBean(userRepository);
     }
 
     @AfterEach
@@ -59,14 +58,21 @@ class UserDalServiceBeanTest {
 
     @Order(1)
     @Test
+    void serviceInstantiation() {
+        assertNotNull(userDalService,
+                "you have forgot to create an Instance userDalService and inject Mock Repository inside");
+    }
+
+    @Order(2)
+    @Test
     void findAll() {
-        assertNotNull(userDalServiceBean);
+        assertNotNull(userDalService);
         //***********************************************************
         //****************CHECK MOCK INVOCATION at start*************
         //***********************************************************
         verify(userRepository, Mockito.never()).findAll();
         //WHEN
-        List<User> usersResult = userDalServiceBean.findAll();
+        List<User> usersResult = userDalService.findAll();
 
         //THEN
         //***********************************************************
@@ -80,7 +86,7 @@ class UserDalServiceBeanTest {
         assertEquals(usersGiven.get(1), usersResult.get(1));
     }
 
-    @Order(2)
+    @Order(3)
     @Test
     void findOne() {
         //GIVEN
@@ -91,7 +97,7 @@ class UserDalServiceBeanTest {
         verify(userRepository, Mockito.never()).findById(Mockito.anyLong());
 
         //WHEN
-        User userResult = userDalServiceBean.findOne(10L);
+        User userResult = userDalService.findOne(10L);
         //***********************************************************
         //****************CHECK MOCK INVOCATION at end***************
         //***********************************************************
@@ -101,7 +107,7 @@ class UserDalServiceBeanTest {
         assertEquals(userExpected.getEmail(), userResult.getEmail());
     }
 
-    @Order(3)
+    @Order(4)
     @Test
     void findByEmail() {
         //GIVEN
@@ -112,7 +118,7 @@ class UserDalServiceBeanTest {
         verify(userRepository, Mockito.never()).findByEmail(Mockito.anyString());
 
         //WHEN
-        User userResult = userDalServiceBean.findByEmail("tartantion@email.fr");
+        User userResult = userDalService.findByEmail("tartantion@email.fr");
         //***********************************************************
         //****************CHECK MOCK INVOCATION at end***************
         //***********************************************************
@@ -122,7 +128,7 @@ class UserDalServiceBeanTest {
         assertEquals(userExpected, userResult);
     }
 
-    @Order(4)
+    @Order(5)
     @Test
     void create() {
         //***********************************************************
@@ -131,7 +137,7 @@ class UserDalServiceBeanTest {
         verify(userRepository, Mockito.never()).save(any());
 
         //WHEN
-        User userResult = userDalServiceBean.create(userCreated);
+        User userResult = userDalService.create(userToCreate);
 
         //THEN
         //***********************************************************
@@ -139,10 +145,10 @@ class UserDalServiceBeanTest {
         //***********************************************************
         verify(userRepository, Mockito.times(1)).save(any());
 
-        assertEquals(userResult, userCreated);
+        assertEquals(userToCreate, userResult);
     }
 
-    @Order(5)
+    @Order(6)
     @Test
     void update() {
         //***********************************************************
@@ -152,7 +158,7 @@ class UserDalServiceBeanTest {
         verify(userRepository, Mockito.never()).save(userToUpdate);
 
         //WHEN
-        User userResult = userDalServiceBean.update(userToUpdate);
+        User userResult = userDalService.update(userToUpdate);
         //THEN
         //***********************************************************
         //*****************CHECK MOCK INVOCATION at end**************
@@ -160,10 +166,10 @@ class UserDalServiceBeanTest {
         verify(userRepository, Mockito.times(1)).findById(userToUpdate.getId());
         verify(userRepository, Mockito.times(1)).save(userToUpdate);
 
-        assertEquals(userResult, userToUpdate);
+        assertEquals(userToUpdate, userResult);
     }
 
-    @Order(6)
+    @Order(7)
     @Test
     void delete() {
         //***********************************************************
@@ -173,7 +179,7 @@ class UserDalServiceBeanTest {
         verify(userRepository, Mockito.never()).delete(userToUpdate);
 
         //WHEN
-        userDalServiceBean.delete(userToUpdate.getId());
+        userDalService.delete(userToUpdate.getId());
         //***********************************************************
         //*****************CHECK MOCK INVOCATION at end**************
         //***********************************************************
@@ -181,7 +187,7 @@ class UserDalServiceBeanTest {
         verify(userRepository, Mockito.times(1)).delete(userToUpdate);
     }
 
-    @Order(7)
+    @Order(8)
     @Test
     void deleteAll() {
         //***********************************************************
@@ -190,7 +196,7 @@ class UserDalServiceBeanTest {
         verify(userRepository, Mockito.never()).deleteAll();
 
         //WHEN
-        userDalServiceBean.deleteAll();
+        userDalService.deleteAll();
         //***********************************************************
         //*****************CHECK MOCK INVOCATION at end**************
         //***********************************************************

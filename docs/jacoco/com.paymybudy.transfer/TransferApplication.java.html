@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransferApplication.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">transfer</a> &gt; <a href="index.source.html" class="el_package">com.paymybudy.transfer</a> &gt; <span class="el_source">TransferApplication.java</span></div><h1>TransferApplication.java</h1><pre class="source lang-java linenums">package com.paymybudy.transfer;
+
+import com.paymybudy.transfer.dal.service.*;
+import com.paymybudy.transfer.functionaltest.FunctionalScenario;
+import com.paymybudy.transfer.models.*;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+
+import java.util.Collection;
+import java.util.List;
+
+/**
+ * &lt;b&gt;Main Class of the Application (Root)&lt;/b&gt;
+ */
+//@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+<span class="fc" id="L21">@Slf4j</span>
+@SpringBootApplication
+@EnableConfigurationProperties
+<span class="fc" id="L24">public class TransferApplication implements CommandLineRunner {</span>
+
+	@Autowired
+	private IUserDalService userDalService;
+	@Autowired
+	private FunctionalScenario functionalScenario;
+
+	public static void main(String[] args) {
+<span class="nc" id="L32">		SpringApplication.run(TransferApplication.class, args);</span>
+<span class="nc" id="L33">	}</span>
+
+	@Override
+	public void run(String... args) throws Exception {
+        //Thread.sleep(1000);  --------------------------------------------------&gt; line 1
+<span class="fc" id="L38">		log.info(&quot;All users -&gt; {}&quot;, userDalService.findAll());</span>
+<span class="fc" id="L39">		Thread.sleep(1000);</span>
+<span class="fc" id="L40">		functionalScenario.moneyTransfer();</span>
+		//https://stackoverflow.com/questions/62400654/is-data-sql-disabled-in-spring-boot-2-3-1-release
+<span class="fc" id="L42">	}</span>
+
+	//https://www.tutorialspoint.com/jpa/jpa_entity_relationships.htm
+	//https://programmerfriend.com/spring-boot-integration-testing-done-right/
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

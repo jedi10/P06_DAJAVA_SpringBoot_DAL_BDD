@@ -32,23 +32,22 @@ class AppAccountTest {
         assertEquals(EnumAppAccountStatus.NOTCONFIRMED, appAccount.getAppAccountStatus());
     }
 
-    /**
+
     @Order(2)
     @Test
-    void setAppAccountStatus_Exception() throws Exception {
+    void setAppAccountStatus_Exception() {
         //GIVEN
         String firstName = "bill";
         String lastName = "gates";
         String email = "billgates@vaccinforeveryone.com";
         String password = "bilou666";
         User user = new User(firstName, lastName, email, password);
-        //WHEN
 
-        //THEN
+        //WHEN-THEN
         Exception exception = assertThrows(Exception.class, ()-> {
             new AppAccount(user, EnumAppAccountStatus.CONFIRMED);
         } );
         assertTrue(exception.getMessage().contains(
                 "User Bank Account and User Internal Account have to be created"));
-    }**/
+    }
 }
