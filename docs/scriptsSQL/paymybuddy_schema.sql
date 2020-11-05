@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : mer. 21 oct. 2020 à 17:07
+-- Généré le : jeu. 05 nov. 2020 à 17:30
 -- Version du serveur :  10.4.14-MariaDB
 -- Version de PHP : 7.4.10
 
@@ -98,13 +98,6 @@ CREATE TABLE `hibernate_sequence` (
 -- RELATIONS POUR LA TABLE `hibernate_sequence`:
 --
 
---
--- Déchargement des données de la table `hibernate_sequence`
---
-
-INSERT INTO `hibernate_sequence` (`next_val`) VALUES
-(1);
-
 -- --------------------------------------------------------
 
 --
@@ -186,15 +179,6 @@ CREATE TABLE `user` (
 --       `int_cash_account` -> `int_cash_account_id`
 --
 
---
--- Déchargement des données de la table `user`
---
-
-INSERT INTO `user` (`user_id`, `email`, `first_name`, `last_name`, `password`, `bank_account_fk`, `int_cash_account_fk`) VALUES
-(1, 'tobiac@paymybuddy.com', 'Tobiac', 'Bonterre', 'XXXX', NULL, NULL),
-(2, 'nono@paymybuddy.com', 'Nono', 'Cyborg', 'XXXX', NULL, NULL),
-(3, 'gille@paymybuddy.com', 'Gille', 'Rotchield', 'XXXX', NULL, NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -249,7 +233,8 @@ ALTER TABLE `internal_transaction`
 -- Index pour la table `int_cash_account`
 --
 ALTER TABLE `int_cash_account`
-  ADD PRIMARY KEY (`int_cash_account_id`);
+  ADD PRIMARY KEY (`int_cash_account_id`),
+  ADD UNIQUE KEY `UKmywhexpaculaopjxve6ed8jeo` (`number`);
 
 --
 -- Index pour la table `money_transfer_type`
@@ -312,7 +297,7 @@ ALTER TABLE `int_cash_account`
 -- AUTO_INCREMENT pour la table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- Contraintes pour les tables déchargées
