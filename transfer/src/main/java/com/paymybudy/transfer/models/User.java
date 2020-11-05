@@ -42,13 +42,13 @@ public class User implements Serializable {
     @Column(nullable = false, length = 100)
     private String password;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="bank_account_fk")
     @Getter
     @Setter
     private BankAccount bankAccount;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="int_cash_account_fk")
     @Getter
     @Setter
@@ -64,6 +64,14 @@ public class User implements Serializable {
             name = "user_friends",
             joinColumns = @JoinColumn(name = "user_fk", referencedColumnName = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "friend_fk", referencedColumnName = "user_id"))
+    /*
+    @OneToMany
+    private List<User> friends;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "account_id", referencedColumnName="id")
+
+    */
+
     @Getter
     private List<User> contactList;
 
@@ -124,6 +132,20 @@ public class User implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, email);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", bankAccount=" + bankAccount +
+                ", internalCashAccount=" + internalCashAccount +
+                ", appAccount=" + appAccount +
+                '}';
     }
 }
 

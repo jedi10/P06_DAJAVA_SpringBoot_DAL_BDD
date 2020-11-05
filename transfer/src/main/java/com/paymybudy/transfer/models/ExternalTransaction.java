@@ -7,6 +7,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity(name = "ExternalTransaction")
 @Table(name = "EXTERNAL_TRANSACTION")
@@ -65,6 +66,28 @@ public class ExternalTransaction implements Serializable {
         this.status = status;
         this.accountDebit = accountDebit;
         this.accountCredit = accountCredit;
+        executeExternalTransfer();
+    }
+
+    public void executeExternalTransfer(){
+        if (this.accountDebit != null && this.accountCredit != null){
+            double initialAmount = this.accountCredit.getAmount();
+            this.accountCredit.setAmount( initialAmount + this.amount);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ExternalTransaction)) return false;
+        ExternalTransaction that = (ExternalTransaction) o;
+        return Double.compare(that.amount, amount) == 0 &&
+                Objects.equals(description, that.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(description, amount);
     }
 }
 

@@ -2,18 +2,18 @@ package com.paymybudy.transfer.models;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Entity(name = "InternalCashAccount")
-@Table(name = "INT_CASH_ACCOUNT")
+@Table(name = "INT_CASH_ACCOUNT", uniqueConstraints = @UniqueConstraint(columnNames = "number"))
 @NoArgsConstructor
 public class InternalCashAccount implements Serializable {
 
@@ -41,11 +41,13 @@ public class InternalCashAccount implements Serializable {
     private double amount;
 
     @OneToOne(mappedBy = "internalCashAccount")
+    @Getter
+    @Setter
     private User user;
 
     @OneToMany(mappedBy = "internalCashAccount")
     @Getter
-    private List<MoneyTransfertType> transfertTypeList;
+    private List<MoneyTransferType> transfertTypeList;
     /*
     @OneToMany(targetEntity = InternalTransaction.class, cascade = CascadeType.ALL,
             fetch = FetchType.LAZY, mappedBy = "accountDebit")
@@ -54,8 +56,26 @@ public class InternalCashAccount implements Serializable {
     private List<InternalTransaction> internalTransactionList;*/
 
 
-
+    /**
+     * <b>InternalCashAccount Constructor</b>
+     * @param number account number
+     * @param libelle libelle
+     */
     public InternalCashAccount(String number, String libelle) {
+        this.number = number;
+        this.libelle = libelle;
+        this.amount = 0;
+        setTransfertTypeList(null);
+    }
+
+    /**
+     * <b>internalCashAccount constructor</b>
+     * @param id id
+     * @param number account Number
+     * @param libelle libelle
+     */
+    public InternalCashAccount(Long id, String number, String libelle) {
+        this.id = id;
         this.number = number;
         this.libelle = libelle;
         this.amount = 0;
@@ -70,11 +90,35 @@ public class InternalCashAccount implements Serializable {
         this.amount = this.amount - amount;
     }
 
-    public void setTransfertTypeList(List<MoneyTransfertType> internalList){
+    public void setTransfertTypeList(List<MoneyTransferType> internalList){
         this.transfertTypeList = Optional.ofNullable(internalList)
                 .map(List::stream)
                 .orElseGet(Stream::empty)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof InternalCashAccount)) return false;
+        InternalCashAccount that = (InternalCashAccount) o;
+        return number.equals(that.number);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(number);
+    }
+
+    @Override
+    public String toString() {
+        return "InternalCashAccount{" +
+                "id=" + id +
+                ", number='" + number + '\'' +
+                ", libelle='" + libelle + '\'' +
+                ", currency='" + currency + '\'' +
+                ", amount=" + amount +
+                '}';
     }
 }
 
