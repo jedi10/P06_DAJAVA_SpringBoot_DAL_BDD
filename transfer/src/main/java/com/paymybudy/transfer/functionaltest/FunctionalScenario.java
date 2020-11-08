@@ -18,9 +18,7 @@ public class FunctionalScenario {
     @Autowired
     private IInternalCashAccountDalService internalCashAccountDalService;
     @Autowired
-    private IInternalTransactionDalService internalTransactionDalService;
-    @Autowired
-    private IMoneyTransferTypeDalService moneyTransferTypeDalService;
+    private MoneyTransferService moneyTransferService;
 
     public FunctionalScenario() {
         super();
@@ -41,25 +39,15 @@ public class FunctionalScenario {
             externalTransactionDalService.create(externalTransaction);
             internalCashAccountDalService.update(externalTransaction.getAccountCredit());
 
-            User user2 = user1.getContactList().get(1);
             //User 1 want to give money to User 2
-            InternalTransaction internalTransaction = new InternalTransaction("Paiement service livraison", 500);
-            //Operation creation in DBB
-            internalTransactionDalService.create(internalTransaction);
-            //Attach this transaction with 2 internal Account (one for credit, one for debit)
-            MoneyTransferTypeKey keyDebitOperation = new MoneyTransferTypeKey(user1.getInternalCashAccount().getId(), internalTransaction.getId());
-            MoneyTransferType debitOperation = new MoneyTransferType(keyDebitOperation, user1.getInternalCashAccount(), internalTransaction, false);
-            moneyTransferTypeDalService.create(debitOperation);
-            MoneyTransferTypeKey keyCreditOperation = new MoneyTransferTypeKey(user2.getInternalCashAccount().getId(), internalTransaction.getId());
-            MoneyTransferType creditOperation = new MoneyTransferType(keyCreditOperation, user2.getInternalCashAccount(), internalTransaction, true);
-            moneyTransferTypeDalService.create(creditOperation);
+            User user2 = user1.getContactList().get(1);
 
-            //Execute Money Transfer
-            internalTransaction.executeTransaction(user1.getInternalCashAccount(), user2.getInternalCashAccount());
-            //Save Money Transfer in DBB
-            internalCashAccountDalService.update(user1.getInternalCashAccount());
-            internalCashAccountDalService.update(user2.getInternalCashAccount());
-            internalTransactionDalService.update(internalTransaction);
+            //TRANSACTIONAL FUNCTIONALITY
+            moneyTransferService.sendMoney(user1, user2,
+                    "Paiement service livraison",
+                    500);
         }
     }
 }
+
+//https://o7planning.org/fr/11661/tutoriel-spring-boot-jpa-et-spring-transaction
