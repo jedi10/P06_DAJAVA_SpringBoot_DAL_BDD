@@ -1,10 +1,10 @@
 package com.paymybudy.transfer.exception;
 
-public class InternalMoneyTransferException extends Exception {
+public class IntMoneyTransferExecutionException extends Exception {
 
     private static final long serialVersionUID = -3128681006635769411L;
 
-    public InternalMoneyTransferException(String message) {
+    public IntMoneyTransferExecutionException(String message) {
         super(message);
     }
 }

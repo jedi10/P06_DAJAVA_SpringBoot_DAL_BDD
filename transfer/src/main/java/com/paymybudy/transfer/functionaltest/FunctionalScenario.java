@@ -18,6 +18,8 @@ public class FunctionalScenario {
     @Autowired
     private IInternalCashAccountDalService internalCashAccountDalService;
     @Autowired
+    private IInternalTransactionDalService internalTransactionDalService;
+    @Autowired
     private MoneyTransferService moneyTransferService;
 
     public FunctionalScenario() {
@@ -41,11 +43,12 @@ public class FunctionalScenario {
 
             //User 1 want to give money to User 2
             User user2 = user1.getContactList().get(1);
-
-            //TRANSACTIONAL FUNCTIONALITY
-            moneyTransferService.sendMoney(user1, user2,
-                    "Paiement service livraison",
+            user2.setInternalCashAccount(null);
+            //for this Transaction
+            InternalTransaction internalTransaction = new InternalTransaction("Paiement service livraison",
                     500);
+            //TRANSACTIONAL FUNCTIONALITY
+            moneyTransferService.sendMoney(user1, user2, internalTransaction);
         }
     }
 }

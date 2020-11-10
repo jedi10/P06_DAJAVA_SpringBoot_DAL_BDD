@@ -22,6 +22,7 @@ class InternalTransactionTest {
     void tearDown() {
     }
 
+    /**Test useless because transfer gestion moved to MoneyTransferService
     @Order(1)
     @ParameterizedTest
     @CsvSource({"2000, 1500", "1500.50, 1499.99"})
@@ -37,7 +38,7 @@ class InternalTransactionTest {
                 amountTransferred);
 
         //WHEN
-        transaction.executeTransaction(debitAccount, creditAccount);
+        //transaction.executeTransaction(debitAccount, creditAccount);
 
         //THEN
         assertEquals(EnumTransacStatus.FINISHED ,transaction.getStatus());
@@ -61,11 +62,11 @@ class InternalTransactionTest {
                 amountTransferred);
 
         //WHEN
-        transaction.executeTransaction(debitAccount, creditAccount);
+        //transaction.executeTransaction(debitAccount, creditAccount);
 
         //THEN
         assertEquals(EnumTransacStatus.ABORTED , transaction.getStatus());
         assertEquals(initialAmountForBeneficiary, creditAccount.getAmount());
         assertEquals(initialAmountForDonor, debitAccount.getAmount());
-    }
+    }**/
 }

@@ -79,19 +79,6 @@ public class InternalTransaction implements Serializable {
         this.status = EnumTransacStatus.INITIATED;
     }
 
-    public void executeTransaction(InternalCashAccount debitAccount, InternalCashAccount creditAccount) {
-
-        if (debitAccount.getAmount() >= amount){
-            creditAccount.setAmount(creditAccount.getAmount() + amount);
-            debitAccount.setAmount(debitAccount.getAmount() - amount);
-            setStatus(EnumTransacStatus.FINISHED);
-            setTransactionMessage("Transaction has been executed with success");
-        } else {
-            setStatus(EnumTransacStatus.ABORTED);
-            setTransactionMessage("Not Enough cash to execute transaction");
-        }
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
