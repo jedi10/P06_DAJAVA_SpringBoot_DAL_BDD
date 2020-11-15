@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * <b>Service controls Money transfer between two internal accounts</b>
  * <p>this service uses transactional SQL</p>
@@ -77,41 +81,31 @@ public class MoneyTransferService {
             rollbackFor = IntMoneyTransferPreparationException.class)
     void sendMoneyPreparation(User fromUser, User toUser) throws IntMoneyTransferPreparationException {
 
-        String messageTransactionAborted = null;
-        //check if user have an Internal Account
-        if (fromUser.getInternalCashAccount() == null) {
-            messageTransactionAborted = String.format(
-                    "Internal Cash Account not found for user id: %s",
-                    fromUser.getId());
-            throw new IntMoneyTransferPreparationException(messageTransactionAborted);
-        }
-        if (toUser.getInternalCashAccount() == null){
-            messageTransactionAborted = String.format(
-                    "Internal Cash Account not found for user id: %s",
-                    toUser.getId());
-            throw new IntMoneyTransferPreparationException(messageTransactionAborted);
-        }
+        Map<String, User> map = Map.of("from", fromUser,"to",toUser);
+        //https://mkyong.com/java/how-to-loop-a-map-in-java/
+        for (Map.Entry<String, User> entry : map.entrySet()){
+            String messageTransactionAborted = null;
+            boolean isCredit = !"from".equals(entry.getKey());
 
-        //Attach transaction with internal Account
-        MoneyTransferTypeKey keyDebitOperation = new MoneyTransferTypeKey(fromUser.getInternalCashAccount().getId(), internalTransaction.getId());
-        MoneyTransferType moneyTransferType = new MoneyTransferType(keyDebitOperation, fromUser.getInternalCashAccount(), internalTransaction, false);
-        MoneyTransferType moneyTransferTypeCreated = moneyTransferTypeDalService.create(moneyTransferType);
-        if (moneyTransferTypeCreated == null){
-            messageTransactionAborted = String.format(
-                    "Money Transfer Type can not be created:  %s",
-                    moneyTransferType.toString()
-            );
-            throw new IntMoneyTransferPreparationException(messageTransactionAborted);
-        }
-        MoneyTransferTypeKey keyDebitOperation2 = new MoneyTransferTypeKey(toUser.getInternalCashAccount().getId(), internalTransaction.getId());
-        MoneyTransferType moneyTransferType2 = new MoneyTransferType(keyDebitOperation2, toUser.getInternalCashAccount(), internalTransaction, true);
-        MoneyTransferType moneyTransferTypeCreated2 = moneyTransferTypeDalService.create(moneyTransferType2);
-        if (moneyTransferTypeCreated2 == null){
-            messageTransactionAborted = String.format(
-                    "Money Transfer Type can not be created:  %s",
-                    moneyTransferType.toString()
-            );
-            throw new IntMoneyTransferPreparationException(messageTransactionAborted);
+            //check if user have an Internal Account
+            if (entry.getValue().getInternalCashAccount() == null) {
+                messageTransactionAborted = String.format(
+                        "Internal Cash Account not found for user id: %s",
+                        entry.getValue().getId());
+                throw new IntMoneyTransferPreparationException(messageTransactionAborted);
+
+            }
+            //Attach transaction with internal Account
+            MoneyTransferTypeKey keyDebitOperation = new MoneyTransferTypeKey(entry.getValue().getInternalCashAccount().getId(), internalTransaction.getId());
+            MoneyTransferType moneyTransferType = new MoneyTransferType(keyDebitOperation, entry.getValue().getInternalCashAccount(), internalTransaction, isCredit);
+            MoneyTransferType moneyTransferTypeCreated = moneyTransferTypeDalService.create(moneyTransferType);
+            if (moneyTransferTypeCreated == null){
+                messageTransactionAborted = String.format(
+                        "Money Transfer Type can not be created:  %s",
+                        moneyTransferType.toString()
+                );
+                throw new IntMoneyTransferPreparationException(messageTransactionAborted);
+            }
         }
     }
 

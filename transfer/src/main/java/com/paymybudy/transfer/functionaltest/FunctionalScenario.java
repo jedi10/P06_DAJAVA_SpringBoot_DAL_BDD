@@ -26,9 +26,24 @@ public class FunctionalScenario {
         super();
     }
 
-    public void moneyTransfer() throws Exception {
+    public void internalMoneyTransfer() throws Exception {
         List<User> userList = (List<User>) userDalService.findAll();
         if (userList != null && userList.size() > 1){
+            User user1 = userDalService.findByEmail(userList.get(0).getEmail());
+            //User 1 want to give money to User 2
+            User user2 = user1.getContactList().get(1);
+            //user2.setInternalCashAccount(null);
+            //for this Transaction
+            InternalTransaction internalTransaction = new InternalTransaction("Paiement service livraison",
+                    500);
+            //TRANSACTIONAL FUNCTIONALITY
+            moneyTransferService.sendMoney(user1, user2, internalTransaction);
+        }
+    }
+
+    public void addExternalCashToInternalAccount(){
+        List<User> userList = (List<User>) userDalService.findAll();
+        if (userList != null && userList.size() > 1) {
             User user1 = userDalService.findByEmail(userList.get(0).getEmail());
             //USER 1 want to credit his internal Account
             ExternalTransaction externalTransaction = new ExternalTransaction(
@@ -40,15 +55,6 @@ public class FunctionalScenario {
             //Save transaction in DBB
             externalTransactionDalService.create(externalTransaction);
             internalCashAccountDalService.update(externalTransaction.getAccountCredit());
-
-            //User 1 want to give money to User 2
-            User user2 = user1.getContactList().get(1);
-            user2.setInternalCashAccount(null);
-            //for this Transaction
-            InternalTransaction internalTransaction = new InternalTransaction("Paiement service livraison",
-                    500);
-            //TRANSACTIONAL FUNCTIONALITY
-            moneyTransferService.sendMoney(user1, user2, internalTransaction);
         }
     }
 }
