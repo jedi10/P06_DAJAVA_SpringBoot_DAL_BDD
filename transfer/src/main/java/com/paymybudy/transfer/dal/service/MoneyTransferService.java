@@ -182,6 +182,11 @@ public class MoneyTransferService {
     }
 }
 
+//https://www.marcobehler.com/guides/spring-transaction-management-transactional-in-depth
+//https://www.baeldung.com/java-transactions
+//https://www.baeldung.com/java-synchronized
+//https://winterbe.com/posts/2015/04/30/java8-concurrency-tutorial-synchronized-locks-examples/
+//https://mkyong.com/java/how-to-loop-a-map-in-java/
 
 //https://www.baeldung.com/spring-transactional-propagation-isolation
 //https://o7planning.org/fr/11661/tutoriel-spring-boot-jpa-et-spring-transaction
