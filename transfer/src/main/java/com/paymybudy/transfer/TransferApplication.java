@@ -32,7 +32,7 @@ public class TransferApplication implements CommandLineRunner {
         //Thread.sleep(1000);  --------------------------------------------------> line 1
 		log.info("All users -> {}", userDalService.findAll());
 		Thread.sleep(1000);
-		functionalScenario.addExternalCashToInternalAccount();
+		//functionalScenario.addExternalCashToInternalAccount();
 		functionalScenario.internalMoneyTransfer();
 		//https://stackoverflow.com/questions/62400654/is-data-sql-disabled-in-spring-boot-2-3-1-release
 	}

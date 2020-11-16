@@ -238,7 +238,7 @@ class MoneyTransferServiceTest {
         assertTrue(exception.getMessage().contains(
                 "Amount can't be updated for cash account id:"));
         assertEquals(debitAccount-transfer, fromUser.getInternalCashAccount().getAmount());
-        assertNotEquals(creditAccount+transfer, toUser.getInternalCashAccount().getAmount());
+        assertEquals(creditAccount+transfer, toUser.getInternalCashAccount().getAmount());
 
         //***********************************************************
         //****************CHECK MOCK INVOCATION at end***************

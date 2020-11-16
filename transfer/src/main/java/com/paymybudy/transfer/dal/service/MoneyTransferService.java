@@ -93,12 +93,10 @@ public class MoneyTransferService {
         checkPreparationMoneyTransferTypeDBBCreation(moneyTransferTypeCreated, moneyTransferType);
     }
 
-    void checkPreparationMoneyTransferTypeDBBCreation(
-            MoneyTransferType moneyTransferTypeCreated,
+    void checkPreparationMoneyTransferTypeDBBCreation(MoneyTransferType moneyTransferTypeCreated,
             MoneyTransferType moneyTransferType) throws IntMoneyTransferPreparationException {
-        String messageTransactionAborted = null;
         if (moneyTransferTypeCreated == null){
-            messageTransactionAborted = String.format(
+            String messageTransactionAborted = String.format(
                     "Money Transfer Type can not be created:  %s",
                     moneyTransferType.toString()
             );
@@ -108,10 +106,9 @@ public class MoneyTransferService {
 
     MoneyTransferType preparationMoneyTransferType(
             User user, boolean isCredit) throws IntMoneyTransferPreparationException {
-        String messageTransactionAborted = null;
         //check if user have an Internal Account
         if (user.getInternalCashAccount() == null) {
-            messageTransactionAborted = String.format(
+            String messageTransactionAborted = String.format(
                     "Internal Cash Account not found for user id: %s",
                     user.getId());
             throw new IntMoneyTransferPreparationException(messageTransactionAborted);
@@ -138,9 +135,28 @@ public class MoneyTransferService {
         //Money Transfer
         addAmount(fromUser, false);
         addAmount(toUser,true);
+
+        //Save Money Transfer in DBB
+        InternalCashAccount internalCashAccountUpdated = internalCashAccountDalService.update(fromUser.getInternalCashAccount());
+        checkExecutionCashAccountUpdate(internalCashAccountUpdated, fromUser);
+
+        InternalCashAccount internalCashAccountUpdated2 = internalCashAccountDalService.update(toUser.getInternalCashAccount());
+        checkExecutionCashAccountUpdate(internalCashAccountUpdated2, toUser);
+
         updateTransactionStatus(
                 "Transaction has been executed with success",
                 EnumTransacStatus.FINISHED);
+    }
+
+    void checkExecutionCashAccountUpdate(InternalCashAccount internalCashAccountUpdated,
+                                         User user) throws IntMoneyTransferExecutionException {
+        if (internalCashAccountUpdated == null){
+            String messageTransactionAborted = String.format(
+                    "Amount can't be updated for cash account id: %s",
+                    user.getInternalCashAccount().getId()
+            );
+            throw new IntMoneyTransferExecutionException(messageTransactionAborted);
+        }
     }
 
     /**
@@ -150,7 +166,7 @@ public class MoneyTransferService {
      * @throws IntMoneyTransferExecutionException specific exception for money transfer execution
      */
     // MANDATORY: Transaction must be created before.
-    @Transactional(propagation = Propagation.MANDATORY )
+    //@Transactional(propagation = Propagation.MANDATORY )
     void addAmount(User user, boolean isCredit) throws IntMoneyTransferExecutionException {
         //Execute Money Transfer
         double newBalance = 0;
@@ -167,17 +183,7 @@ public class MoneyTransferService {
                 throw new IntMoneyTransferExecutionException(messageTransactionAborted);
             }
         }
-
         user.getInternalCashAccount().setAmount(newBalance);
-        //Save Money Transfer in DBB
-        InternalCashAccount internalCashAccountUpdated = internalCashAccountDalService.update(user.getInternalCashAccount());
-        if (internalCashAccountUpdated == null){
-            String messageTransactionAborted = String.format(
-                    "Amount can't be updated for cash account id: %s",
-                    user.getInternalCashAccount().getId()
-            );
-            throw new IntMoneyTransferExecutionException(messageTransactionAborted);
-        }
     }
 
     private void updateTransactionStatus(String message, EnumTransacStatus status) throws IntMoneyTransferExecutionException {
