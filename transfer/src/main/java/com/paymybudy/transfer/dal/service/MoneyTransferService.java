@@ -80,33 +80,45 @@ public class MoneyTransferService {
     @Transactional(propagation = Propagation.REQUIRES_NEW,
             rollbackFor = IntMoneyTransferPreparationException.class)
     void sendMoneyPreparation(User fromUser, User toUser) throws IntMoneyTransferPreparationException {
+        //for debit user
+        MoneyTransferType moneyTransferType = preparationMoneyTransferType(fromUser, false);
+        //for credit user
+        MoneyTransferType moneyTransferType2 = preparationMoneyTransferType(toUser, true);
 
-        Map<String, User> map = Map.of("from", fromUser,"to",toUser);
-        //https://mkyong.com/java/how-to-loop-a-map-in-java/
-        for (Map.Entry<String, User> entry : map.entrySet()){
-            String messageTransactionAborted = null;
-            boolean isCredit = !"from".equals(entry.getKey());
+        //MoneyTransferType DBB Creation
+        MoneyTransferType moneyTransferTypeCreated = moneyTransferTypeDalService.create(moneyTransferType);
+        checkPreparationMoneyTransferTypeDBBCreation(moneyTransferTypeCreated, moneyTransferType);
 
-            //check if user have an Internal Account
-            if (entry.getValue().getInternalCashAccount() == null) {
-                messageTransactionAborted = String.format(
-                        "Internal Cash Account not found for user id: %s",
-                        entry.getValue().getId());
-                throw new IntMoneyTransferPreparationException(messageTransactionAborted);
+        moneyTransferTypeCreated = moneyTransferTypeDalService.create(moneyTransferType2);
+        checkPreparationMoneyTransferTypeDBBCreation(moneyTransferTypeCreated, moneyTransferType);
+    }
 
-            }
-            //Attach transaction with internal Account
-            MoneyTransferTypeKey keyDebitOperation = new MoneyTransferTypeKey(entry.getValue().getInternalCashAccount().getId(), internalTransaction.getId());
-            MoneyTransferType moneyTransferType = new MoneyTransferType(keyDebitOperation, entry.getValue().getInternalCashAccount(), internalTransaction, isCredit);
-            MoneyTransferType moneyTransferTypeCreated = moneyTransferTypeDalService.create(moneyTransferType);
-            if (moneyTransferTypeCreated == null){
-                messageTransactionAborted = String.format(
-                        "Money Transfer Type can not be created:  %s",
-                        moneyTransferType.toString()
-                );
-                throw new IntMoneyTransferPreparationException(messageTransactionAborted);
-            }
+    void checkPreparationMoneyTransferTypeDBBCreation(
+            MoneyTransferType moneyTransferTypeCreated,
+            MoneyTransferType moneyTransferType) throws IntMoneyTransferPreparationException {
+        String messageTransactionAborted = null;
+        if (moneyTransferTypeCreated == null){
+            messageTransactionAborted = String.format(
+                    "Money Transfer Type can not be created:  %s",
+                    moneyTransferType.toString()
+            );
+            throw new IntMoneyTransferPreparationException(messageTransactionAborted);
         }
+    }
+
+    MoneyTransferType preparationMoneyTransferType(
+            User user, boolean isCredit) throws IntMoneyTransferPreparationException {
+        String messageTransactionAborted = null;
+        //check if user have an Internal Account
+        if (user.getInternalCashAccount() == null) {
+            messageTransactionAborted = String.format(
+                    "Internal Cash Account not found for user id: %s",
+                    user.getId());
+            throw new IntMoneyTransferPreparationException(messageTransactionAborted);
+        }
+        //Attach transaction with internal Account
+        MoneyTransferTypeKey keyDebitOperation = new MoneyTransferTypeKey(user.getInternalCashAccount().getId(), internalTransaction.getId());
+        return new MoneyTransferType(keyDebitOperation, user.getInternalCashAccount(), internalTransaction, isCredit);
     }
 
     /**
