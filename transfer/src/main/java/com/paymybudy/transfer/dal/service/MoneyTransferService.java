@@ -36,7 +36,14 @@ public class MoneyTransferService {
 
     /**
      * <b>Send Money from one to another user</b>
-     * <p>first step: transaction creation</p>
+     * <p>Different Steps</p>
+     * <ul>
+     *    <li>transaction creation</li>
+     *    <li>check internal accounts existence</li>
+     *    <li>build MoneyTransferType for credit and debit (transactional)</li>
+     *    <li>add and remove credit (transactional)</li>
+     *    <li>update transaction status</li>
+     * </ul>
      * @param fromUser user wants to give money
      * @param toUser user will received money
      * @param internalTransaction transaction relative
@@ -74,7 +81,7 @@ public class MoneyTransferService {
      * </ul>
      * @param fromUser user wants to give money
      * @param toUser user will received money
-     * @throws IntMoneyTransferPreparationException specific exception for preparation of the money transfer
+     * @throws Exception specific exception for preparation of the money transfer
      */
     // Do not catch Exception in this method
     @Transactional(propagation = Propagation.REQUIRES_NEW,
@@ -128,7 +135,7 @@ public class MoneyTransferService {
      * </ul>
      * @param fromUser user wants to give money
      * @param toUser user will received money
-     * @throws IntMoneyTransferExecutionException specific exception for money transfer execution
+     * @throws Exception specific exception for money transfer execution
      */
     // Do not catch Exception in this method
     @Transactional(propagation = Propagation.REQUIRES_NEW,
