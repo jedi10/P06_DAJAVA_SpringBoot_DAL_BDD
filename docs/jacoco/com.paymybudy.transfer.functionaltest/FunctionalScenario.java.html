@@ -20,47 +20,44 @@ public class FunctionalScenario {
     @Autowired
     private IInternalTransactionDalService internalTransactionDalService;
     @Autowired
-    private IMoneyTransferTypeDalService moneyTransferTypeDalService;
+    private MoneyTransferService moneyTransferService;
 
     public FunctionalScenario() {
 <span class="fc" id="L26">        super();</span>
 <span class="fc" id="L27">    }</span>
 
-    public void moneyTransfer() throws Exception {
+    public void internalMoneyTransfer() throws Exception {
 <span class="fc" id="L30">        List&lt;User&gt; userList = (List&lt;User&gt;) userDalService.findAll();</span>
 <span class="pc bpc" id="L31" title="2 of 4 branches missed.">        if (userList != null &amp;&amp; userList.size() &gt; 1){</span>
 <span class="nc" id="L32">            User user1 = userDalService.findByEmail(userList.get(0).getEmail());</span>
+            //User 1 want to give money to User 2
+<span class="nc" id="L34">            User user2 = user1.getContactList().get(1);</span>
+            //user2.setInternalCashAccount(null);
+            //for this Transaction
+<span class="nc" id="L37">            InternalTransaction internalTransaction = new InternalTransaction(&quot;Paiement service livraison&quot;,</span>
+                    500);
+            //TRANSACTIONAL FUNCTIONALITY
+<span class="nc" id="L40">            moneyTransferService.sendMoney(user1, user2, internalTransaction);</span>
+        }
+<span class="fc" id="L42">    }</span>
+
+    public void addExternalCashToInternalAccount(){
+<span class="nc" id="L45">        List&lt;User&gt; userList = (List&lt;User&gt;) userDalService.findAll();</span>
+<span class="nc bnc" id="L46" title="All 4 branches missed.">        if (userList != null &amp;&amp; userList.size() &gt; 1) {</span>
+<span class="nc" id="L47">            User user1 = userDalService.findByEmail(userList.get(0).getEmail());</span>
             //USER 1 want to credit his internal Account
-<span class="nc" id="L34">            ExternalTransaction externalTransaction = new ExternalTransaction(</span>
+<span class="nc" id="L49">            ExternalTransaction externalTransaction = new ExternalTransaction(</span>
                     &quot;Approvisionnement&quot;,
                     1000,
                     EnumTransacStatus.FINISHED,
-<span class="nc" id="L38">                    user1.getBankAccount(),</span>
-<span class="nc" id="L39">                    user1.getInternalCashAccount());</span>
+<span class="nc" id="L53">                    user1.getBankAccount(),</span>
+<span class="nc" id="L54">                    user1.getInternalCashAccount());</span>
             //Save transaction in DBB
-<span class="nc" id="L41">            externalTransactionDalService.create(externalTransaction);</span>
-<span class="nc" id="L42">            internalCashAccountDalService.update(externalTransaction.getAccountCredit());</span>
-
-<span class="nc" id="L44">            User user2 = user1.getContactList().get(1);</span>
-            //User 1 want to give money to User 2
-<span class="nc" id="L46">            InternalTransaction internalTransaction = new InternalTransaction(&quot;Paiement service livraison&quot;, 500);</span>
-            //Operation creation in DBB
-<span class="nc" id="L48">            internalTransactionDalService.create(internalTransaction);</span>
-            //Attach this transaction with 2 internal Account (one for credit, one for debit)
-<span class="nc" id="L50">            MoneyTransferTypeKey keyDebitOperation = new MoneyTransferTypeKey(user1.getInternalCashAccount().getId(), internalTransaction.getId());</span>
-<span class="nc" id="L51">            MoneyTransferType debitOperation = new MoneyTransferType(keyDebitOperation, user1.getInternalCashAccount(), internalTransaction, false);</span>
-<span class="nc" id="L52">            moneyTransferTypeDalService.create(debitOperation);</span>
-<span class="nc" id="L53">            MoneyTransferTypeKey keyCreditOperation = new MoneyTransferTypeKey(user2.getInternalCashAccount().getId(), internalTransaction.getId());</span>
-<span class="nc" id="L54">            MoneyTransferType creditOperation = new MoneyTransferType(keyCreditOperation, user2.getInternalCashAccount(), internalTransaction, true);</span>
-<span class="nc" id="L55">            moneyTransferTypeDalService.create(creditOperation);</span>
-
-            //Execute Money Transfer
-<span class="nc" id="L58">            internalTransaction.executeTransaction(user1.getInternalCashAccount(), user2.getInternalCashAccount());</span>
-            //Save Money Transfer in DBB
-<span class="nc" id="L60">            internalCashAccountDalService.update(user1.getInternalCashAccount());</span>
-<span class="nc" id="L61">            internalCashAccountDalService.update(user2.getInternalCashAccount());</span>
-<span class="nc" id="L62">            internalTransactionDalService.update(internalTransaction);</span>
+<span class="nc" id="L56">            externalTransactionDalService.create(externalTransaction);</span>
+<span class="nc" id="L57">            internalCashAccountDalService.update(externalTransaction.getAccountCredit());</span>
         }
-<span class="fc" id="L64">    }</span>
+<span class="nc" id="L59">    }</span>
 }
+
+//https://o7planning.org/fr/11661/tutoriel-spring-boot-jpa-et-spring-transaction
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

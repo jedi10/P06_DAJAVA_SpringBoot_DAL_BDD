@@ -2,26 +2,21 @@
 
 import com.paymybudy.transfer.dal.service.*;
 import com.paymybudy.transfer.functionaltest.FunctionalScenario;
-import com.paymybudy.transfer.models.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * &lt;b&gt;Main Class of the Application (Root)&lt;/b&gt;
  */
 //@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-<span class="fc" id="L21">@Slf4j</span>
+<span class="fc" id="L16">@Slf4j</span>
 @SpringBootApplication
 @EnableConfigurationProperties
-<span class="fc" id="L24">public class TransferApplication implements CommandLineRunner {</span>
+<span class="fc" id="L19">public class TransferApplication implements CommandLineRunner {</span>
 
 	@Autowired
 	private IUserDalService userDalService;
@@ -29,17 +24,18 @@ import java.util.List;
 	private FunctionalScenario functionalScenario;
 
 	public static void main(String[] args) {
-<span class="nc" id="L32">		SpringApplication.run(TransferApplication.class, args);</span>
-<span class="nc" id="L33">	}</span>
+<span class="nc" id="L27">		SpringApplication.run(TransferApplication.class, args);</span>
+<span class="nc" id="L28">	}</span>
 
 	@Override
 	public void run(String... args) throws Exception {
         //Thread.sleep(1000);  --------------------------------------------------&gt; line 1
-<span class="fc" id="L38">		log.info(&quot;All users -&gt; {}&quot;, userDalService.findAll());</span>
-<span class="fc" id="L39">		Thread.sleep(1000);</span>
-<span class="fc" id="L40">		functionalScenario.moneyTransfer();</span>
+<span class="fc" id="L33">		log.info(&quot;All users -&gt; {}&quot;, userDalService.findAll());</span>
+<span class="fc" id="L34">		Thread.sleep(1000);</span>
+		//functionalScenario.addExternalCashToInternalAccount();
+<span class="fc" id="L36">		functionalScenario.internalMoneyTransfer();</span>
 		//https://stackoverflow.com/questions/62400654/is-data-sql-disabled-in-spring-boot-2-3-1-release
-<span class="fc" id="L42">	}</span>
+<span class="fc" id="L38">	}</span>
 
 	//https://www.tutorialspoint.com/jpa/jpa_entity_relationships.htm
 	//https://programmerfriend.com/spring-boot-integration-testing-done-right/

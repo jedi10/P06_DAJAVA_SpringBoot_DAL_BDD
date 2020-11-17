@@ -44,12 +44,12 @@ public class MoneyTransferType implements Serializable {
     public MoneyTransferType(MoneyTransferTypeKey key,
                 InternalCashAccount internalCashAccount,
                 InternalTransaction internalTransaction,
-<span class="nc" id="L47">                boolean isCredit) {</span>
-<span class="nc" id="L48">        this.id = key;</span>
-<span class="nc" id="L49">        this.internalCashAccount = internalCashAccount;</span>
-<span class="nc" id="L50">        this.internalTransaction = internalTransaction;</span>
-<span class="nc" id="L51">        this.isCredit = isCredit;</span>
-<span class="nc" id="L52">    }</span>
+<span class="fc" id="L47">                boolean isCredit) {</span>
+<span class="fc" id="L48">        this.id = key;</span>
+<span class="fc" id="L49">        this.internalCashAccount = internalCashAccount;</span>
+<span class="fc" id="L50">        this.internalTransaction = internalTransaction;</span>
+<span class="fc" id="L51">        this.isCredit = isCredit;</span>
+<span class="fc" id="L52">    }</span>
 
     public MoneyTransferType(InternalCashAccount internalCashAccount,
                              InternalTransaction internalTransaction,
@@ -71,7 +71,7 @@ public class MoneyTransferType implements Serializable {
 
     @Override
     public int hashCode() {
-<span class="nc" id="L74">        return Objects.hash(id, internalCashAccount, internalTransaction);</span>
+<span class="fc" id="L74">        return Objects.hash(id, internalCashAccount, internalTransaction);</span>
     }
 }
 
