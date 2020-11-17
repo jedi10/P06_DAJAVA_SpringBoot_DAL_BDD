@@ -78,8 +78,8 @@ public class MoneyTransferService {
      */
     // Do not catch Exception in this method
     @Transactional(propagation = Propagation.REQUIRES_NEW,
-            rollbackFor = IntMoneyTransferPreparationException.class)
-    void sendMoneyPreparation(User fromUser, User toUser) throws IntMoneyTransferPreparationException {
+            rollbackFor = {IntMoneyTransferPreparationException.class, Exception.class})
+    void sendMoneyPreparation(User fromUser, User toUser) throws Exception {
         //for debit user
         MoneyTransferType moneyTransferType = preparationMoneyTransferType(fromUser, false);
         //for credit user
@@ -89,10 +89,11 @@ public class MoneyTransferService {
         MoneyTransferType moneyTransferTypeCreated = moneyTransferTypeDalService.create(moneyTransferType);
         checkPreparationMoneyTransferTypeDBBCreation(moneyTransferTypeCreated, moneyTransferType);
 
-        moneyTransferTypeCreated = moneyTransferTypeDalService.create(moneyTransferType2);
-        checkPreparationMoneyTransferTypeDBBCreation(moneyTransferTypeCreated, moneyTransferType);
+        MoneyTransferType moneyTransferTypeCreated2 = moneyTransferTypeDalService.create(moneyTransferType2);
+        checkPreparationMoneyTransferTypeDBBCreation(moneyTransferTypeCreated2, moneyTransferType2);
     }
 
+    @Transactional(propagation = Propagation.MANDATORY )
     void checkPreparationMoneyTransferTypeDBBCreation(MoneyTransferType moneyTransferTypeCreated,
             MoneyTransferType moneyTransferType) throws IntMoneyTransferPreparationException {
         if (moneyTransferTypeCreated == null){
@@ -104,6 +105,7 @@ public class MoneyTransferService {
         }
     }
 
+    @Transactional(propagation = Propagation.MANDATORY )
     MoneyTransferType preparationMoneyTransferType(
             User user, boolean isCredit) throws IntMoneyTransferPreparationException {
         //check if user have an Internal Account
@@ -130,8 +132,8 @@ public class MoneyTransferService {
      */
     // Do not catch Exception in this method
     @Transactional(propagation = Propagation.REQUIRES_NEW,
-            rollbackFor = IntMoneyTransferExecutionException.class)
-    void sendMoneyExecution(User fromUser, User toUser) throws IntMoneyTransferExecutionException {
+            rollbackFor = {IntMoneyTransferExecutionException.class, Exception.class})
+    void sendMoneyExecution(User fromUser, User toUser) throws Exception {
         //Money Transfer
         addAmount(fromUser, false);
         addAmount(toUser,true);
@@ -148,6 +150,7 @@ public class MoneyTransferService {
                 EnumTransacStatus.FINISHED);
     }
 
+    @Transactional(propagation = Propagation.MANDATORY )
     void checkExecutionCashAccountUpdate(InternalCashAccount internalCashAccountUpdated,
                                          User user) throws IntMoneyTransferExecutionException {
         if (internalCashAccountUpdated == null){
@@ -166,7 +169,7 @@ public class MoneyTransferService {
      * @throws IntMoneyTransferExecutionException specific exception for money transfer execution
      */
     // MANDATORY: Transaction must be created before.
-    //@Transactional(propagation = Propagation.MANDATORY )
+    @Transactional(propagation = Propagation.MANDATORY )
     void addAmount(User user, boolean isCredit) throws IntMoneyTransferExecutionException {
         //Execute Money Transfer
         double newBalance = 0;

@@ -144,7 +144,7 @@ class MoneyTransferServiceTest {
 
     @Order(4)
     @Test
-    void sendMoney2_moneyTransferType_creation_success() throws IntMoneyTransferPreparationException {
+    void sendMoney2_moneyTransferType_creation_success() throws Exception {
         //GIVEN
         fromUser.getInternalCashAccount().setAmount(500);
         toUser.getInternalCashAccount().setAmount(1000);
@@ -252,7 +252,7 @@ class MoneyTransferServiceTest {
     @CsvSource({"1500, 1000, 1500","590.9, -500, 199.7"})
     void sendMoney3_cashAccount_update_success(double debitAccount,
                                                double creditAccount,
-                                              double transfer) throws IntMoneyTransferExecutionException {
+                                              double transfer) throws Exception {
         //GIVEN
         fromUser.getInternalCashAccount().setAmount(debitAccount);
         toUser.getInternalCashAccount().setAmount(creditAccount);
