@@ -50,8 +50,8 @@ public class User implements Serializable {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name=&quot;int_cash_account_fk&quot;)
-<span class="nc" id="L53">    @Getter</span>
-<span class="nc" id="L54">    @Setter</span>
+<span class="fc" id="L53">    @Getter</span>
+<span class="fc" id="L54">    @Setter</span>
     private InternalCashAccount internalCashAccount;
 
     @OneToOne(mappedBy = &quot;user&quot;)

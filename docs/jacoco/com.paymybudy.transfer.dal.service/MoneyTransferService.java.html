@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MoneyTransferService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">transfer</a> &gt; <a href="index.source.html" class="el_package">com.paymybudy.transfer.dal.service</a> &gt; <span class="el_source">MoneyTransferService.java</span></div><h1>MoneyTransferService.java</h1><pre class="source lang-java linenums">package com.paymybudy.transfer.dal.service;
+
+import com.paymybudy.transfer.exception.IntMoneyTransferExecutionException;
+import com.paymybudy.transfer.exception.IntMoneyTransferPreparationException;
+import com.paymybudy.transfer.models.*;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * &lt;b&gt;Service controls Money transfer between two internal accounts&lt;/b&gt;
+ * &lt;p&gt;this service uses transactional SQL&lt;/p&gt;
+ */
+@Service
+public class MoneyTransferService {
+
+
+    private IInternalCashAccountDalService internalCashAccountDalService;
+    private IInternalTransactionDalService internalTransactionDalService;
+    private IMoneyTransferTypeDalService moneyTransferTypeDalService;
+
+    InternalTransaction internalTransaction;
+
+    public MoneyTransferService(IInternalCashAccountDalService internalCashAccountDalService,
+                                IInternalTransactionDalService internalTransactionDalService,
+<span class="fc" id="L30">                                IMoneyTransferTypeDalService moneyTransferTypeDalService) {</span>
+<span class="fc" id="L31">        this.internalCashAccountDalService = internalCashAccountDalService;</span>
+<span class="fc" id="L32">        this.internalTransactionDalService = internalTransactionDalService;</span>
+<span class="fc" id="L33">        this.moneyTransferTypeDalService = moneyTransferTypeDalService;</span>
+<span class="fc" id="L34">    }</span>
+
+
+    /**
+     * &lt;b&gt;Send Money from one to another user&lt;/b&gt;
+     * &lt;p&gt;Different Steps&lt;/p&gt;
+     * &lt;ul&gt;
+     *    &lt;li&gt;transaction creation&lt;/li&gt;
+     *    &lt;li&gt;check internal accounts existence&lt;/li&gt;
+     *    &lt;li&gt;build MoneyTransferType for credit and debit (transactional)&lt;/li&gt;
+     *    &lt;li&gt;add and remove credit (transactional)&lt;/li&gt;
+     *    &lt;li&gt;update transaction status&lt;/li&gt;
+     * &lt;/ul&gt;
+     * @param fromUser user wants to give money
+     * @param toUser user will received money
+     * @param internalTransaction transaction relative
+     * @throws Exception exception
+     */
+    public void sendMoney(User fromUser, User toUser, InternalTransaction internalTransaction) throws Exception {
+        //Transaction
+<span class="fc" id="L54">        this.internalTransaction = internalTransaction;</span>
+        //save in DBB
+<span class="fc" id="L56">        InternalTransaction internalTransactionCreated = internalTransactionDalService.create(internalTransaction);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        if (internalTransactionCreated == null) {</span>
+<span class="fc" id="L58">            String messageTransactionAborted = String.format(</span>
+                    &quot;internalTransaction can not be created: %s&quot;,
+<span class="fc" id="L60">                    internalTransaction.toString()</span>
+            );
+<span class="fc" id="L62">            updateTransactionStatus(messageTransactionAborted, EnumTransacStatus.ABORTED);</span>
+<span class="fc" id="L63">            throw new IntMoneyTransferPreparationException(messageTransactionAborted);</span>
+        }
+        try {
+            //MoneyTransfer Preparation
+<span class="nc" id="L67">            sendMoneyPreparation(fromUser, toUser);</span>
+            //Money Transfer Execution
+<span class="nc" id="L69">            sendMoneyExecution(fromUser, toUser);</span>
+<span class="fc" id="L70">        } catch (Exception e) {</span>
+<span class="fc" id="L71">            updateTransactionStatus(e.getMessage(), EnumTransacStatus.ABORTED);</span>
+<span class="fc" id="L72">            throw e;</span>
+<span class="nc" id="L73">        }</span>
+<span class="nc" id="L74">    }</span>
+
+    /**
+     * &lt;b&gt;Check transfer Money mandatory component &lt;/b&gt;
+     * &lt;ul&gt;
+     *     &lt;li&gt;check internal accounts existence,&lt;/li&gt;
+     *     &lt;li&gt;build MoneyTransferType for credit and debit (transactional)&lt;/li&gt;
+     * &lt;/ul&gt;
+     * @param fromUser user wants to give money
+     * @param toUser user will received money
+     * @throws Exception specific exception for preparation of the money transfer
+     */
+    // Do not catch Exception in this method
+    @Transactional(propagation = Propagation.REQUIRES_NEW,
+            rollbackFor = {IntMoneyTransferPreparationException.class, Exception.class})
+    void sendMoneyPreparation(User fromUser, User toUser) throws Exception {
+        //for debit user
+<span class="fc" id="L91">        MoneyTransferType moneyTransferType = preparationMoneyTransferType(fromUser, false);</span>
+        //for credit user
+<span class="fc" id="L93">        MoneyTransferType moneyTransferType2 = preparationMoneyTransferType(toUser, true);</span>
+
+        //MoneyTransferType DBB Creation
+<span class="fc" id="L96">        MoneyTransferType moneyTransferTypeCreated = moneyTransferTypeDalService.create(moneyTransferType);</span>
+<span class="fc" id="L97">        checkPreparationMoneyTransferTypeDBBCreation(moneyTransferTypeCreated, moneyTransferType);</span>
+
+<span class="fc" id="L99">        MoneyTransferType moneyTransferTypeCreated2 = moneyTransferTypeDalService.create(moneyTransferType2);</span>
+<span class="fc" id="L100">        checkPreparationMoneyTransferTypeDBBCreation(moneyTransferTypeCreated2, moneyTransferType2);</span>
+<span class="fc" id="L101">    }</span>
+
+    @Transactional(propagation = Propagation.MANDATORY )
+    void checkPreparationMoneyTransferTypeDBBCreation(MoneyTransferType moneyTransferTypeCreated,
+            MoneyTransferType moneyTransferType) throws IntMoneyTransferPreparationException {
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        if (moneyTransferTypeCreated == null){</span>
+<span class="fc" id="L107">            String messageTransactionAborted = String.format(</span>
+                    &quot;Money Transfer Type can not be created:  %s&quot;,
+<span class="fc" id="L109">                    moneyTransferType.toString()</span>
+            );
+<span class="fc" id="L111">            throw new IntMoneyTransferPreparationException(messageTransactionAborted);</span>
+        }
+<span class="fc" id="L113">    }</span>
+
+    @Transactional(propagation = Propagation.MANDATORY )
+    MoneyTransferType preparationMoneyTransferType(
+            User user, boolean isCredit) throws IntMoneyTransferPreparationException {
+        //check if user have an Internal Account
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        if (user.getInternalCashAccount() == null) {</span>
+<span class="fc" id="L120">            String messageTransactionAborted = String.format(</span>
+                    &quot;Internal Cash Account not found for user id: %s&quot;,
+<span class="fc" id="L122">                    user.getId());</span>
+<span class="fc" id="L123">            throw new IntMoneyTransferPreparationException(messageTransactionAborted);</span>
+        }
+        //Attach transaction with internal Account
+<span class="fc" id="L126">        MoneyTransferTypeKey keyDebitOperation = new MoneyTransferTypeKey(user.getInternalCashAccount().getId(), internalTransaction.getId());</span>
+<span class="fc" id="L127">        return new MoneyTransferType(keyDebitOperation, user.getInternalCashAccount(), internalTransaction, isCredit);</span>
+    }
+
+    /**
+     * &lt;b&gt;Money transfer execution, main method&lt;/b&gt;
+     * &lt;ul&gt;
+     *     &lt;li&gt;add and remove credit (transactional)&lt;/li&gt;
+     *     &lt;li&gt;update transaction status if transfer OK&lt;/li&gt;
+     * &lt;/ul&gt;
+     * @param fromUser user wants to give money
+     * @param toUser user will received money
+     * @throws Exception specific exception for money transfer execution
+     */
+    // Do not catch Exception in this method
+    @Transactional(propagation = Propagation.REQUIRES_NEW,
+            rollbackFor = {IntMoneyTransferExecutionException.class, Exception.class})
+    void sendMoneyExecution(User fromUser, User toUser) throws Exception {
+        //Money Transfer
+<span class="fc" id="L145">        addAmount(fromUser, false);</span>
+<span class="fc" id="L146">        addAmount(toUser,true);</span>
+
+        //Save Money Transfer in DBB
+<span class="fc" id="L149">        InternalCashAccount internalCashAccountUpdated = internalCashAccountDalService.update(fromUser.getInternalCashAccount());</span>
+<span class="fc" id="L150">        checkExecutionCashAccountUpdate(internalCashAccountUpdated, fromUser);</span>
+
+<span class="fc" id="L152">        InternalCashAccount internalCashAccountUpdated2 = internalCashAccountDalService.update(toUser.getInternalCashAccount());</span>
+<span class="fc" id="L153">        checkExecutionCashAccountUpdate(internalCashAccountUpdated2, toUser);</span>
+
+<span class="fc" id="L155">        updateTransactionStatus(</span>
+                &quot;Transaction has been executed with success&quot;,
+                EnumTransacStatus.FINISHED);
+<span class="fc" id="L158">    }</span>
+
+    @Transactional(propagation = Propagation.MANDATORY )
+    void checkExecutionCashAccountUpdate(InternalCashAccount internalCashAccountUpdated,
+                                         User user) throws IntMoneyTransferExecutionException {
+<span class="fc bfc" id="L163" title="All 2 branches covered.">        if (internalCashAccountUpdated == null){</span>
+<span class="fc" id="L164">            String messageTransactionAborted = String.format(</span>
+                    &quot;Amount can't be updated for cash account id: %s&quot;,
+<span class="fc" id="L166">                    user.getInternalCashAccount().getId()</span>
+            );
+<span class="fc" id="L168">            throw new IntMoneyTransferExecutionException(messageTransactionAborted);</span>
+        }
+<span class="fc" id="L170">    }</span>
+
+    /**
+     * &lt;b&gt;Money transfer execution: change cash account&lt;/b&gt;
+     * @param user user concerned by the change of tha balance of its account
+     * @param isCredit is a credit or a debit: true for credit
+     * @throws IntMoneyTransferExecutionException specific exception for money transfer execution
+     */
+    // MANDATORY: Transaction must be created before.
+    @Transactional(propagation = Propagation.MANDATORY )
+    void addAmount(User user, boolean isCredit) throws IntMoneyTransferExecutionException {
+        //Execute Money Transfer
+<span class="fc" id="L182">        double newBalance = 0;</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        if (isCredit){</span>
+<span class="fc" id="L184">            newBalance = user.getInternalCashAccount().getAmount() + internalTransaction.getAmount();</span>
+        } else {
+<span class="fc" id="L186">            newBalance = user.getInternalCashAccount().getAmount() - internalTransaction.getAmount();</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">            if (newBalance &lt; 0 ){</span>
+<span class="fc" id="L188">                String messageTransactionAborted = String.format(</span>
+                        &quot;The balance of the account '%s' is not enough (%s)&quot;,
+<span class="fc" id="L190">                        user.getInternalCashAccount().getId(),</span>
+<span class="fc" id="L191">                        user.getInternalCashAccount().getAmount()</span>
+                );
+<span class="fc" id="L193">                throw new IntMoneyTransferExecutionException(messageTransactionAborted);</span>
+            }
+        }
+<span class="fc" id="L196">        user.getInternalCashAccount().setAmount(newBalance);</span>
+<span class="fc" id="L197">    }</span>
+
+    private void updateTransactionStatus(String message, EnumTransacStatus status) throws IntMoneyTransferExecutionException {
+<span class="fc" id="L200">        internalTransaction.setStatus(status);</span>
+<span class="fc" id="L201">        internalTransaction.setTransactionMessage(message);</span>
+<span class="fc" id="L202">        InternalTransaction internalTransactionUpdated = internalTransactionDalService.update(internalTransaction);</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">        if (internalTransactionUpdated == null) {</span>
+<span class="nc" id="L204">            String messageTransactionAborted = String.format(</span>
+                    &quot;Transaction with id '%s' can't be updated&quot;,
+<span class="nc" id="L206">                    internalTransaction.getId()</span>
+            );
+<span class="nc" id="L208">            throw new IntMoneyTransferExecutionException(messageTransactionAborted);</span>
+        }
+<span class="fc" id="L210">    }</span>
+}
+
+//https://www.marcobehler.com/guides/spring-transaction-management-transactional-in-depth
+//https://www.baeldung.com/java-transactions
+//https://www.baeldung.com/java-synchronized
+//https://winterbe.com/posts/2015/04/30/java8-concurrency-tutorial-synchronized-locks-examples/
+//https://mkyong.com/java/how-to-loop-a-map-in-java/
+
+//https://www.baeldung.com/spring-transactional-propagation-isolation
+//https://o7planning.org/fr/11661/tutoriel-spring-boot-jpa-et-spring-transaction
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
