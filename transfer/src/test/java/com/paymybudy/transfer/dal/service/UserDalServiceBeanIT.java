@@ -1,15 +1,20 @@
 package com.paymybudy.transfer.dal.service;
 
 import com.paymybudy.transfer.models.User;
+import com.paymybudy.transfer.web.dto.UserRegistrationDto;
 import org.junit.jupiter.api.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -48,18 +53,33 @@ class UserDalServiceBeanIT {
                 "you have forgot to declare userDalService as a SpringBoot service or to autowire it");
     }
 
+    @DisplayName("Spring Security: user creation with encrypt password")
     @Order(2)
     @Test
     void create() {
+        //GIVEN
+        List<UserRegistrationDto> userDtoList =  usersGiven.stream()
+                .map(user -> {return new UserRegistrationDto(usersGiven.get(0).getFirstName(),
+                        user.getLastName(),
+                        user.getEmail(),
+                        user.getPassword());
+                })
+                .collect(Collectors.toList());
         //WHEN
-        User userResult1 = userDalService.create(usersGiven.get(0));
-        User userResult2 = userDalService.create(usersGiven.get(1));
+        User userResult1 = userDalService.create2(userDtoList.get(0));
+        User userResult2 = userDalService.create2(userDtoList.get(1));
 
         //THEN
-        assertEquals(usersGiven.get(0), userResult1);
+        assertEquals(usersGiven.get(0).getEmail(), userResult1.getEmail());
+        assertNotEquals(usersGiven.get(0).getPassword(), userResult1.getPassword());
         assertNotNull(userResult1.getId());
-        assertEquals(usersGiven.get(1), userResult2);
-        assertNotNull( userResult2.getId());
+        usersGiven.get(0).setId(userResult1.getId());
+        usersGiven.get(0).setPassword(userResult1.getPassword());
+        assertEquals(usersGiven.get(1).getEmail(), userResult2.getEmail());
+        assertNotEquals(usersGiven.get(1).getPassword(), userResult2.getPassword());
+        assertNotNull(userResult2.getId());
+        usersGiven.get(1).setId(userResult2.getId());
+        usersGiven.get(1).setPassword(userResult2.getPassword());
     }
 
     @Order(3)
@@ -71,10 +91,15 @@ class UserDalServiceBeanIT {
                 usersGiven.get(0).getLastName(),
                 usersGiven.get(0).getEmail(),
                 usersGiven.get(0).getPassword());
+        UserRegistrationDto userRegistrationDtoClone = new UserRegistrationDto(
+                userClone.getFirstName(),
+                userClone.getLastName(),
+                userClone.getEmail(),
+                userClone.getPassword());
 
         //WHEN
         Exception exception = assertThrows(DataIntegrityViolationException.class, ()-> {
-            userDalService.create(userClone);
+            userDalService.create2(userRegistrationDtoClone);
         });
         assertTrue(exception.getMessage().contains("could not execute statement"));
         assertTrue(exception.getMessage().contains("constraint"));
@@ -113,24 +138,44 @@ class UserDalServiceBeanIT {
         assertEquals(userCreatedResult.getId(), userResult.getId());
     }
 
+    @DisplayName("Spring Security: load by Email")
     @Order(6)
     @Test
-    void findByEmail() {
+    void loadUserByUsername() {
         //GIVEN
-        User userCreatedResult = userDalService.create(userToCreateBis);
+        UserRegistrationDto userRegistrationDtoToCreate = new UserRegistrationDto(
+                userToCreateBis.getFirstName(),
+                userToCreateBis.getLastName(),
+                userToCreateBis.getEmail(),
+                userToCreateBis.getPassword());
+
+        User userCreatedResult = userDalService.create2(userRegistrationDtoToCreate);
         assertEquals(userToCreateBis.getEmail(), userCreatedResult.getEmail());
         assertNotNull(userCreatedResult.getId());
 
         //WHEN
-        User userResult = userDalService.findByEmail(userCreatedResult.getEmail());
+        UserDetails userResult = userDalService.loadUserByUsername(userCreatedResult.getEmail());
 
         //THEN
         assertNotNull(userResult, "userToCreateBis has not been created or can not be find");
-        assertEquals(userCreatedResult.getEmail(), userResult.getEmail());
-        assertEquals(userCreatedResult.getId(), userResult.getId());
+        assertEquals(userCreatedResult.getEmail(), userResult.getUsername());
+        assertEquals(userCreatedResult.getPassword(), userResult.getPassword());
     }
 
     @Order(7)
+    @Test
+    void findByEmail() {
+        //WHEN
+        User userResult = userDalService.findByEmail(usersGiven.get(0).getEmail());
+
+        //THEN
+        assertNotNull(userResult, "user can not be find");
+        assertEquals(usersGiven.get(0).getEmail(), userResult.getEmail());
+        assertEquals(usersGiven.get(0).getPassword(), userResult.getPassword());
+        assertEquals(usersGiven.get(0).getId(), userResult.getId());
+    }
+
+    @Order(8)
     @Test
     void update() {
         //GIVEN
@@ -146,7 +191,7 @@ class UserDalServiceBeanIT {
         assertEquals(userCreatedResult.getFirstName(), userUpdateResult.getFirstName());
     }
 
-    @Order(8)
+    @Order(9)
     @Test
     void delete() {
         List<User> usersResult = userDalService.findAll();
@@ -164,7 +209,7 @@ class UserDalServiceBeanIT {
         assertFalse(usersResultAfter.contains(userToRemove));
     }
 
-    @Order(9)
+    @Order(10)
     @Test
     @Sql({"/import_users.sql"})
     void addOneContact() {
@@ -194,7 +239,7 @@ class UserDalServiceBeanIT {
                 "contact added is not the same");
     }
 
-    @Order(10)
+    @Order(11)
     @Test
     void deleteAll() {
         List<User> usersResult = userDalService.findAll();
