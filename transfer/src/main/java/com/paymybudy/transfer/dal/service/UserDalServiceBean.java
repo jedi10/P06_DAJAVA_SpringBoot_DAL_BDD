@@ -22,7 +22,7 @@ public class UserDalServiceBean implements IUserDalService {
 
     private IUserRepository userRepository;
 
-    //@Autowired
+    @Autowired
     BCryptPasswordEncoder passwordEncoder;
 
     public UserDalServiceBean(IUserRepository userRepository){
