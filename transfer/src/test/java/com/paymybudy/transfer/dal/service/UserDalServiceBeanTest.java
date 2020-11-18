@@ -2,13 +2,19 @@ package com.paymybudy.transfer.dal.service;
 
 import com.paymybudy.transfer.dal.repository.IUserRepository;
 import com.paymybudy.transfer.models.User;
+import com.paymybudy.transfer.web.dto.UserRegistrationDto;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +29,9 @@ class UserDalServiceBeanTest {
 
     @Mock
     private IUserRepository userRepository;
+
+    @Mock
+    private BCryptPasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UserDalServiceBean userDalService;
@@ -50,6 +59,8 @@ class UserDalServiceBeanTest {
         userToUpdate.setId(251L);
         when(userRepository.save(userToUpdate)).thenReturn(userToUpdate);
         when(userRepository.findById(userToUpdate.getId())).thenReturn(Optional.of(userToUpdate));
+        when(passwordEncoder.encode(Mockito.anyString())).thenReturn("XXXXX");
+        userDalService.passwordEncoder = this.passwordEncoder;
     }
 
     @AfterEach
@@ -107,7 +118,51 @@ class UserDalServiceBeanTest {
         assertEquals(userExpected.getEmail(), userResult.getEmail());
     }
 
+    @DisplayName("Spring Security: load By Email with Null Param")
     @Order(4)
+    @Test
+    void loadUserByUsername_nullParam() {
+        //WHEN
+        Exception exception = assertThrows(NullPointerException.class, () -> {
+                    userDalService.findByEmail(null);
+        });
+        //THEN
+        assertTrue(exception.getMessage().contains(
+                "email is marked non-null but is null"));
+        //***********************************************************
+        //****************CHECK MOCK INVOCATION at end***************
+        //***********************************************************
+        verify(userRepository, Mockito.never()).findByEmail(Mockito.anyString());
+    }
+
+    @DisplayName("Spring Security: load By Email")
+    @Order(5)
+    @Test
+    void loadUserByUsername_ok() {
+        //GIVEN
+        User userExpected = usersGiven.get(0);
+        UserDetails userDetailsExpected = new org.springframework.security.core.userdetails.User(
+                userExpected.getEmail(),
+                userExpected.getPassword(),
+                List.of(new SimpleGrantedAuthority("role1"))
+        );
+        //***********************************************************
+        //****************CHECK MOCK INVOCATION at start*************
+        //***********************************************************
+        verify(userRepository, Mockito.never()).findByEmail(Mockito.anyString());
+
+        //WHEN
+        UserDetails userDetailsResult = userDalService.loadUserByUsername("tartantion@email.fr");
+        //***********************************************************
+        //****************CHECK MOCK INVOCATION at end***************
+        //***********************************************************
+        verify(userRepository, Mockito.times(1)).findByEmail(Mockito.anyString());
+
+        //THEN
+        assertEquals(userDetailsExpected, userDetailsResult);
+    }
+
+    @Order(6)
     @Test
     void findByEmail() {
         //GIVEN
@@ -128,7 +183,54 @@ class UserDalServiceBeanTest {
         assertEquals(userExpected, userResult);
     }
 
-    @Order(5)
+    @DisplayName("Spring Security: user creation with null param")
+    @Order(7)
+    @Test
+    void create2_nullParam() {
+        //WHEN
+        Exception exception = assertThrows(NullPointerException.class, () -> {
+            userDalService.create2(null);
+        });
+        //THEN
+        assertTrue(exception.getMessage().contains(
+                "userRegistrationDto is marked non-null but is null"));
+
+        //THEN
+        //***********************************************************
+        //****************CHECK MOCK INVOCATION at end***************
+        //***********************************************************
+        verify(userRepository, Mockito.never()).save(any());
+    }
+
+    @DisplayName("Spring Security: user creation ok")
+    @Order(8)
+    @Test
+    void create2_ok() {
+        //GIVEN
+        UserRegistrationDto userDtoToCreate = new UserRegistrationDto(
+                userToCreate.getFirstName(),
+                userToCreate.getLastName(),
+                userToCreate.getEmail(),
+                userToCreate.getPassword()
+        );
+        //***********************************************************
+        //****************CHECK MOCK INVOCATION at start*************
+        //***********************************************************
+        verify(userRepository, Mockito.never()).save(any());
+
+        //WHEN
+        User userResult = userDalService.create2(userDtoToCreate);
+
+        //THEN
+        //***********************************************************
+        //****************CHECK MOCK INVOCATION at end***************
+        //***********************************************************
+        verify(userRepository, Mockito.times(1)).save(any());
+
+        assertEquals(userToCreate, userResult);
+    }
+
+    @Order(9)
     @Test
     void create() {
         //***********************************************************
@@ -148,7 +250,7 @@ class UserDalServiceBeanTest {
         assertEquals(userToCreate, userResult);
     }
 
-    @Order(6)
+    @Order(10)
     @Test
     void update() {
         //***********************************************************
@@ -169,7 +271,7 @@ class UserDalServiceBeanTest {
         assertEquals(userToUpdate, userResult);
     }
 
-    @Order(7)
+    @Order(11)
     @Test
     void delete() {
         //***********************************************************
@@ -187,7 +289,7 @@ class UserDalServiceBeanTest {
         verify(userRepository, Mockito.times(1)).delete(userToUpdate);
     }
 
-    @Order(8)
+    @Order(12)
     @Test
     void deleteAll() {
         //***********************************************************

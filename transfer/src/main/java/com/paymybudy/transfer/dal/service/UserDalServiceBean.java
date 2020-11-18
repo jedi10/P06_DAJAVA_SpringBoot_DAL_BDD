@@ -2,7 +2,12 @@ package com.paymybudy.transfer.dal.service;
 
 import com.paymybudy.transfer.dal.repository.IUserRepository;
 import com.paymybudy.transfer.models.User;
+import com.paymybudy.transfer.web.dto.UserRegistrationDto;
 import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +23,7 @@ public class UserDalServiceBean implements IUserDalService {
     private IUserRepository userRepository;
 
     //@Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    BCryptPasswordEncoder passwordEncoder;
 
     public UserDalServiceBean(IUserRepository userRepository){
         super();
@@ -44,6 +49,19 @@ public class UserDalServiceBean implements IUserDalService {
     }
 
     @Override
+    public UserDetails loadUserByUsername(@NonNull String email) throws UsernameNotFoundException {
+
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException("Invalid username or password.");
+        }
+        return new org.springframework.security.core.userdetails.User(
+                user.get().getEmail(),
+                user.get().getPassword(),
+                List.of(new SimpleGrantedAuthority("role1")));
+    }
+
+    @Override
     public User findByEmail(@NonNull String email) {
         User result = null;
         Optional<User> userOptional = userRepository.findByEmail(email);
@@ -51,6 +69,14 @@ public class UserDalServiceBean implements IUserDalService {
             result = userOptional.get();
         }
         return result;
+    }
+
+    @Override
+    public User create2(@NonNull UserRegistrationDto userRegistrationDto) {
+        User user = new User(userRegistrationDto.getFirstName(),
+                userRegistrationDto.getLastName(), userRegistrationDto.getEmail(),
+                passwordEncoder.encode(userRegistrationDto.getPassword()));
+        return userRepository.save(user);
     }
 
     @Override
@@ -84,9 +110,12 @@ public class UserDalServiceBean implements IUserDalService {
     public void deleteAll() {
         userRepository.deleteAll();
     }
+
+
+
 }
 
 
-
+//https://www.javaguides.net/2020/06/spring-security-tutorial-with-spring-boot-spring-data-jpa-thymeleaf-and-mysql-database.html
 //https://riptutorial.com/fr/spring-boot/example/21493/exemple-de-base-de-l-integration-spring-spring-et-spring-data-jpa
 //https://stackoverflow.com/questions/3317381/what-is-the-difference-between-collection-and-list-in-java
