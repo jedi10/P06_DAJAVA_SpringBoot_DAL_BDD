@@ -125,6 +125,7 @@
 										<exclude>com.paymybudy.transfer.functionaltest</exclude>
 										<exclude>com.paymybudy.transfer.config</exclude>
 										<exclude>com.paymybudy.transfer.exception</exclude>
+										<exclude>com.paymybudy.transfer.web.dto</exclude>
 									</excludes>
 									<limits>
 										<limit>
