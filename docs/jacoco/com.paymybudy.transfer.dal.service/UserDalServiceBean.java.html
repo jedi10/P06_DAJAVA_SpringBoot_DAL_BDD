@@ -2,7 +2,12 @@
 
 import com.paymybudy.transfer.dal.repository.IUserRepository;
 import com.paymybudy.transfer.models.User;
+import com.paymybudy.transfer.web.dto.UserRegistrationDto;
 import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,77 +22,101 @@ public class UserDalServiceBean implements IUserDalService {
 
     private IUserRepository userRepository;
 
-    //@Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    BCryptPasswordEncoder passwordEncoder;
 
     public UserDalServiceBean(IUserRepository userRepository){
-<span class="fc" id="L24">        super();</span>
-<span class="fc" id="L25">        this.userRepository = userRepository;</span>
-<span class="fc" id="L26">    }</span>
+<span class="fc" id="L29">        super();</span>
+<span class="fc" id="L30">        this.userRepository = userRepository;</span>
+<span class="fc" id="L31">    }</span>
 
     @Override
     public List&lt;User&gt; findAll() {
-<span class="fc" id="L30">        Iterable&lt;User&gt; usersIterable = userRepository.findAll();</span>
+<span class="fc" id="L35">        Iterable&lt;User&gt; usersIterable = userRepository.findAll();</span>
 
-<span class="fc" id="L32">        return StreamSupport.stream(usersIterable.spliterator(), false)</span>
-<span class="fc" id="L33">                .collect(Collectors.toList());</span>
+<span class="fc" id="L37">        return StreamSupport.stream(usersIterable.spliterator(), false)</span>
+<span class="fc" id="L38">                .collect(Collectors.toList());</span>
     }
 
     @Override
-<span class="pc bpc" id="L37" title="1 of 2 branches missed.">    public User findOne(@NonNull Long id) {</span>
-<span class="fc" id="L38">        User result = null;</span>
-<span class="fc" id="L39">        Optional&lt;User&gt; userOptional = userRepository.findById(id);</span>
-<span class="pc bpc" id="L40" title="1 of 2 branches missed.">        if (userOptional.isPresent()){</span>
-<span class="fc" id="L41">            result = userOptional.get();</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">    public User findOne(@NonNull Long id) {</span>
+<span class="fc" id="L43">        User result = null;</span>
+<span class="fc" id="L44">        Optional&lt;User&gt; userOptional = userRepository.findById(id);</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">        if (userOptional.isPresent()){</span>
+<span class="fc" id="L46">            result = userOptional.get();</span>
         }
-<span class="fc" id="L43">        return result;</span>
+<span class="fc" id="L48">        return result;</span>
     }
 
     @Override
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">    public User findByEmail(@NonNull String email) {</span>
-<span class="fc" id="L48">        User result = null;</span>
-<span class="fc" id="L49">        Optional&lt;User&gt; userOptional = userRepository.findByEmail(email);</span>
-<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        if (userOptional.isPresent()){</span>
-<span class="fc" id="L51">            result = userOptional.get();</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">    public UserDetails loadUserByUsername(@NonNull String email) throws UsernameNotFoundException {</span>
+
+<span class="fc" id="L54">        Optional&lt;User&gt; user = userRepository.findByEmail(email);</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        if (user.isEmpty()) {</span>
+<span class="nc" id="L56">            throw new UsernameNotFoundException(&quot;Invalid username or password.&quot;);</span>
         }
-<span class="fc" id="L53">        return result;</span>
+<span class="fc" id="L58">        return new org.springframework.security.core.userdetails.User(</span>
+<span class="fc" id="L59">                user.get().getEmail(),</span>
+<span class="fc" id="L60">                user.get().getPassword(),</span>
+<span class="fc" id="L61">                List.of(new SimpleGrantedAuthority(&quot;role1&quot;)));</span>
     }
 
     @Override
-<span class="pc bpc" id="L57" title="1 of 2 branches missed.">    public User create(@NonNull User user) {</span>
-<span class="pc bpc" id="L58" title="1 of 2 branches missed.">        if (user.getId() != null) {</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">    public User findByEmail(@NonNull String email) {</span>
+<span class="fc" id="L66">        User result = null;</span>
+<span class="fc" id="L67">        Optional&lt;User&gt; userOptional = userRepository.findByEmail(email);</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">        if (userOptional.isPresent()){</span>
+<span class="fc" id="L69">            result = userOptional.get();</span>
+        }
+<span class="fc" id="L71">        return result;</span>
+    }
+
+    @Override
+<span class="fc bfc" id="L75" title="All 2 branches covered.">    public User create2(@NonNull UserRegistrationDto userRegistrationDto) {</span>
+<span class="fc" id="L76">        User user = new User(userRegistrationDto.getFirstName(),</span>
+<span class="fc" id="L77">                userRegistrationDto.getLastName(), userRegistrationDto.getEmail(),</span>
+<span class="fc" id="L78">                passwordEncoder.encode(userRegistrationDto.getPassword()));</span>
+<span class="fc" id="L79">        return userRepository.save(user);</span>
+    }
+
+    @Override
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">    public User create(@NonNull User user) {</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">        if (user.getId() != null) {</span>
             //cannot create user with specified Id value
-<span class="nc" id="L60">            return null;</span>
+<span class="nc" id="L86">            return null;</span>
         }
-<span class="fc" id="L62">        return userRepository.save(user);</span>
+<span class="fc" id="L88">        return userRepository.save(user);</span>
     }
 
     @Override
-<span class="pc bpc" id="L66" title="1 of 2 branches missed.">    public User update(@NonNull User user) {</span>
-<span class="fc" id="L67">        User userPersisted = findOne(user.getId());</span>
-<span class="pc bpc" id="L68" title="1 of 2 branches missed.">        if (userPersisted == null){</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">    public User update(@NonNull User user) {</span>
+<span class="fc" id="L93">        User userPersisted = findOne(user.getId());</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">        if (userPersisted == null){</span>
             //We can't update an object not persisted
-<span class="nc" id="L70">            return null;</span>
+<span class="nc" id="L96">            return null;</span>
         }
-<span class="fc" id="L72">        return userRepository.save(user);</span>
+<span class="fc" id="L98">        return userRepository.save(user);</span>
     }
 
     @Override
-<span class="pc bpc" id="L76" title="1 of 2 branches missed.">    public void delete(@NonNull Long id) {</span>
-<span class="fc" id="L77">        User userPersisted = findOne(id);</span>
-<span class="pc bpc" id="L78" title="1 of 2 branches missed.">        if (userPersisted != null){</span>
-<span class="fc" id="L79">            userRepository.delete(userPersisted);</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">    public void delete(@NonNull Long id) {</span>
+<span class="fc" id="L103">        User userPersisted = findOne(id);</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        if (userPersisted != null){</span>
+<span class="fc" id="L105">            userRepository.delete(userPersisted);</span>
         }
-<span class="fc" id="L81">    }</span>
+<span class="fc" id="L107">    }</span>
 
     @Override
     public void deleteAll() {
-<span class="fc" id="L85">        userRepository.deleteAll();</span>
-<span class="fc" id="L86">    }</span>
+<span class="fc" id="L111">        userRepository.deleteAll();</span>
+<span class="fc" id="L112">    }</span>
+
+
+
 }
 
 
-
+//https://www.javaguides.net/2020/06/spring-security-tutorial-with-spring-boot-spring-data-jpa-thymeleaf-and-mysql-database.html
 //https://riptutorial.com/fr/spring-boot/example/21493/exemple-de-base-de-l-integration-spring-spring-et-spring-data-jpa
 //https://stackoverflow.com/questions/3317381/what-is-the-difference-between-collection-and-list-in-java
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

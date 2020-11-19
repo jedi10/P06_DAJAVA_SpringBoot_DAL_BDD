@@ -2,13 +2,18 @@
 
 import com.paymybudy.transfer.dal.service.*;
 import com.paymybudy.transfer.models.*;
+import com.paymybudy.transfer.web.dto.UserRegistrationDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * &lt;b&gt;Functional Scenarios for demo purpose&lt;/b&gt;
+ */
 @Service
 public class FunctionalScenario {
     @Autowired
@@ -21,42 +26,141 @@ public class FunctionalScenario {
     private IInternalTransactionDalService internalTransactionDalService;
     @Autowired
     private MoneyTransferService moneyTransferService;
+    @Autowired
+    private IAppAccountDalService appAccountDalService;
+    @Autowired
+    private IBankAccountDalService bankAccountDalService;
 
     public FunctionalScenario() {
-<span class="fc" id="L26">        super();</span>
-<span class="fc" id="L27">    }</span>
+<span class="fc" id="L35">        super();</span>
+<span class="fc" id="L36">    }</span>
 
+    /**
+     * &lt;b&gt;Execute an Internal Money transfer between two users created by external SQL script&lt;/b&gt;
+     * @throws Exception exception
+     */
     public void internalMoneyTransfer() throws Exception {
-<span class="fc" id="L30">        List&lt;User&gt; userList = (List&lt;User&gt;) userDalService.findAll();</span>
-<span class="pc bpc" id="L31" title="2 of 4 branches missed.">        if (userList != null &amp;&amp; userList.size() &gt; 1){</span>
-<span class="nc" id="L32">            User user1 = userDalService.findByEmail(userList.get(0).getEmail());</span>
+<span class="nc" id="L43">        List&lt;User&gt; userList = (List&lt;User&gt;) userDalService.findAll();</span>
+<span class="nc bnc" id="L44" title="All 4 branches missed.">        if (userList != null &amp;&amp; userList.size() &gt; 1){</span>
+<span class="nc" id="L45">            User user1 = userDalService.findByEmail(userList.get(0).getEmail());</span>
             //User 1 want to give money to User 2
-<span class="nc" id="L34">            User user2 = user1.getContactList().get(1);</span>
+<span class="nc" id="L47">            User user2 = user1.getContactList().get(1);</span>
             //user2.setInternalCashAccount(null);
             //for this Transaction
-<span class="nc" id="L37">            InternalTransaction internalTransaction = new InternalTransaction(&quot;Paiement service livraison&quot;,</span>
+<span class="nc" id="L50">            InternalTransaction internalTransaction = new InternalTransaction(&quot;Paiement service livraison&quot;,</span>
                     500);
             //TRANSACTIONAL FUNCTIONALITY
-<span class="nc" id="L40">            moneyTransferService.sendMoney(user1, user2, internalTransaction);</span>
+<span class="nc" id="L53">            moneyTransferService.sendMoney(user1, user2, internalTransaction);</span>
         }
-<span class="fc" id="L42">    }</span>
+<span class="nc" id="L55">    }</span>
 
+    /**
+     * &lt;b&gt;Execute an External Money transfer for one users created by external SQL script&lt;/b&gt;
+     */
     public void addExternalCashToInternalAccount(){
-<span class="nc" id="L45">        List&lt;User&gt; userList = (List&lt;User&gt;) userDalService.findAll();</span>
-<span class="nc bnc" id="L46" title="All 4 branches missed.">        if (userList != null &amp;&amp; userList.size() &gt; 1) {</span>
-<span class="nc" id="L47">            User user1 = userDalService.findByEmail(userList.get(0).getEmail());</span>
+<span class="nc" id="L61">        List&lt;User&gt; userList = (List&lt;User&gt;) userDalService.findAll();</span>
+<span class="nc bnc" id="L62" title="All 4 branches missed.">        if (userList != null &amp;&amp; userList.size() &gt; 1) {</span>
+<span class="nc" id="L63">            User user1 = userDalService.findByEmail(userList.get(0).getEmail());</span>
             //USER 1 want to credit his internal Account
-<span class="nc" id="L49">            ExternalTransaction externalTransaction = new ExternalTransaction(</span>
+<span class="nc" id="L65">            ExternalTransaction externalTransaction = new ExternalTransaction(</span>
                     &quot;Approvisionnement&quot;,
                     1000,
                     EnumTransacStatus.FINISHED,
-<span class="nc" id="L53">                    user1.getBankAccount(),</span>
-<span class="nc" id="L54">                    user1.getInternalCashAccount());</span>
+<span class="nc" id="L69">                    user1.getBankAccount(),</span>
+<span class="nc" id="L70">                    user1.getInternalCashAccount());</span>
             //Save transaction in DBB
-<span class="nc" id="L56">            externalTransactionDalService.create(externalTransaction);</span>
-<span class="nc" id="L57">            internalCashAccountDalService.update(externalTransaction.getAccountCredit());</span>
+<span class="nc" id="L72">            externalTransactionDalService.create(externalTransaction);</span>
+<span class="nc" id="L73">            internalCashAccountDalService.update(externalTransaction.getAccountCredit());</span>
         }
-<span class="nc" id="L59">    }</span>
+<span class="nc" id="L75">    }</span>
+
+    /**
+     * &lt;b&gt;All Registration Process for one User on java side&lt;/b&gt;
+     * &lt;ul&gt;
+     *     &lt;li&gt;User creation with password encode&lt;/li&gt;
+     *     &lt;li&gt;AppAccount creation&lt;/li&gt;
+     *     &lt;li&gt;BankAccount And InternalCashAccount creation&lt;/li&gt;
+     *     &lt;li&gt;Credit Internal Cash Account from outside Bank (external transaction)&lt;/li&gt;
+     *     &lt;li&gt;Add One friend in contact list&lt;/li&gt;
+     * &lt;/ul&gt;
+     * @throws Exception exception
+     */
+    public void addUserFullInscription() throws Exception {
+        //*************
+        //User Creation
+        //*************
+<span class="nc" id="L92">        UserRegistrationDto userRegistrationDtoToCreate = new UserRegistrationDto(</span>
+                &quot;Joli&quot;,
+                &quot;Jumper&quot;,
+                &quot;jolijumper@farwest.us&quot;,
+                &quot;luckyluke&quot;);
+
+<span class="nc" id="L98">        User userCreated = userDalService.create2(userRegistrationDtoToCreate);</span>
+
+        //Check User Creation with password
+<span class="nc" id="L101">        UserDetails userDetails = userDalService.loadUserByUsername(userCreated.getEmail());</span>
+<span class="nc" id="L102">        System.out.println(&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Generated Password: '&quot; + userDetails.getPassword()+&quot;' &lt;&lt;&lt;&lt;&lt;&lt;&lt;&quot;);</span>
+
+        //*******************
+        //appAccount Creation
+        //*******************
+<span class="nc" id="L107">        AppAccount appAccount1 = new AppAccount(userCreated, EnumAppAccountStatus.NOTCONFIRMED);</span>
+
+<span class="nc" id="L109">        AppAccount appAccountResult1 = appAccountDalService.create(appAccount1);</span>
+        //check AppAccount Status
+<span class="nc" id="L111">        System.out.println(&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt; App Account id: '&quot; + appAccount1.getId() +&quot;' &lt;&lt;&lt;&lt;&lt;&lt;&lt;&quot;);</span>
+
+        //******************************************************
+        //BankAccount Creation &amp;&amp; Internal Cash Account Creation
+        //******************************************************
+<span class="nc" id="L116">        BankAccount bankAccount1 = new BankAccount(&quot;Texaco Bank&quot;,&quot;0034445777&quot;, &quot;72 Mulland Drive New York&quot;);</span>
+<span class="nc" id="L117">        BankAccount bankAccountResult1 = bankAccountDalService.create(bankAccount1);</span>
+<span class="nc" id="L118">        userCreated.setBankAccount(bankAccountResult1);</span>
+
+<span class="nc" id="L120">        InternalCashAccount internalCashAccount1 = new InternalCashAccount(&quot;XX23453-456&quot;, &quot;Compte de dépot Joli Jumper&quot; );</span>
+<span class="nc" id="L121">        InternalCashAccount intCashAccountResult1 = internalCashAccountDalService.create(internalCashAccount1);</span>
+<span class="nc" id="L122">        userCreated.setInternalCashAccount(intCashAccountResult1);</span>
+
+<span class="nc" id="L124">        User userUpdated = userDalService.update(userCreated);</span>
+
+        //**************************
+        //Add Cash From outside Bank
+        //**************************
+<span class="nc" id="L129">        ExternalTransaction externalTransaction = new ExternalTransaction(</span>
+                &quot;Approvisionnement&quot;,
+                1000,
+                EnumTransacStatus.FINISHED,
+<span class="nc" id="L133">                userUpdated.getBankAccount(),</span>
+<span class="nc" id="L134">                userUpdated.getInternalCashAccount());</span>
+        //Save transaction in DBB
+<span class="nc" id="L136">        externalTransactionDalService.create(externalTransaction);</span>
+<span class="nc" id="L137">        internalCashAccountDalService.update(externalTransaction.getAccountCredit());</span>
+
+        //**************
+        //Add one Friend
+        //**************
+<span class="nc" id="L142">        List&lt;User&gt; userList = (List&lt;User&gt;) userDalService.findAll();</span>
+
+<span class="nc" id="L144">        User friend = userDalService.findByEmail(userList.get(0).getEmail());</span>
+<span class="nc" id="L145">        userUpdated.addOneContact(friend);</span>
+<span class="nc" id="L146">        userDalService.update(userUpdated);</span>
+<span class="nc" id="L147">    }</span>
+
+    /**
+     * &lt;b&gt;Execute an Internal Money transfer with one user created on java side&lt;/b&gt;
+     * @throws Exception exception
+     */
+    public void newUserGiveCashToAnother() throws Exception {
+<span class="nc" id="L154">            User user1 = userDalService.findByEmail(&quot;jolijumper@farwest.us&quot;);</span>
+            //User 1 want to give money to User 2
+<span class="nc" id="L156">            User user2 = user1.getContactList().get(0);</span>
+            //user2.setInternalCashAccount(null);
+            //for this Transaction
+<span class="nc" id="L159">            InternalTransaction internalTransaction = new InternalTransaction(&quot;Livraison Fourrage &quot;,</span>
+                    700);
+            //TRANSACTIONAL FUNCTIONALITY
+<span class="nc" id="L162">            moneyTransferService.sendMoney(user1, user2, internalTransaction);</span>
+<span class="nc" id="L163">    }</span>
 }
 
 //https://o7planning.org/fr/11661/tutoriel-spring-boot-jpa-et-spring-transaction
