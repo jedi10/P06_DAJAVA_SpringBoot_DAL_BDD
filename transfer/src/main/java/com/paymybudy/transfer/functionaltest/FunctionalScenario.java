@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * <b>Functional Scenarios for demo purpose</b>
+ */
 @Service
 public class FunctionalScenario {
     @Autowired
@@ -33,8 +36,8 @@ public class FunctionalScenario {
     }
 
     /**
-     * <b>Execute an Internal Money transfer between two users Created by external SQL script</b>
-     * @throws Exception
+     * <b>Execute an Internal Money transfer between two users created by external SQL script</b>
+     * @throws Exception exception
      */
     public void internalMoneyTransfer() throws Exception {
         List<User> userList = (List<User>) userDalService.findAll();
@@ -72,15 +75,15 @@ public class FunctionalScenario {
     }
 
     /**
-     * <b>All Registration Process for one User with one external operation for credit internal account</b>
+     * <b>All Registration Process for one User on java side</b>
      * <ul>
-     *     <li>User Creation with password encode</li>
-     *     <li>AppAccount Creation</li>
-     *     <li>BankAccount Creation && Internal Cash Account Creation</li>
+     *     <li>User creation with password encode</li>
+     *     <li>AppAccount creation</li>
+     *     <li>BankAccount And InternalCashAccount creation</li>
      *     <li>Credit Internal Cash Account from outside Bank (external transaction)</li>
      *     <li>Add One friend in contact list</li>
      * </ul>
-     * @throws Exception
+     * @throws Exception exception
      */
     public void addUserFullInscription() throws Exception {
         //*************
@@ -145,7 +148,7 @@ public class FunctionalScenario {
 
     /**
      * <b>Execute an Internal Money transfer with one user created on java side</b>
-     * @throws Exception
+     * @throws Exception exception
      */
     public void newUserGiveCashToAnother() throws Exception {
             User user1 = userDalService.findByEmail("jolijumper@farwest.us");
