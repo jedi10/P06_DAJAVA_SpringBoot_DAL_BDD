@@ -5,6 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * <b>User Dto for registration and login</b>
+ * <p>this dto is used by spring security</p>
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRegistrationDto {

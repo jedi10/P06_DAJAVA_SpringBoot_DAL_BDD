@@ -32,6 +32,10 @@ public class FunctionalScenario {
         super();
     }
 
+    /**
+     * <b>Execute an Internal Money transfer between two users Created by external SQL script</b>
+     * @throws Exception
+     */
     public void internalMoneyTransfer() throws Exception {
         List<User> userList = (List<User>) userDalService.findAll();
         if (userList != null && userList.size() > 1){
@@ -47,6 +51,9 @@ public class FunctionalScenario {
         }
     }
 
+    /**
+     * <b>Execute an External Money transfer for one users created by external SQL script</b>
+     */
     public void addExternalCashToInternalAccount(){
         List<User> userList = (List<User>) userDalService.findAll();
         if (userList != null && userList.size() > 1) {
@@ -64,6 +71,17 @@ public class FunctionalScenario {
         }
     }
 
+    /**
+     * <b>All Registration Process for one User with one external operation for credit internal account</b>
+     * <ul>
+     *     <li>User Creation with password encode</li>
+     *     <li>AppAccount Creation</li>
+     *     <li>BankAccount Creation && Internal Cash Account Creation</li>
+     *     <li>Credit Internal Cash Account from outside Bank (external transaction)</li>
+     *     <li>Add One friend in contact list</li>
+     * </ul>
+     * @throws Exception
+     */
     public void addUserFullInscription() throws Exception {
         //*************
         //User Creation
@@ -125,6 +143,10 @@ public class FunctionalScenario {
         userDalService.update(userUpdated);
     }
 
+    /**
+     * <b>Execute an Internal Money transfer with one user created on java side</b>
+     * @throws Exception
+     */
     public void newUserGiveCashToAnother() throws Exception {
             User user1 = userDalService.findByEmail("jolijumper@farwest.us");
             //User 1 want to give money to User 2
