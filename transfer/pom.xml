@@ -40,6 +40,18 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- must have because Spring security need javax-servlet-filter
+		https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api
+		-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -111,6 +123,9 @@
 										<exclude>com.paymybudy.transfer.dal.repository</exclude>
 										<exclude>com.paymybudy.transfer.models</exclude>
 										<exclude>com.paymybudy.transfer.functionaltest</exclude>
+										<exclude>com.paymybudy.transfer.config</exclude>
+										<exclude>com.paymybudy.transfer.exception</exclude>
+										<exclude>com.paymybudy.transfer.web.dto</exclude>
 									</excludes>
 									<limits>
 										<limit>

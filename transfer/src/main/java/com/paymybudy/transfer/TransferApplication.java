@@ -33,9 +33,15 @@ public class TransferApplication implements CommandLineRunner {
 		log.info("All users -> {}", userDalService.findAll());
 		Thread.sleep(1000);
 		//functionalScenario.addExternalCashToInternalAccount();
-		functionalScenario.internalMoneyTransfer();
+		//functionalScenario.internalMoneyTransfer();
+		//functionalScenario.addUserFullInscription();
+		//functionalScenario.newUserGiveCashToAnother();
+
+
+
 		//https://stackoverflow.com/questions/62400654/is-data-sql-disabled-in-spring-boot-2-3-1-release
 	}
+
 
 	//https://www.tutorialspoint.com/jpa/jpa_entity_relationships.htm
 	//https://programmerfriend.com/spring-boot-integration-testing-done-right/
