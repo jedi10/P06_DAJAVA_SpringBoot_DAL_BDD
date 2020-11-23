@@ -239,7 +239,33 @@ class UserDalServiceBeanIT {
                 "contact added is not the same");
     }
 
+    @DisplayName("Check all Friends List clean up user to delete")
     @Order(11)
+    @Test
+    void delete_friendList() {
+        List<User> usersResult = userDalService.findAll();
+        assertTrue(usersResult.size() > 0);
+        int userListSizeAtStart = usersResult.size();
+        User userToRemove = usersResult.get(usersResult.size()-1);
+        assertTrue(usersResult.contains(userToRemove));
+        //User who have userToDelete in its contactList
+        User userWhoHasUserToDeleteAsFriend = usersResult.get(0);
+        assertTrue(userWhoHasUserToDeleteAsFriend.getContactList().contains(userToRemove));
+
+        //WHEN
+        userDalService.delete(userToRemove.getId());
+
+        //THEN
+        //Check Friend List deletion of other user
+        User userWithUpdatedContactList = userDalService.findByEmail(userWhoHasUserToDeleteAsFriend.getEmail());
+        assertFalse(userWithUpdatedContactList.getContactList().contains(userToRemove));
+        //Check Deletion
+        List<User> usersResultAfter = userDalService.findAll();
+        assertEquals(userListSizeAtStart-1, usersResultAfter.size());
+        assertFalse(usersResultAfter.contains(userToRemove));
+    }
+
+    @Order(12)
     @Test
     void deleteAll() {
         List<User> usersResult = userDalService.findAll();

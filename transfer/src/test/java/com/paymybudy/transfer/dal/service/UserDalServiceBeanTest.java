@@ -60,6 +60,9 @@ class UserDalServiceBeanTest {
         when(userRepository.save(userToUpdate)).thenReturn(userToUpdate);
         when(userRepository.findById(userToUpdate.getId())).thenReturn(Optional.of(userToUpdate));
         when(passwordEncoder.encode(Mockito.anyString())).thenReturn("XXXXX");
+        //for Delete Operation
+        when(userRepository.save(usersGiven.get(0))).thenReturn(usersGiven.get(0));
+        when(userRepository.save(usersGiven.get(1))).thenReturn(usersGiven.get(1));
         userDalService.passwordEncoder = this.passwordEncoder;
     }
 
@@ -274,17 +277,34 @@ class UserDalServiceBeanTest {
     @Order(11)
     @Test
     void delete() {
+        //GIVEN
+        usersGiven.get(0).setId(123L);
+        usersGiven.get(1).setId(321L);
+        usersGiven.get(0).getContactList().add(userToUpdate);
+        usersGiven.get(1).getContactList().add(userToUpdate);
+        assertTrue(usersGiven.get(0).getContactList().contains(userToUpdate));
+        assertTrue(usersGiven.get(1).getContactList().contains(userToUpdate));
         //***********************************************************
         //****************CHECK MOCK INVOCATION at start*************
         //***********************************************************
+        verify(userRepository, Mockito.never()).save(usersGiven.get(0));
+        verify(userRepository, Mockito.never()).save(usersGiven.get(1));
         verify(userRepository, Mockito.never()).findById(userToUpdate.getId());
         verify(userRepository, Mockito.never()).delete(userToUpdate);
 
         //WHEN
         userDalService.delete(userToUpdate.getId());
+
+        //THEN
+        //User have to be removed from all others Friend List
+        assertFalse(usersGiven.get(0).getContactList().contains(userToUpdate));
+        assertFalse(usersGiven.get(1).getContactList().contains(userToUpdate));
+
         //***********************************************************
         //*****************CHECK MOCK INVOCATION at end**************
         //***********************************************************
+        verify(userRepository, Mockito.times(1)).save(usersGiven.get(0));
+        verify(userRepository, Mockito.times(1)).save(usersGiven.get(1));
         verify(userRepository, Mockito.times(1)).findById(userToUpdate.getId());
         verify(userRepository, Mockito.times(1)).delete(userToUpdate);
     }
