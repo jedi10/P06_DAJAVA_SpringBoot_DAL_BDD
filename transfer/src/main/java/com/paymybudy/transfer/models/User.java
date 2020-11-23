@@ -101,6 +101,7 @@ public class User implements Serializable {
                 .map(List::stream)
                 .orElseGet(Stream::empty)
                 .collect(Collectors.toList());
+        /**we add the user in user friend list**/
         if(userList != null && userList.size() > 0){
             userList.forEach(e -> {
                 if (!e.getContactList().contains(this)){

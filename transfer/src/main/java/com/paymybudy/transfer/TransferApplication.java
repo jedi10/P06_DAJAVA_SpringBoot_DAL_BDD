@@ -36,7 +36,7 @@ public class TransferApplication implements CommandLineRunner {
 		//functionalScenario.internalMoneyTransfer();
 		//functionalScenario.addUserFullInscription();
 		//functionalScenario.newUserGiveCashToAnother();
-		functionalScenario.deleteNewUser();
+		//functionalScenario.deleteNewUser();
 
 
 
