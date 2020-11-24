@@ -16,16 +16,17 @@ import java.util.Optional;
 public class AppAccountDalServiceBean implements IAppAccountDalService {
 
     private IAppAccountRepository appAccountRepository;
-    @Autowired
+
     private IUserDalService userDalService;
 
     /**
      * <b>App Account Dal Service Constructor</b>
      * @param appAccountRepository repository appAccount
      */
-    public AppAccountDalServiceBean(IAppAccountRepository appAccountRepository) {
+    public AppAccountDalServiceBean(IAppAccountRepository appAccountRepository, IUserDalService userDalService) {
         super();
         this.appAccountRepository = appAccountRepository;
+        this.userDalService = userDalService;
     }
 
     @Override

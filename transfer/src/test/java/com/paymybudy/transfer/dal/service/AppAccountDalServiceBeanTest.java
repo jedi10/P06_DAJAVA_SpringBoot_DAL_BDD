@@ -27,6 +27,9 @@ class AppAccountDalServiceBeanTest {
     @Mock
     private IAppAccountRepository appAccountRepository;
 
+    @Mock
+    private IUserDalService userDalService;
+
     @InjectMocks
     private AppAccountDalServiceBean appAccountDalService;
 
@@ -173,6 +176,7 @@ class AppAccountDalServiceBeanTest {
         //****************CHECK MOCK INVOCATION at start*************
         //***********************************************************
         verify(appAccountRepository, Mockito.never()).findById(appAccountToUpdate.getId());
+        verify(userDalService, Mockito.never()).removeOneUserFromAllFriendList(appAccountToUpdate.getUser());
         verify(appAccountRepository, Mockito.never()).delete(appAccountToUpdate);
 
         //WHEN
@@ -181,6 +185,7 @@ class AppAccountDalServiceBeanTest {
         //*****************CHECK MOCK INVOCATION at end**************
         //***********************************************************
         verify(appAccountRepository, Mockito.times(1)).findById(appAccountToUpdate.getId());
+        verify(userDalService, Mockito.times(1)).removeOneUserFromAllFriendList(appAccountToUpdate.getUser());
         verify(appAccountRepository, Mockito.times(1)).delete(appAccountToUpdate);
     }
 
