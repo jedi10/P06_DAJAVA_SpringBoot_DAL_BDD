@@ -6,9 +6,11 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -62,7 +64,7 @@ public class InternalCashAccount implements Serializable {
      * @param libelle libelle
      */
     public InternalCashAccount(String number, String libelle) {
-        this.number = number;
+        this.number = generatorCashAccountNumber(number);
         this.libelle = libelle;
         this.amount = 0;
         setTransfertTypeList(null);
@@ -76,10 +78,24 @@ public class InternalCashAccount implements Serializable {
      */
     public InternalCashAccount(Long id, String number, String libelle) {
         this.id = id;
-        this.number = number;
+        this.number = generatorCashAccountNumber(number);
         this.libelle = libelle;
         this.amount = 0;
         setTransfertTypeList(null);
+    }
+
+    /**
+     * <b>Number of Cash Account have to be unique</b>
+     * @param numberEndPart suffixe of cash account number
+     * @return String
+     */
+    private String generatorCashAccountNumber(String numberEndPart){
+        String result = null;
+        result = String.format("%s-%s-%s",
+                Instant.now().getEpochSecond(),
+                new Random().nextInt(100),
+                numberEndPart);
+        return result;
     }
 
     public void addCash(double amount){
