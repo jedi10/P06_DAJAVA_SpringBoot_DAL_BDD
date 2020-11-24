@@ -15,5 +15,6 @@ public interface IUserDalService extends UserDetailsService {
     User create(User user);
     User update(User user);
     void delete(Long id);
+    void removeOneUserFromAllFriendList(User user);
     void deleteAll();
 }

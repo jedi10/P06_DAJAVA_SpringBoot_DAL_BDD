@@ -42,7 +42,7 @@ public class User implements Serializable {
     @Column(nullable = false, length = 100)
     private String password;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinColumn(name="bank_account_fk")
     @Getter
     @Setter
@@ -101,6 +101,7 @@ public class User implements Serializable {
                 .map(List::stream)
                 .orElseGet(Stream::empty)
                 .collect(Collectors.toList());
+        /**we add the user in user friend list**/
         if(userList != null && userList.size() > 0){
             userList.forEach(e -> {
                 if (!e.getContactList().contains(this)){
