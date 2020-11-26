@@ -49,6 +49,12 @@ public class UserDalServiceBean implements IUserDalService {
         return result;
     }
 
+    /**
+     * <b>Spring Security Method to log-in</b>
+     * @param email email is used to log in
+     * @return UserDetails
+     * @throws UsernameNotFoundException spring security exception
+     */
     @Override
     public UserDetails loadUserByUsername(@NonNull String email) throws UsernameNotFoundException {
 
@@ -72,6 +78,11 @@ public class UserDalServiceBean implements IUserDalService {
         return result;
     }
 
+    /**
+     * <b>Spring Security Method for user registration</b>
+     * @param userRegistrationDto user Data Transfer Object
+     * @return User user
+     */
     @Override
     public User create2(@NonNull UserRegistrationDto userRegistrationDto) {
         User user = new User(userRegistrationDto.getFirstName(),

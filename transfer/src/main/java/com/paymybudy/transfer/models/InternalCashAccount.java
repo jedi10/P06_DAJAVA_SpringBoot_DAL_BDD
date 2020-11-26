@@ -60,7 +60,10 @@ public class InternalCashAccount implements Serializable {
 
     /**
      * <b>InternalCashAccount Constructor</b>
-     * @param number account number
+     * <p>Constructor use a Cash Account Number generator to be sure the number is unique</p>
+     * <p>number given by param will be add as a suffix on the generated Number </p>
+     * @see InternalCashAccount#generatorCashAccountNumber(String)
+     * @param number account number suffix
      * @param libelle libelle
      */
     public InternalCashAccount(String number, String libelle) {
@@ -72,8 +75,11 @@ public class InternalCashAccount implements Serializable {
 
     /**
      * <b>internalCashAccount constructor</b>
+     * <p>Constructor use a Cash Account Number generator to be sure the number is unique</p>
+     * <p>number given by param will be add as a suffix on the generated Number</p>
+     * @see InternalCashAccount#generatorCashAccountNumber(String)
      * @param id id
-     * @param number account Number
+     * @param number account Number suffix
      * @param libelle libelle
      */
     public InternalCashAccount(Long id, String number, String libelle) {
@@ -86,7 +92,7 @@ public class InternalCashAccount implements Serializable {
 
     /**
      * <b>Number of Cash Account have to be unique</b>
-     * @param numberEndPart suffixe of cash account number
+     * @param numberEndPart suffix of cash account number
      * @return String
      */
     private String generatorCashAccountNumber(String numberEndPart){
