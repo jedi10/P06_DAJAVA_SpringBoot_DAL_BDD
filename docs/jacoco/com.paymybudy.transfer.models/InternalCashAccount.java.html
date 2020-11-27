@@ -6,47 +6,49 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Entity(name = &quot;InternalCashAccount&quot;)
 @Table(name = &quot;INT_CASH_ACCOUNT&quot;, uniqueConstraints = @UniqueConstraint(columnNames = &quot;number&quot;))
-<span class="fc" id="L17">@NoArgsConstructor</span>
+<span class="fc" id="L19">@NoArgsConstructor</span>
 public class InternalCashAccount implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = &quot;int_cash_account_id&quot;)
-<span class="fc" id="L23">    @Getter</span>
-<span class="fc" id="L24">    @Setter</span>
+<span class="fc" id="L25">    @Getter</span>
+<span class="fc" id="L26">    @Setter</span>
     private Long id;
 
     @Column(length = 35)
-<span class="fc" id="L28">    @Getter</span>
-<span class="nc" id="L29">    @Setter</span>
+<span class="fc" id="L30">    @Getter</span>
+<span class="nc" id="L31">    @Setter</span>
     private String number;
-<span class="nc" id="L31">    @Getter</span>
-<span class="nc" id="L32">    @Setter</span>
+<span class="nc" id="L33">    @Getter</span>
+<span class="nc" id="L34">    @Setter</span>
     private String libelle;
 
-<span class="pc" id="L35">    @Column(length = 35)</span>
-<span class="nc" id="L36">    @Getter</span>
+<span class="pc" id="L37">    @Column(length = 35)</span>
+<span class="nc" id="L38">    @Getter</span>
     private final String currency = &quot;Euros&quot;;
 
-<span class="fc" id="L39">    @Getter</span>
-<span class="fc" id="L40">    @Setter</span>
+<span class="fc" id="L41">    @Getter</span>
+<span class="fc" id="L42">    @Setter</span>
     private double amount;
 
     @OneToOne(mappedBy = &quot;internalCashAccount&quot;)
-<span class="nc" id="L44">    @Getter</span>
-<span class="nc" id="L45">    @Setter</span>
+<span class="nc" id="L46">    @Getter</span>
+<span class="nc" id="L47">    @Setter</span>
     private User user;
 
     @OneToMany(mappedBy = &quot;internalCashAccount&quot;)
-<span class="nc" id="L49">    @Getter</span>
+<span class="nc" id="L51">    @Getter</span>
     private List&lt;MoneyTransferType&gt; transfertTypeList;
     /*
     @OneToMany(targetEntity = InternalTransaction.class, cascade = CascadeType.ALL,
@@ -58,61 +60,81 @@ public class InternalCashAccount implements Serializable {
 
     /**
      * &lt;b&gt;InternalCashAccount Constructor&lt;/b&gt;
-     * @param number account number
+     * &lt;p&gt;Constructor use a Cash Account Number generator to be sure the number is unique&lt;/p&gt;
+     * &lt;p&gt;number given by param will be add as a suffix on the generated Number &lt;/p&gt;
+     * @see InternalCashAccount#generatorCashAccountNumber(String)
+     * @param number account number suffix
      * @param libelle libelle
      */
-<span class="fc" id="L64">    public InternalCashAccount(String number, String libelle) {</span>
-<span class="fc" id="L65">        this.number = number;</span>
-<span class="fc" id="L66">        this.libelle = libelle;</span>
-<span class="fc" id="L67">        this.amount = 0;</span>
-<span class="fc" id="L68">        setTransfertTypeList(null);</span>
-<span class="fc" id="L69">    }</span>
+<span class="fc" id="L69">    public InternalCashAccount(String number, String libelle) {</span>
+<span class="fc" id="L70">        this.number = generatorCashAccountNumber(number);</span>
+<span class="fc" id="L71">        this.libelle = libelle;</span>
+<span class="fc" id="L72">        this.amount = 0;</span>
+<span class="fc" id="L73">        setTransfertTypeList(null);</span>
+<span class="fc" id="L74">    }</span>
 
     /**
      * &lt;b&gt;internalCashAccount constructor&lt;/b&gt;
+     * &lt;p&gt;Constructor use a Cash Account Number generator to be sure the number is unique&lt;/p&gt;
+     * &lt;p&gt;number given by param will be add as a suffix on the generated Number&lt;/p&gt;
+     * @see InternalCashAccount#generatorCashAccountNumber(String)
      * @param id id
-     * @param number account Number
+     * @param number account Number suffix
      * @param libelle libelle
      */
-<span class="nc" id="L77">    public InternalCashAccount(Long id, String number, String libelle) {</span>
-<span class="nc" id="L78">        this.id = id;</span>
-<span class="nc" id="L79">        this.number = number;</span>
-<span class="nc" id="L80">        this.libelle = libelle;</span>
-<span class="nc" id="L81">        this.amount = 0;</span>
-<span class="nc" id="L82">        setTransfertTypeList(null);</span>
-<span class="nc" id="L83">    }</span>
+<span class="nc" id="L85">    public InternalCashAccount(Long id, String number, String libelle) {</span>
+<span class="nc" id="L86">        this.id = id;</span>
+<span class="nc" id="L87">        this.number = generatorCashAccountNumber(number);</span>
+<span class="nc" id="L88">        this.libelle = libelle;</span>
+<span class="nc" id="L89">        this.amount = 0;</span>
+<span class="nc" id="L90">        setTransfertTypeList(null);</span>
+<span class="nc" id="L91">    }</span>
+
+    /**
+     * &lt;b&gt;Number of Cash Account have to be unique&lt;/b&gt;
+     * @param numberEndPart suffix of cash account number
+     * @return String
+     */
+    private String generatorCashAccountNumber(String numberEndPart){
+<span class="fc" id="L99">        String result = null;</span>
+<span class="fc" id="L100">        result = String.format(&quot;%s-%s-%s&quot;,</span>
+<span class="fc" id="L101">                Instant.now().getEpochSecond(),</span>
+<span class="fc" id="L102">                new Random().nextInt(100),</span>
+                numberEndPart);
+<span class="fc" id="L104">        return result;</span>
+    }
 
     public void addCash(double amount){
-<span class="fc" id="L86">        this.amount = this.amount + amount;</span>
-<span class="fc" id="L87">    }</span>
+<span class="fc" id="L108">        this.amount = this.amount + amount;</span>
+<span class="fc" id="L109">    }</span>
 
     public void removeCash(double amount){
-<span class="fc" id="L90">        this.amount = this.amount - amount;</span>
-<span class="fc" id="L91">    }</span>
+<span class="fc" id="L112">        this.amount = this.amount - amount;</span>
+<span class="fc" id="L113">    }</span>
 
     public void setTransfertTypeList(List&lt;MoneyTransferType&gt; internalList){
-<span class="fc" id="L94">        this.transfertTypeList = Optional.ofNullable(internalList)</span>
-<span class="fc" id="L95">                .map(List::stream)</span>
-<span class="fc" id="L96">                .orElseGet(Stream::empty)</span>
-<span class="fc" id="L97">                .collect(Collectors.toList());</span>
-<span class="fc" id="L98">    }</span>
+<span class="fc" id="L116">        this.transfertTypeList = Optional.ofNullable(internalList)</span>
+<span class="fc" id="L117">                .map(List::stream)</span>
+<span class="fc" id="L118">                .orElseGet(Stream::empty)</span>
+<span class="fc" id="L119">                .collect(Collectors.toList());</span>
+<span class="fc" id="L120">    }</span>
 
     @Override
     public boolean equals(Object o) {
-<span class="fc bfc" id="L102" title="All 2 branches covered.">        if (this == o) return true;</span>
-<span class="pc bpc" id="L103" title="1 of 2 branches missed.">        if (!(o instanceof InternalCashAccount)) return false;</span>
-<span class="fc" id="L104">        InternalCashAccount that = (InternalCashAccount) o;</span>
-<span class="fc" id="L105">        return number.equals(that.number);</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (this == o) return true;</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">        if (!(o instanceof InternalCashAccount)) return false;</span>
+<span class="fc" id="L126">        InternalCashAccount that = (InternalCashAccount) o;</span>
+<span class="fc" id="L127">        return number.equals(that.number);</span>
     }
 
     @Override
     public int hashCode() {
-<span class="fc" id="L110">        return Objects.hash(number);</span>
+<span class="fc" id="L132">        return Objects.hash(number);</span>
     }
 
     @Override
     public String toString() {
-<span class="nc" id="L115">        return &quot;InternalCashAccount{&quot; +</span>
+<span class="nc" id="L137">        return &quot;InternalCashAccount{&quot; +</span>
                 &quot;id=&quot; + id +
                 &quot;, number='&quot; + number + '\'' +
                 &quot;, libelle='&quot; + libelle + '\'' +
