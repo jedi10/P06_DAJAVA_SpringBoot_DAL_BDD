@@ -42,7 +42,7 @@ public class User implements Serializable {
     @Column(nullable = false, length = 100)
     private String password;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinColumn(name="bank_account_fk")
     @Getter
     @Setter
@@ -59,21 +59,22 @@ public class User implements Serializable {
     @Setter
     private AppAccount appAccount;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+
+    @ManyToMany(targetEntity = User.class, fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_friends",
             joinColumns = @JoinColumn(name = "user_fk", referencedColumnName = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "friend_fk", referencedColumnName = "user_id"))
-    /*
-    @OneToMany
-    private List<User> friends;
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "account_id", referencedColumnName="id")
-
-    */
-
     @Getter
     private List<User> contactList;
+
+/**
+    @OneToMany(fetch = FetchType.EAGER)
+    @Getter
+    private List<User> contactList;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "account_id", referencedColumnName="id")
+     **/
 
 
     /**
@@ -100,6 +101,7 @@ public class User implements Serializable {
                 .map(List::stream)
                 .orElseGet(Stream::empty)
                 .collect(Collectors.toList());
+        /**we add the user in user friend list**/
         if(userList != null && userList.size() > 0){
             userList.forEach(e -> {
                 if (!e.getContactList().contains(this)){
@@ -149,6 +151,9 @@ public class User implements Serializable {
     }
 }
 
+//friendList
+//https://stackoverflow.com/questions/35958335/jpa-onetomany-on-same-entity
+//https://stackoverflow.com/questions/1656113/hibernate-recursive-many-to-many-association-with-the-same-entity
 
 //https://stuetzpunkt.wordpress.com/2013/10/19/jpa-recursive-manytomany-relationship/
 //https://www.baeldung.com/jpa-many-to-many

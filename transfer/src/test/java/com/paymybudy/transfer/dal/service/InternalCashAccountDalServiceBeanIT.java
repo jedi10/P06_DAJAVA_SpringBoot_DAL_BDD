@@ -73,11 +73,12 @@ class InternalCashAccountDalServiceBeanIT {
 
 
         //WHEN
-        Exception exception = assertThrows(DataIntegrityViolationException.class, ()-> {
+        assertDoesNotThrow(()-> {
             internalCashAccountDalService.create(intCashAccountClone);
         });
-        assertTrue(exception.getMessage().contains("could not execute statement"));
-        assertTrue(exception.getMessage().contains("constraint"));
+        //no more DataIntegrityViolationException.class since model create unique number
+        //assertTrue(exception.getMessage().contains("could not execute statement"));
+        //assertTrue(exception.getMessage().contains("constraint"));
     }
 
     @Order(4)
@@ -89,7 +90,7 @@ class InternalCashAccountDalServiceBeanIT {
 
         //THEN
         assertNotNull(intCashAccountResult);
-        assertEquals(intCashAccountsGiven.size(), intCashAccountResult.size());
+        assertEquals(intCashAccountsGiven.size()+1, intCashAccountResult.size());
         assertEquals(intCashAccountsGiven.get(0).getNumber(),
                 intCashAccountResult.get(0).getNumber());
         assertEquals(intCashAccountsGiven.get(1).getNumber(),

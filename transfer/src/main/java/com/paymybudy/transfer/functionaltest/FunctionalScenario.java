@@ -1,15 +1,20 @@
 package com.paymybudy.transfer.functionaltest;
 
 import com.paymybudy.transfer.dal.service.*;
+import com.paymybudy.transfer.exception.IntMoneyTransferPreparationException;
 import com.paymybudy.transfer.models.*;
 import com.paymybudy.transfer.web.dto.UserRegistrationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * <b>Functional Scenarios for demo purpose</b>
@@ -30,6 +35,9 @@ public class FunctionalScenario {
     private IAppAccountDalService appAccountDalService;
     @Autowired
     private IBankAccountDalService bankAccountDalService;
+    @Autowired
+    private IMoneyTransferTypeDalService moneyTransferTypeDalService;
+
 
     public FunctionalScenario() {
         super();
@@ -85,6 +93,8 @@ public class FunctionalScenario {
      * </ul>
      * @throws Exception exception
      */
+    @Transactional(propagation = Propagation.REQUIRES_NEW,
+            rollbackFor = Exception.class)
     public void addUserFullInscription() throws Exception {
         //*************
         //User Creation
@@ -161,6 +171,45 @@ public class FunctionalScenario {
             //TRANSACTIONAL FUNCTIONALITY
             moneyTransferService.sendMoney(user1, user2, internalTransaction);
     }
+
+    /**
+     * <b>Delete User in all tables</b>
+     * <p>internal Transaction will be saved</p>
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW,
+            rollbackFor = Exception.class)
+    public void deleteNewUser(){
+        User user1 = userDalService.findByEmail("jolijumper@farwest.us");
+        List<AppAccount> appAccountList =  appAccountDalService.findAll();
+        AppAccount appAccount1 =  appAccountList.stream().filter(
+                e->  e.getUser().getEmail().equals(user1.getEmail()))
+                .findFirst().get();
+                //.limit(1);
+                //.reduce((a, b) -> {
+                //    throw new IllegalStateException("Multiple elements: " + a + ", " + b);
+                //});
+
+        appAccountDalService.delete(appAccount1.getId());
+
+        //Delete Cash Account
+        //internal Transaction will be saved
+        InternalCashAccount internalCashAccount1 = user1.getInternalCashAccount();
+        List<MoneyTransferType> moneyTransferTypeList = moneyTransferTypeDalService.findAll();
+        List<MoneyTransferType> moneyTransferTypeListFiltered = moneyTransferTypeList.stream()
+                .filter(e-> internalCashAccount1.getId().equals(e.getId().getInternalCashAccountId()))
+                .collect(Collectors.toList());
+
+        moneyTransferTypeListFiltered.forEach(e->
+                {   MoneyTransferTypeKey moneyTransferTypeKey = new MoneyTransferTypeKey(
+                        e.getId().getInternalCashAccountId(),
+                        e.getId().getInternalTransactionId());
+                    moneyTransferTypeDalService.delete(moneyTransferTypeKey);}
+        );
+        internalCashAccountDalService.delete(internalCashAccount1.getId());
+
+        System.out.println("c'est fini");
+    }
+
 }
 
 //https://o7planning.org/fr/11661/tutoriel-spring-boot-jpa-et-spring-transaction

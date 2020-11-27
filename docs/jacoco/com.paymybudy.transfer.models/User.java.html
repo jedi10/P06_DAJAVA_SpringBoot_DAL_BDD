@@ -42,7 +42,7 @@ public class User implements Serializable {
     @Column(nullable = false, length = 100)
     private String password;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinColumn(name=&quot;bank_account_fk&quot;)
 <span class="fc" id="L47">    @Getter</span>
 <span class="nc" id="L48">    @Setter</span>
@@ -59,21 +59,22 @@ public class User implements Serializable {
 <span class="nc" id="L59">    @Setter</span>
     private AppAccount appAccount;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+
+    @ManyToMany(targetEntity = User.class, fetch = FetchType.EAGER)
     @JoinTable(
             name = &quot;user_friends&quot;,
             joinColumns = @JoinColumn(name = &quot;user_fk&quot;, referencedColumnName = &quot;user_id&quot;),
             inverseJoinColumns = @JoinColumn(name = &quot;friend_fk&quot;, referencedColumnName = &quot;user_id&quot;))
-    /*
-    @OneToMany
-    private List&lt;User&gt; friends;
+<span class="fc" id="L68">    @Getter</span>
+    private List&lt;User&gt; contactList;
+
+/**
+    @OneToMany(fetch = FetchType.EAGER)
+    @Getter
+    private List&lt;User&gt; contactList;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = &quot;account_id&quot;, referencedColumnName=&quot;id&quot;)
-
-    */
-
-<span class="fc" id="L75">    @Getter</span>
-    private List&lt;User&gt; contactList;
+     **/
 
 
     /**
@@ -83,60 +84,61 @@ public class User implements Serializable {
      * @param email email
      * @param password password
      */
-<span class="fc" id="L86">    public User(String firstName, String lastName, String email, String password) {</span>
-<span class="fc" id="L87">        this.firstName = firstName;</span>
-<span class="fc" id="L88">        this.lastName = lastName;</span>
-<span class="fc" id="L89">        this.email = email;</span>
-<span class="fc" id="L90">        this.password = password;</span>
-<span class="fc" id="L91">        setContactList(null);</span>
-<span class="fc" id="L92">    }</span>
+<span class="fc" id="L87">    public User(String firstName, String lastName, String email, String password) {</span>
+<span class="fc" id="L88">        this.firstName = firstName;</span>
+<span class="fc" id="L89">        this.lastName = lastName;</span>
+<span class="fc" id="L90">        this.email = email;</span>
+<span class="fc" id="L91">        this.password = password;</span>
+<span class="fc" id="L92">        setContactList(null);</span>
+<span class="fc" id="L93">    }</span>
 
     public User() {
-<span class="fc" id="L95">        super();</span>
-<span class="fc" id="L96">    }</span>
+<span class="fc" id="L96">        super();</span>
+<span class="fc" id="L97">    }</span>
 
     public void setContactList(List&lt;User&gt; userList){
-<span class="fc" id="L99">        this.contactList = Optional.ofNullable(userList)</span>
-<span class="fc" id="L100">                .map(List::stream)</span>
-<span class="fc" id="L101">                .orElseGet(Stream::empty)</span>
-<span class="fc" id="L102">                .collect(Collectors.toList());</span>
-<span class="pc bpc" id="L103" title="3 of 4 branches missed.">        if(userList != null &amp;&amp; userList.size() &gt; 0){</span>
-<span class="nc" id="L104">            userList.forEach(e -&gt; {</span>
-<span class="nc bnc" id="L105" title="All 2 branches missed.">                if (!e.getContactList().contains(this)){</span>
-<span class="nc" id="L106">                    e.addOneContact(this);</span>
+<span class="fc" id="L100">        this.contactList = Optional.ofNullable(userList)</span>
+<span class="fc" id="L101">                .map(List::stream)</span>
+<span class="fc" id="L102">                .orElseGet(Stream::empty)</span>
+<span class="fc" id="L103">                .collect(Collectors.toList());</span>
+        /**we add the user in user friend list**/
+<span class="pc bpc" id="L105" title="3 of 4 branches missed.">        if(userList != null &amp;&amp; userList.size() &gt; 0){</span>
+<span class="nc" id="L106">            userList.forEach(e -&gt; {</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">                if (!e.getContactList().contains(this)){</span>
+<span class="nc" id="L108">                    e.addOneContact(this);</span>
                 }
-<span class="nc" id="L108">            });</span>
+<span class="nc" id="L110">            });</span>
         }
-<span class="fc" id="L110">    }</span>
+<span class="fc" id="L112">    }</span>
 
     public void addOneContact(User contact){
-<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (!this.contactList.contains(contact)){</span>
-<span class="nc" id="L114">            this.contactList.add(contact);</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">        if (!this.contactList.contains(contact)){</span>
+<span class="nc" id="L116">            this.contactList.add(contact);</span>
         }
-<span class="nc bnc" id="L116" title="All 2 branches missed.">        if (!contact.getContactList().contains(this)){</span>
-<span class="nc" id="L117">            contact.addOneContact(this);</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        if (!contact.getContactList().contains(this)){</span>
+<span class="nc" id="L119">            contact.addOneContact(this);</span>
         }
-<span class="nc" id="L119">    }</span>
+<span class="nc" id="L121">    }</span>
 
 
 
     @Override
     public boolean equals(Object o) {
-<span class="fc bfc" id="L125" title="All 2 branches covered.">        if (this == o) return true;</span>
-<span class="pc bpc" id="L126" title="1 of 2 branches missed.">        if (!(o instanceof User)) return false;</span>
-<span class="fc" id="L127">        User user = (User) o;</span>
-<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        return Objects.equals(id, user.id) &amp;&amp;</span>
-<span class="pc bnc" id="L129" title="All 2 branches missed.">                email.equals(user.email);</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">        if (this == o) return true;</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        if (!(o instanceof User)) return false;</span>
+<span class="fc" id="L129">        User user = (User) o;</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        return Objects.equals(id, user.id) &amp;&amp;</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">                email.equals(user.email);</span>
     }
 
     @Override
     public int hashCode() {
-<span class="nc" id="L134">        return Objects.hash(id, email);</span>
+<span class="nc" id="L136">        return Objects.hash(id, email);</span>
     }
 
     @Override
     public String toString() {
-<span class="nc" id="L139">        return &quot;User{&quot; +</span>
+<span class="nc" id="L141">        return &quot;User{&quot; +</span>
                 &quot;id=&quot; + id +
                 &quot;, firstName='&quot; + firstName + '\'' +
                 &quot;, lastName='&quot; + lastName + '\'' +
@@ -149,6 +151,9 @@ public class User implements Serializable {
     }
 }
 
+//friendList
+//https://stackoverflow.com/questions/35958335/jpa-onetomany-on-same-entity
+//https://stackoverflow.com/questions/1656113/hibernate-recursive-many-to-many-association-with-the-same-entity
 
 //https://stuetzpunkt.wordpress.com/2013/10/19/jpa-recursive-manytomany-relationship/
 //https://www.baeldung.com/jpa-many-to-many

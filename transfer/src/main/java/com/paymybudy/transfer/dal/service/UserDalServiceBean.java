@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +49,12 @@ public class UserDalServiceBean implements IUserDalService {
         return result;
     }
 
+    /**
+     * <b>Spring Security Method to log-in</b>
+     * @param email email is used to log in
+     * @return UserDetails
+     * @throws UsernameNotFoundException spring security exception
+     */
     @Override
     public UserDetails loadUserByUsername(@NonNull String email) throws UsernameNotFoundException {
 
@@ -71,6 +78,11 @@ public class UserDalServiceBean implements IUserDalService {
         return result;
     }
 
+    /**
+     * <b>Spring Security Method for user registration</b>
+     * @param userRegistrationDto user Data Transfer Object
+     * @return User user
+     */
     @Override
     public User create2(@NonNull UserRegistrationDto userRegistrationDto) {
         User user = new User(userRegistrationDto.getFirstName(),
@@ -102,7 +114,24 @@ public class UserDalServiceBean implements IUserDalService {
     public void delete(@NonNull Long id) {
         User userPersisted = findOne(id);
         if (userPersisted != null){
+            this.removeOneUserFromAllFriendList(userPersisted);
             userRepository.delete(userPersisted);
+        }
+    }
+
+    /**
+     * <b>Remove one user from all Friends List</b>
+     * @param userToRemove user
+     */
+    public void removeOneUserFromAllFriendList(User userToRemove){
+        List<User> userList = findAll();
+        //User user1 = userList.get(0);
+        //user1.getContactList().remove(userToRemove);
+        //this.update(user1);
+        for (User u : userList){
+            List<User> contactList = u.getContactList();
+            boolean isPresent = contactList.remove(userToRemove);
+            if (isPresent) this.update(u);
         }
     }
 

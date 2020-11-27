@@ -17,21 +17,28 @@ class InternalCashAccountTest {
     void tearDown() {
     }
 
-    /*
+
     @Order(1)
     @Test
-    void checConstructor_ListEmpty() {
+    void checkUniqueCashAccountNumber() {
         //When
         InternalCashAccount cashAccount = new InternalCashAccount(
-                "1234564343",
+                "EA234",
+                "Livret de depot standard");
+
+        InternalCashAccount cashAccount2 = new InternalCashAccount(
+                "EA234",
                 "Livret de depot standard");
 
         //Then
         assertNotNull(cashAccount);
+        assertNotNull(cashAccount2);
 
-        assertNotNull(cashAccount.getInternalTransactionList());
-        assertTrue(cashAccount.getInternalTransactionList().isEmpty());
-    }*/
+        assertNotNull(cashAccount.getNumber());
+        assertNotNull(cashAccount2.getNumber());
+
+        assertNotEquals(cashAccount.getNumber(), cashAccount2.getNumber());
+    }
 
     @Order(2)
     @Test
